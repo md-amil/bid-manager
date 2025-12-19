@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Amazon Bid Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">📊 Amazon Bid Manager</h1>
+            <ul class="nav-links">
+                <li><a href="/" class="active">Dashboard</a></li>
+                <li><a href="/campaigns">Campaigns</a></li>
+                <li><a href="/logs">Logs</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <h2>Dashboard</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Campaigns</h3>
+                <p class="stat-value"><%= stats.totalCampaigns %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Active Campaigns</h3>
+                <p class="stat-value"><%= stats.activeCampaigns %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Spend</h3>
+                <p class="stat-value">$<%= stats.totalSpend.toFixed(2) %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Sales</h3>
+                <p class="stat-value">$<%= stats.totalSales.toFixed(2) %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Average ROI</h3>
+                <p class="stat-value <%= stats.averageROI >= 3 ? 'high-roi' : stats.averageROI <= 1 ? 'low-roi' : '' %>">
+                    <%= stats.averageROI.toFixed(2) %>
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Recent Campaigns</h3>
+            <div class="table-responsive">
+                <table class="campaign-table">
+                    <thead>
+                        <tr>
+                            <th>Campaign</th>
+                            <th>Keyword</th>
+                            <th>Current Bid</th>
+                            <th>Sales</th>
+                            <th>Spend</th>
+                            <th>ROI</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% campaigns.slice(0, 5).forEach(campaign => { %>
+                            <tr>
+                                <td><%= campaign.campaignName %></td>
+                                <td><%= campaign.keyword %></td>
+                                <td>$<%= campaign.currentBid.toFixed(2) %></td>
+                                <td>$<%= campaign.sales.toFixed(2) %></td>
+                                <td>$<%= campaign.spend.toFixed(2) %></td>
+                                <td>
+                                    <% const roi = campaign.roi || (campaign.spend > 0 ? campaign.sales / campaign.spend : 0); %>
+                                    <span class="roi-badge <%= roi >= 3 ? 'high' : roi <= 1 ? 'low' : 'medium' %>">
+                                        <%= roi.toFixed(2) %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge <%= campaign.status %>">
+                                        <%= campaign.status %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="/campaigns/<%= campaign.campaignId %>" class="btn-small">View</a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <a href="/campaigns" class="btn">View All Campaigns</a>
+        </div>
+
+        <div class="section">
+            <h3>Recent Bid Adjustments</h3>
+            <div class="table-responsive">
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Campaign</th>
+                            <th>Keyword</th>
+                            <th>Old Bid</th>
+                            <th>New Bid</th>
+                            <th>ROI</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentLogs.forEach(log => { %>
+                            <tr>
+                                <td><%= new Date(log.createdAt).toLocaleString() %></td>
+                                <td><%= log.campaignId %></td>
+                                <td><%= log.keyword %></td>
+                                <td>$<%= log.oldBid.toFixed(2) %></td>
+                                <td>$<%= log.newBid.toFixed(2) %></td>
+                                <td>
+                                    <span class="roi-badge <%= log.roi >= 3 ? 'high' : log.roi <= 1 ? 'low' : 'medium' %>">
+                                        <%= log.roi.toFixed(2) %>
+                                    </span>
+                                </td>
+                                <td><%= log.reason %></td>
+                                <td>
+                                    <span class="status-badge <%= log.status %>">
+                                        <%= log.status %>
+                                    </span>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <a href="/logs" class="btn">View All Logs</a>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Amazon Bid Manager - Automated ROI-based Bidding</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Profile Details' %> - Amazon Bid Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">Amazon Bid Manager</h1>
+            <ul class="nav-links">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/campaigns">Campaigns</a></li>
+                <li><a href="/profiles" class="active">Profiles</a></li>
+                <li><a href="/logs">Logs</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+<div class="container">
+  <div class="header-section">
+    <div class="breadcrumb">
+      <a href="/profiles"><i class="fas fa-users"></i> Profiles</a>
+      <span class="separator">/</span>
+      <span class="current">Profile Details</span>
+    </div>
+    <h1><i class="fas fa-user-circle"></i> Profile Details</h1>
+  </div>
+
+  <% if (error) { %>
+    <div class="alert alert-error">
+      <i class="fas fa-exclamation-triangle"></i>
+      <%= error %>
+    </div>
+    <div class="actions-section">
+      <a href="/profiles" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Back to Profiles
+      </a>
+    </div>
+  <% } else if (profile) { %>
+    <div class="profile-detail-card">
+      <div class="profile-header">
+        <div class="profile-icon">
+          <i class="fas fa-<%= profile.accountInfo.type === 'seller' ? 'store' : profile.accountInfo.type === 'vendor' ? 'building' : 'users' %>"></i>
+        </div>
+        <div class="profile-info">
+          <h2><%= profile.accountInfo.name %></h2>
+          <div class="profile-badges">
+            <span class="badge badge-<%= profile.accountInfo.type %>">
+              <%= profile.accountInfo.type.toUpperCase() %>
+            </span>
+            <% if (profile.accountInfo.validPaymentMethod) { %>
+              <span class="badge badge-success">
+                <i class="fas fa-check-circle"></i>
+                Payment Verified
+              </span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-sections">
+        <!-- Basic Information -->
+        <div class="section">
+          <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Profile ID</span>
+              <span class="value" id="profileId"><%= profile.profileId %></span>
+              <button onclick="copyToClipboard('profileId')" class="copy-btn" title="Copy Profile ID">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+            <div class="info-item">
+              <span class="label">Account ID</span>
+              <span class="value" id="accountId"><%= profile.accountInfo.id %></span>
+              <button onclick="copyToClipboard('accountId')" class="copy-btn" title="Copy Account ID">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+            <div class="info-item">
+              <span class="label">Marketplace ID</span>
+              <span class="value" id="marketplaceId"><%= profile.accountInfo.marketplaceStringId %></span>
+              <button onclick="copyToClipboard('marketplaceId')" class="copy-btn" title="Copy Marketplace ID">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+            <div class="info-item">
+              <span class="label">Account Type</span>
+              <span class="value"><%= profile.accountInfo.type %></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Regional Settings -->
+        <div class="section">
+          <h3><i class="fas fa-globe"></i> Regional Settings</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Country</span>
+              <span class="value">
+                <i class="fas fa-flag"></i>
+                <%= profile.countryCode %>
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="label">Currency</span>
+              <span class="value">
+                <i class="fas fa-dollar-sign"></i>
+                <%= profile.currencyCode %>
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="label">Timezone</span>
+              <span class="value">
+                <i class="fas fa-clock"></i>
+                <%= profile.timezone %>
+              </span>
+            </div>
+            <% if (profile.dailyBudget) { %>
+              <div class="info-item">
+                <span class="label">Daily Budget</span>
+                <span class="value budget">
+                  <i class="fas fa-wallet"></i>
+                  <%= profile.currencyCode %> <%= profile.dailyBudget.toFixed(2) %>
+                </span>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section">
+          <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+          <div class="actions-grid">
+            <a href="/campaigns?profileId=<%= profile.profileId %>" class="action-card">
+              <i class="fas fa-bullhorn"></i>
+              <span>View Campaigns</span>
+              <small>Manage advertising campaigns</small>
+            </a>
+            <a href="/reports?profileId=<%= profile.profileId %>" class="action-card">
+              <i class="fas fa-chart-bar"></i>
+              <span>Performance Reports</span>
+              <small>View advertising metrics</small>
+            </a>
+            <a href="/keywords?profileId=<%= profile.profileId %>" class="action-card">
+              <i class="fas fa-key"></i>
+              <span>Keyword Management</span>
+              <small>Manage keyword bids</small>
+            </a>
+            <button onclick="testApiConnection()" class="action-card">
+              <i class="fas fa-plug"></i>
+              <span>Test API Connection</span>
+              <small>Verify API connectivity</small>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-section">
+      <a href="/profiles" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Back to Profiles
+      </a>
+      <button onclick="refreshProfile()" class="btn btn-primary">
+        <i class="fas fa-sync-alt"></i>
+        Refresh Profile
+      </button>
+    </div>
+  <% } %>
+</div>
+
+<style>
+.breadcrumb {
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.breadcrumb a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  margin: 0 8px;
+}
+
+.current {
+  color: #333;
+  font-weight: 500;
+}
+
+.profile-detail-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+.profile-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px;
+}
+
+.profile-icon i {
+  font-size: 32px;
+}
+
+.profile-info h2 {
+  margin: 0 0 12px 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.profile-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-seller {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.badge-vendor {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196f3;
+}
+
+.badge-agency {
+  background: rgba(156, 39, 176, 0.2);
+  color: #9c27b0;
+}
+
+.badge-success {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.profile-sections {
+  padding: 30px;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.section h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section h3 i {
+  color: #667eea;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  position: relative;
+}
+
+.info-item .label {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.info-item .value {
+  color: #333;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.budget {
+  color: #4caf50 !important;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.action-card:hover {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  transform: translateY(-2px);
+  color: #333;
+  text-decoration: none;
+}
+
+.action-card i {
+  font-size: 24px;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.action-card span {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.action-card small {
+  color: #666;
+  font-size: 12px;
+}
+
+.actions-section {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .profile-icon {
+    margin-right: 0;
+    margin-bottom: 16px;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+</style>
+
+<script>
+function copyToClipboard(elementId) {
+  const element = document.getElementById(elementId);
+  const text = element.textContent;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    // Show success feedback
+    const button = element.nextElementSibling;
+    const originalIcon = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i>';
+    button.style.color = '#4caf50';
+    
+    setTimeout(() => {
+      button.innerHTML = originalIcon;
+      button.style.color = '';
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy text: ', err);
+    alert('Failed to copy to clipboard');
+  });
+}
+
+async function refreshProfile() {
+  const button = event.target;
+  const originalText = button.innerHTML;
+  
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+  button.disabled = true;
+  
+  try {
+    const profileId = '<%= profile ? profile.profileId : "" %>';
+    const response = await fetch(`/profiles/api/${profileId}`);
+    if (response.ok) {
+      location.reload();
+    } else {
+      throw new Error('Failed to refresh profile');
+    }
+  } catch (error) {
+    alert('Failed to refresh profile. Please try again.');
+    console.error('Error refreshing profile:', error);
+  } finally {
+    button.innerHTML = originalText;
+    button.disabled = false;
+  }
+}
+
+async function testApiConnection() {
+  const button = event.target;
+  const originalContent = button.innerHTML;
+  
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Testing...</span><small>Checking connection</small>';
+  button.disabled = true;
+  
+  try {
+    const profileId = '<%= profile ? profile.profileId : "" %>';
+    const response = await fetch(`/profiles/api/${profileId}`);
+    
+    if (response.ok) {
+      button.innerHTML = '<i class="fas fa-check-circle" style="color: #4caf50;"></i><span>Connection OK</span><small>API is working</small>';
+      setTimeout(() => {
+        button.innerHTML = originalContent;
+        button.disabled = false;
+      }, 3000);
+    } else {
+      throw new Error('API connection failed');
+    }
+  } catch (error) {
+    button.innerHTML = '<i class="fas fa-times-circle" style="color: #f44336;"></i><span>Connection Failed</span><small>Check configuration</small>';
+    setTimeout(() => {
+      button.innerHTML = originalContent;
+      button.disabled = false;
+    }, 3000);
+    console.error('API connection test failed:', error);
+  }
+}
+</script>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Amazon Bid Manager - Automated ROI-based Bidding</p>
+        </div>
+    </footer>
+</body>
+</html>

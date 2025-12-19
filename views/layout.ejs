@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Amazon Bid Manager' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">Amazon Bid Manager</h1>
+            <ul class="nav-links">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/campaigns">Campaigns</a></li>
+                <li><a href="/profiles">Profiles</a></li>
+                <li><a href="/logs">Logs</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <%- body %>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Amazon Bid Manager - Automated ROI-based Bidding</p>
+        </div>
+    </footer>
+</body>
+</html>

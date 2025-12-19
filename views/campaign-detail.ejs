@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= campaign ? campaign.campaignName : 'Campaign' %> - Details</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">📊 Amazon Bid Manager</h1>
+            <ul class="nav-links">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/campaigns">Campaigns</a></li>
+                <li><a href="/logs">Logs</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <% if (campaign) { %>
+            <div class="page-header">
+                <div>
+                    <a href="/campaigns" class="back-link">← Back to Campaigns</a>
+                    <h2><%= campaign.campaignName %></h2>
+                    <p class="subtitle">Campaign ID: <%= campaign.campaignId %></p>
+                </div>
+                <span class="status-badge <%= campaign.status %>">
+                    <%= campaign.status %>
+                </span>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <h3>Keyword</h3>
+                    <p class="detail-value"><%= campaign.keyword %></p>
+                </div>
+                <div class="detail-card">
+                    <h3>Current Bid</h3>
+                    <p class="detail-value">$<%= campaign.currentBid.toFixed(2) %></p>
+                </div>
+                <div class="detail-card">
+                    <h3>Sales</h3>
+                    <p class="detail-value">$<%= campaign.sales.toFixed(2) %></p>
+                </div>
+                <div class="detail-card">
+                    <h3>Spend</h3>
+                    <p class="detail-value">$<%= campaign.spend.toFixed(2) %></p>
+                </div>
+                <div class="detail-card">
+                    <h3>Clicks</h3>
+                    <p class="detail-value"><%= campaign.clicks %></p>
+                </div>
+                <div class="detail-card">
+                    <h3>Impressions</h3>
+                    <p class="detail-value"><%= campaign.impressions.toLocaleString() %></p>
+                </div>
+                <div class="detail-card">
+                    <h3>ROI</h3>
+                    <% const roi = campaign.roi || (campaign.spend > 0 ? campaign.sales / campaign.spend : 0); %>
+                    <p class="detail-value">
+                        <span class="roi-badge <%= roi >= 3 ? 'high' : roi <= 1 ? 'low' : 'medium' %>">
+                            <%= roi.toFixed(2) %>
+                        </span>
+                    </p>
+                </div>
+                <div class="detail-card">
+                    <h3>Last Adjusted</h3>
+                    <p class="detail-value">
+                        <%= campaign.lastAdjustedAt ? new Date(campaign.lastAdjustedAt).toLocaleString() : 'Never' %>
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Bid Adjustment History</h3>
+                <% if (logs && logs.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="log-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Old Bid</th>
+                                    <th>New Bid</th>
+                                    <th>Change</th>
+                                    <th>ROI</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% logs.forEach(log => { %>
+                                    <tr class="<%= log.status %>">
+                                        <td>
+                                            <div class="timestamp">
+                                                <%= new Date(log.createdAt).toLocaleDateString() %>
+                                                <span class="time"><%= new Date(log.createdAt).toLocaleTimeString() %></span>
+                                            </div>
+                                        </td>
+                                        <td>$<%= log.oldBid.toFixed(2) %></td>
+                                        <td>$<%= log.newBid.toFixed(2) %></td>
+                                        <td>
+                                            <% 
+                                                const change = ((log.newBid - log.oldBid) / log.oldBid * 100).toFixed(1);
+                                                const changeClass = change > 0 ? 'increase' : 'decrease';
+                                            %>
+                                            <span class="change <%= changeClass %>">
+                                                <%= change > 0 ? '+' : '' %><%= change %>%
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="roi-badge <%= log.roi >= 3 ? 'high' : log.roi <= 1 ? 'low' : 'medium' %>">
+                                                <%= log.roi.toFixed(2) %>
+                                            </span>
+                                        </td>
+                                        <td><%= log.reason %></td>
+                                        <td>
+                                            <span class="status-badge <%= log.status %>">
+                                                <%= log.status %>
+                                            </span>
+                                            <% if (log.errorMessage) { %>
+                                                <div class="error-message"><%= log.errorMessage %></div>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <p class="no-data">No bid adjustments yet for this campaign.</p>
+                <% } %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <h2>Campaign Not Found</h2>
+                <p>The campaign you're looking for doesn't exist.</p>
+                <a href="/campaigns" class="btn">Back to Campaigns</a>
+            </div>
+        <% } %>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Amazon Bid Manager - Automated ROI-based Bidding</p>
+        </div>
+    </footer>
+</body>
+</html>
