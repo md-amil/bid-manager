@@ -37,11 +37,13 @@ export class AuthService {
     this.scope = 'advertising::campaign_management';
   }
 
+  
+
   /**
    * Generate authorization URL for Amazon OAuth
    */
   getAuthorizationUrl(): string {
-    const authUrl = new URL('https://www.amazon.com/ap/oa');
+    const authUrl = new URL('https://www.amazon.in/ap/oa');
     authUrl.searchParams.append('client_id', this.clientId);
     authUrl.searchParams.append('scope', this.scope);
     authUrl.searchParams.append('response_type', 'code');
@@ -64,7 +66,7 @@ export class AuthService {
       });
 
       const response = await axios.post<TokenResponse>(
-        'https://api.amazon.com/auth/o2/token',
+        'https://api.amazon.in/auth/o2/token',
         params.toString(),
         {
           headers: {
@@ -87,7 +89,7 @@ export class AuthService {
   async getProfiles(accessToken: string): Promise<AmazonProfile[]> {
     try {
       const response = await axios.get<AmazonProfile[]>(
-        'https://advertising-api.amazon.com/v2/profiles',
+        'https://advertising-api-eu.amazon.com/v2/profiles',
         {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -117,7 +119,7 @@ export class AuthService {
       });
 
       const response = await axios.post<TokenResponse>(
-        'https://api.amazon.com/auth/o2/token',
+        'https://api.amazon.in/auth/o2/token',
         params.toString(),
         {
           headers: {

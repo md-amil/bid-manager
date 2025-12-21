@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Profile - Amazon Bid Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .select-profile-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ff0854 0%, #d6006d 100%);
+            padding: 40px 20px;
+        }
+
+        .select-profile-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-card {
+            background: #f7fafc;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .profile-card:hover {
+            border-color: #ff0854;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 8, 84, 0.3);
+        }
+
+        .profile-card.selected {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .profile-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff0854 0%, #d6006d 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .profile-card.selected .profile-icon {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .profile-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-type {
+            display: inline-block;
+            background: #ff0854;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .profile-details {
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .profile-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-detail-label {
+            color: #718096;
+        }
+
+        .profile-detail-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .check-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 30px;
+            height: 30px;
+            background: #48bb78;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .profile-card.selected .check-icon {
+            display: flex;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-select {
+            background: linear-gradient(135deg, #ff0854 0%, #d6006d 100%);
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-select:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 8, 84, 0.4);
+        }
+
+        .btn-select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-logout {
+            background: white;
+            color: #ff0854;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            border: 2px solid #ff0854;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-logout:hover {
+            background: #ff0854;
+            color: white;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="select-profile-container">
+        <div class="select-profile-box">
+            <div class="header">
+                <div class="header-icon">🎯</div>
+                <h1>Select Your Profile</h1>
+                <p>Choose an Amazon Advertising profile to manage</p>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error">
+                    <% if (error === 'profile_not_found') { %>
+                        ❌ Profile not found. Please select a valid profile.
+                    <% } else { %>
+                        ❌ An error occurred. Please try again.
+                    <% } %>
+                </div>
+            <% } %>
+
+            <% if (profiles && profiles.length > 0) { %>
+                <form action="/select-profile" method="POST" id="profileForm">
+                    <div class="profiles-grid">
+                        <% profiles.forEach(profile => { %>
+                            <div class="profile-card <%= selectedProfile && selectedProfile.profileId === profile.profileId ? 'selected' : '' %>" 
+                                 data-profile-id="<%= profile.profileId %>"
+                                 onclick="selectCard(this)">
+                                <div class="check-icon">✓</div>
+                                <div class="profile-icon">
+                                    <%= profile.accountInfo.type === 'seller' ? '🏪' : profile.accountInfo.type === 'vendor' ? '🏢' : '👥' %>
+                                </div>
+                                <div class="profile-name"><%= profile.accountInfo.name %></div>
+                                <span class="profile-type"><%= profile.accountInfo.type %></span>
+                                
+                                <div class="profile-details">
+                                    <div class="profile-detail-item">
+                                        <span class="profile-detail-label">Profile ID:</span>
+                                        <span class="profile-detail-value"><%= profile.profileId %></span>
+                                    </div>
+                                    <div class="profile-detail-item">
+                                        <span class="profile-detail-label">Country:</span>
+                                        <span class="profile-detail-value"><%= profile.countryCode %></span>
+                                    </div>
+                                    <div class="profile-detail-item">
+                                        <span class="profile-detail-label">Currency:</span>
+                                        <span class="profile-detail-value"><%= profile.currencyCode %></span>
+                                    </div>
+                                    <div class="profile-detail-item">
+                                        <span class="profile-detail-label">Timezone:</span>
+                                        <span class="profile-detail-value"><%= profile.timezone %></span>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+
+                    <input type="hidden" name="profileId" id="selectedProfileId" value="<%= selectedProfile ? selectedProfile.profileId : '' %>">
+
+                    <div class="actions">
+                        <button type="submit" class="btn-select" id="continueBtn" <%= !selectedProfile ? 'disabled' : '' %>>
+                            Continue to Dashboard →
+                        </button>
+                        <a href="/auth/logout" class="btn-logout">Logout</a>
+                    </div>
+                </form>
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <h3>No Profiles Available</h3>
+                    <p>No Amazon Advertising profiles found for your account.</p>
+                    <div class="actions">
+                        <a href="/auth/logout" class="btn-logout">Logout</a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        function selectCard(card) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            card.classList.add('selected');
+            
+            // Update hidden input
+            const profileId = card.getAttribute('data-profile-id');
+            document.getElementById('selectedProfileId').value = profileId;
+            
+            // Enable continue button
+            document.getElementById('continueBtn').disabled = false;
+        }
+
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+
+        // Auto-select if only one profile
+        <% if (profiles && profiles.length === 1) { %>
+            window.onload = function() {
+                const card = document.querySelector('.profile-card');
+                if (card) {
+                    selectCard(card);
+                }
+            };
+        <% } %>
+    </script>
+</body>
+</html>

@@ -1,25 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Amazon Bid Manager</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <h1 class="logo">📊 Amazon Bid Manager</h1>
-            <ul class="nav-links">
-                <li><a href="/" class="active">Dashboard</a></li>
-                <li><a href="/campaigns">Campaigns</a></li>
-                <li><a href="/logs">Logs</a></li>
-            </ul>
-        </div>
-    </nav>
-    
-    <main class="container">
-        <h2>Dashboard</h2>
+<%- include('partials/header', { currentPage: 'dashboard', selectedProfile, profiles }) %>
+
+<h2>Dashboard</h2>
         
         <div class="stats-grid">
             <div class="stat-card">
@@ -134,12 +115,4 @@
             </div>
             <a href="/logs" class="btn">View All Logs</a>
         </div>
-    </main>
-    
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Amazon Bid Manager - Automated ROI-based Bidding</p>
-        </div>
-    </footer>
-</body>
-</html>
+<%- include('partials/footer') %>

@@ -169,13 +169,14 @@ export class BidAdjustmentService {
       const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(); // Last 7 days
 
       // Get performance report
-      const report = await this.amazonApiService.getCampaignPerformanceReport(startDate, endDate);
-
+      const report = await this.amazonApiService.getCampaigns(startDate, endDate);
+      console.log(report.campaigns)
+      return report.campaigns;
       // Update campaigns in database
       // Note: This is simplified - you'll need to parse the actual report format
-      if (report && report.data) {
-        this.logger.log('Campaign data synced successfully');
-      }
+      // if (report && report.data) {
+      //   this.logger.log('Campaign data synced successfully');
+      // }
     } catch (error) {
       this.logger.error('Error syncing campaign data', );
     }

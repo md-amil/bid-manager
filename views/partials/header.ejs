@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>Amazon Bid Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .logout-link {
+            color: #fed7d7 !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-left">
+                <% if (typeof selectedProfile !== 'undefined' && selectedProfile) { %>
+                    <div class="profile-section">
+                        <div class="profile-info">
+                            <div class="profile-icon">
+                                <%= selectedProfile.accountInfo.type === 'seller' ? '🏪' : selectedProfile.accountInfo.type === 'vendor' ? '🏢' : '👥' %>
+                            </div>
+                            <div class="profile-details">
+                                <% if (typeof profiles !== 'undefined' && profiles && profiles.length > 1) { %>
+                                    <form action="/select-profile" method="POST" id="profileSwitchForm" style="margin: 0;">
+                                        <select name="profileId" class="profile-dropdown" id="profileDropdown" onchange="document.getElementById('profileSwitchForm').submit()">
+                                            <% profiles.forEach(profile => { %>
+                                                <option value="<%= profile.profileId %>" <%= profile.profileId === selectedProfile.profileId ? 'selected' : '' %>>
+                                                    <%= profile.accountInfo.name %> (<%= profile.countryCode %>)
+                                                </option>
+                                            <% }); %>
+                                        </select>
+                                    </form>
+                                <% } else { %>
+                                    <h1><%= selectedProfile.accountInfo.name %></h1>
+                                <% } %>
+                                <div class="profile-meta">
+                                    <span class="profile-type-badge"><%= selectedProfile.accountInfo.type %></span>
+                                    <span>ID: <%= selectedProfile.profileId %></span>
+                                    <span>🌍 <%= selectedProfile.countryCode %></span>
+                                    <span>💰 <%= selectedProfile.currencyCode %></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <h1 class="logo">Amazon Bid Manager</h1>
+                <% } %>
+            </div>
+                
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Dashboard</a></li>
+                    <li><a href="/campaigns" class="<%= currentPage === 'campaigns' ? 'active' : '' %>">Campaigns</a></li>
+                    <li><a href="/logs" class="<%= currentPage === 'logs' ? 'active' : '' %>">Logs</a></li>
+                </ul>
+                <a href="/auth/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="container">

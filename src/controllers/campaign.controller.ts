@@ -15,7 +15,9 @@ export class CampaignController {
 
   @Get()
   async getAllCampaigns() {
-    return await this.campaignModel.find().exec();
+    // return await this.campaignModel.find().exec();
+     const campaigns = await this.bidAdjustmentService.syncCampaignData();
+     return campaigns;
   }
 
   @Get(':id')
@@ -31,7 +33,8 @@ export class CampaignController {
 
   @Post('sync')
   async syncCampaigns() {
-    await this.bidAdjustmentService.syncCampaignData();
+    const campaigns = await this.bidAdjustmentService.syncCampaignData();
+    console.log({campaigns})
     return { message: 'Campaign sync initiated' };
   }
 

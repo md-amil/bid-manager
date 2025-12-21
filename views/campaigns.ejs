@@ -1,31 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campaigns - Amazon Bid Manager</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <h1 class="logo">📊 Amazon Bid Manager</h1>
-            <ul class="nav-links">
-                <li><a href="/">Dashboard</a></li>
-                <li><a href="/campaigns" class="active">Campaigns</a></li>
-                <li><a href="/logs">Logs</a></li>
-            </ul>
-        </div>
-    </nav>
-    
-    <main class="container">
-        <div class="page-header">
-            <h2>All Campaigns</h2>
-            <div class="actions">
-                <button onclick="syncCampaigns()" class="btn">🔄 Sync from Amazon</button>
-                <button onclick="adjustBids()" class="btn btn-primary">⚡ Adjust Bids Now</button>
-            </div>
-        </div>
+<%- include('partials/header', { currentPage: 'campaigns', selectedProfile, profiles, title: 'Campaigns' }) %>
+
+<div class="page-header">
+    <h2>All Campaigns</h2>
+    <div class="actions">
+        <button onclick="syncCampaigns()" class="btn">🔄 Sync from Amazon</button>
+        <button onclick="adjustBids()" class="btn btn-primary">⚡ Adjust Bids Now</button>
+    </div>
+</div>
 
         <div class="table-responsive">
             <table class="campaign-table">
@@ -33,7 +14,7 @@
                     <tr>
                         <th>Campaign ID</th>
                         <th>Campaign Name</th>
-                        <th>Keyword</th>
+                        <th>Budget</th>
                         <th>Current Bid</th>
                         <th>Sales</th>
                         <th>Spend</th>
@@ -49,22 +30,22 @@
                     <% campaigns.forEach(campaign => { %>
                         <tr>
                             <td><%= campaign.campaignId %></td>
-                            <td><strong><%= campaign.campaignName %></strong></td>
-                            <td><%= campaign.keyword %></td>
-                            <td class="bid-amount">$<%= campaign.currentBid.toFixed(2) %></td>
-                            <td>$<%= campaign.sales.toFixed(2) %></td>
-                            <td>$<%= campaign.spend.toFixed(2) %></td>
+                            <td><strong><%= campaign.name %></strong></td>
+                            <td><%= campaign.budget.budget %></td>
+                            <td class="bid-amount">$<%= campaign.currentBid %></td>
+                            <td>$<%= campaign.sales%></td>
+                            <td>$<%= campaign.spend%></td>
                             <td><%= campaign.clicks %></td>
-                            <td><%= campaign.impressions.toLocaleString() %></td>
+                            <td><%= campaign.impressions %></td>
                             <td>
                                 <% const roi = campaign.roi || (campaign.spend > 0 ? campaign.sales / campaign.spend : 0); %>
                                 <span class="roi-badge <%= roi >= 3 ? 'high' : roi <= 1 ? 'low' : 'medium' %>">
-                                    <%= roi.toFixed(2) %>
+                                    <%= roi %>
                                 </span>
                             </td>
                             <td>
                                 <span class="status-badge <%= campaign.status %>">
-                                    <%= campaign.status %>
+                                    <%= campaign.state %>
                                 </span>
                             </td>
                             <td>
@@ -85,40 +66,32 @@
                 <code>npm run seed</code>
             </div>
         <% } %>
-    </main>
-    
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Amazon Bid Manager - Automated ROI-based Bidding</p>
-        </div>
-    </footer>
-
-    <script>
-        async function syncCampaigns() {
-            if (!confirm('Sync campaign data from Amazon?')) return;
-            
-            try {
-                const response = await fetch('/api/campaigns/sync', { method: 'POST' });
-                const result = await response.json();
-                alert(result.message);
-                location.reload();
-            } catch (error) {
-                alert('Error syncing campaigns: ' + error.message);
-            }
+<script>
+    async function syncCampaigns() {
+        if (!confirm('Sync campaign data from Amazon?')) return;
+        
+        try {
+            const response = await fetch('/api/campaigns/sync', { method: 'POST' });
+            const result = await response.json();
+            alert(result.message);
+            location.reload();
+        } catch (error) {
+            alert('Error syncing campaigns: ' + error.message);
         }
+    }
 
-        async function adjustBids() {
-            if (!confirm('Manually trigger bid adjustment for all campaigns?')) return;
-            
-            try {
-                const response = await fetch('/api/campaigns/adjust-bids', { method: 'POST' });
-                const result = await response.json();
-                alert(result.message);
-                location.reload();
-            } catch (error) {
-                alert('Error adjusting bids: ' + error.message);
-            }
+    async function adjustBids() {
+        if (!confirm('Manually trigger bid adjustment for all campaigns?')) return;
+        
+        try {
+            const response = await fetch('/api/campaigns/adjust-bids', { method: 'POST' });
+            const result = await response.json();
+            alert(result.message);
+            location.reload();
+        } catch (error) {
+            alert('Error adjusting bids: ' + error.message);
         }
-    </script>
-</body>
-</html>
+    }
+</script>
+
+<%- include('partials/footer') %>

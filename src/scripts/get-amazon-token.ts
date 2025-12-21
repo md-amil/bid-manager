@@ -35,12 +35,12 @@ async function getRefreshToken() {
     process.exit(1);
   }
 
-  const redirectUri = 'http://localhost:3000/callback';
+  const redirectUri = 'http://localhost:3000/auth/callback';
   // const scope = 'advertising::campaign_management';
   const scope = 'advertising::test:create_account%20advertising::campaign_management'
 
   // Step 1: Generate authorization URL
-  const authUrl = `https://www.amazon.com/ap/oa?client_id=${clientId}&scope=${scope}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}`;
+  const authUrl = `https://www.amazon.in/ap/oa?client_id=${clientId}&scope=${scope}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}`;
 
   console.log('Step 1: Authorization URL');
   console.log('------------------------');
@@ -70,7 +70,7 @@ async function getRefreshToken() {
     });
 
     const response = await axios.post(
-      'https://api.amazon.com/auth/o2/token',
+      'https://api.amazon.in/auth/o2/token',
       params.toString(),
       {
         headers: {
@@ -94,7 +94,7 @@ async function getRefreshToken() {
 
     try {
       const profilesResponse = await axios.get(
-        'https://advertising-api.amazon.com/v2/profiles',
+        'https://advertising-api-eu.amazon.com/v2/profiles',
         {
           headers: {
             'Authorization': `Bearer ${access_token}`,

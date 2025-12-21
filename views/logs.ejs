@@ -1,31 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bid Adjustment Logs - Amazon Bid Manager</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <h1 class="logo">📊 Amazon Bid Manager</h1>
-            <ul class="nav-links">
-                <li><a href="/">Dashboard</a></li>
-                <li><a href="/campaigns">Campaigns</a></li>
-                <li><a href="/logs" class="active">Logs</a></li>
-            </ul>
-        </div>
-    </nav>
-    
-    <main class="container">
-        <div class="page-header">
-            <h2>Bid Adjustment Logs</h2>
-            <div class="log-stats">
-                <span class="stat success">✓ Success: <%= successCount %></span>
-                <span class="stat failed">✗ Failed: <%= failedCount %></span>
-            </div>
-        </div>
+<%- include('partials/header', { currentPage: 'logs', selectedProfile, profiles, title: 'Bid Adjustment Logs' }) %>
+
+<div class="page-header">
+    <h2>Bid Adjustment Logs</h2>
+    <div class="log-stats">
+        <span class="stat success">✓ Success: <%= successCount %></span>
+        <span class="stat failed">✗ Failed: <%= failedCount %></span>
+    </div>
+</div>
 
         <div class="table-responsive">
             <table class="log-table">
@@ -93,12 +74,4 @@
                 <a href="/campaigns" class="btn">View Campaigns</a>
             </div>
         <% } %>
-    </main>
-    
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Amazon Bid Manager - Automated ROI-based Bidding</p>
-        </div>
-    </footer>
-</body>
-</html>
+<%- include('partials/footer') %>

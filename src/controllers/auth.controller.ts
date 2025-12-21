@@ -12,11 +12,44 @@ export class AuthController {
    * Login page
    */
   @Get('login')
-  @Render('login')
-  loginPage() {
-    return {
+  async loginPage(@Session() session: Record<string, any>, @Res() res: Response) {
+    // Check if refresh token is available in environment
+    const envRefreshToken = process.env.AMAZON_REFRESH_TOKEN;
+    
+    if (envRefreshToken && !session.authenticated) {
+      this.logger.log('Refresh token found in environment, attempting auto-login');
+      
+      try {
+        // Use refresh token to get new access token
+        const tokens = await this.authService.refreshAccessToken(envRefreshToken);
+        console.log(tokens,"tokens")
+        // Get user profiles
+        const profiles = await this.authService.getProfiles(tokens.access_token);
+        
+        // Store in session
+        session.accessToken = tokens.access_token;
+        session.refreshToken = tokens.refresh_token || envRefreshToken;
+        session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
+        session.profiles = profiles;
+        session.authenticated = true;
+        
+        this.logger.log('Auto-login successful, redirecting to profile selection');
+        return res.redirect('/select-profile');
+      } catch (error) {
+        this.logger.error('Auto-login failed, showing login page', error);
+        // Continue to show login page if auto-login fails
+      }
+    }
+    
+    // If already authenticated, redirect to select profile
+    if (session.authenticated) {
+      return res.redirect('/select-profile');
+    }
+    
+    // Show login page
+    return res.render('login', {
       title: 'Login to Amazon Advertising',
-    };
+    });
   }
 
   /**
@@ -53,9 +86,12 @@ export class AuthController {
     try {
       // Exchange code for tokens
       const tokens = await this.authService.exchangeCodeForTokens(code);
+
       
       // Get user profiles
       const profiles = await this.authService.getProfiles(tokens.access_token);
+      console.log(tokens,"token")
+      console.log(profiles,"profiles")
 
       // Store in session
       session.accessToken = tokens.access_token;
@@ -66,8 +102,8 @@ export class AuthController {
 
       this.logger.log('User authenticated successfully');
 
-      // Redirect to profiles page
-      return res.redirect('/profiles');
+      // Redirect to profile selection page
+      return res.redirect('/select-profile');
     } catch (err) {
       this.logger.error('Authentication failed', err);
       return res.redirect('/auth/login?error=auth_failed');

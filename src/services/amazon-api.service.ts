@@ -52,7 +52,7 @@ export class AmazonApiService {
 
   private async initializeClient() {
     try {
-      const baseURL = this.configService.get<string>('AMAZON_ADVERTISING_API_URL', 'https://advertising-api.amazon.com');
+      const baseURL = this.configService.get<string>('AMAZON_ADVERTISING_API_URL', 'https://advertising-api-eu.amazon.com');
       
       this.httpClient = axios.create({
         baseURL,
@@ -92,6 +92,7 @@ export class AmazonApiService {
         }
       );
 
+
       this.accessToken = response.data.access_token;
       console.log('access token', this.accessToken)
       // Set expiration time (subtract 5 minutes for safety margin)
@@ -120,8 +121,9 @@ export class AmazonApiService {
     return {
       'Authorization': `Bearer ${this.accessToken}`,
       'Amazon-Advertising-API-ClientId': this.clientId,
-      // 'Amazon-Advertising-API-Scope': this.profileId,
-      'Content-Type': 'application/json',
+      'Amazon-Advertising-API-Scope': this.profileId,
+      'Content-Type': 'application/vnd.spCampaign.v3+json',
+      'Accept': 'application/vnd.spCampaign.v3+json',
     };
   }
 
@@ -182,21 +184,29 @@ export class AmazonApiService {
     }
   }
 
-  async getCampaignPerformanceReport(startDate: string, endDate: string) {
+  async getCampaigns(startDate: string, endDate: string) {
     try {
-      // Get performance report for all campaigns
-      const response = await this.makeAdvertisingApiCall(
-        '/v2/sp/campaigns',
-        'GET',
+     const campaigns = await  this.httpClient.post(
+        `/sp/campaigns/list`, {},
         {
-          reportDate: startDate,
-          metrics: 'campaignId,campaignName,impressions,clicks,cost,sales',
+          headers: this.getHeaders(),
         }
-      );
-      console.log({response})
+      ); 
+      return campaigns.data;
 
-      return response;
+      // Get performance report for all campaigns
+      // const response = await this.makeAdvertisingApiCall(
+      //   '/v2/sp/campaigns',
+      //   'POST',
+      //   // {
+      //   //   reportDate: startDate,
+      //   //   metrics: 'campaignId,campaignName,impressions,clicks,cost,sales',
+      //   // }
+      // );
+      // console.log({response})
+      // return response;
     } catch (error) {
+      console.log(error)
       this.logger.error('Failed to get campaign performance report', );
       throw error;
     }
@@ -213,7 +223,6 @@ export class AmazonApiService {
   ) {
     try {
       await this.ensureValidToken();
-
       const config = {
         method,
         url: endpoint,
