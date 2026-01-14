@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Render, Logger, Session, Res, Redirect } from '@nestjs/common';
 import type { Response } from 'express';
-import { AmazonApiService, AmazonProfile } from '../services/amazon-api.service';
+import { AmazonApiService, AmazonProfile } from '../services/amazon/amazon-api.service';
 import { AuthService } from '../services/auth.service';
 
 @Controller('profiles')
@@ -15,19 +15,15 @@ export class ProfileController {
   @Get()
   @Render('profiles')
   async getProfilesPage(@Session() session: Record<string, any>, @Res() res: Response) {
-    // Check if user is authenticated
     if (!session.authenticated || !session.accessToken) {
       return res.redirect('/auth/login');
     }
-
     try {
-      // Check if token needs refresh
       if (Date.now() >= session.tokenExpiresAt) {
         const tokens = await this.authService.refreshAccessToken(session.refreshToken);
         session.accessToken = tokens.access_token;
         session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
       }
-
       // Use profiles from session or fetch fresh
       let profiles = session.profiles || [];
       

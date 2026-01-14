@@ -12,14 +12,15 @@
             <table class="campaign-table">
                 <thead>
                     <tr>
+                        <th>S.No</th>
                         <th>Campaign ID</th>
                         <th>Campaign Name</th>
                         <th>Budget</th>
-                        <th>Current Bid</th>
-                        <th>Sales</th>
-                        <th>Spend</th>
-                        <th>Clicks</th>
-                        <th>Impressions</th>
+                        <!-- <th>Current Bid</th> -->
+                        <!-- <th>Sales</th> -->
+                        <!-- <th>Spend</th> -->
+                        <!-- <th>Clicks</th> 
+                        <th>Impressions</th> -->
                         <th>ROI</th>
                         <th>Status</th>
                         <th>Last Adjusted</th>
@@ -27,16 +28,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% campaigns.forEach(campaign => { %>
+                    <% campaigns.forEach((campaign,i) => { %>
                         <tr>
+                            <td><%= i+1 %></td>
                             <td><%= campaign.campaignId %></td>
                             <td><strong><%= campaign.name %></strong></td>
-                            <td><%= campaign.budget.budget %></td>
-                            <td class="bid-amount">$<%= campaign.currentBid %></td>
-                            <td>$<%= campaign.sales%></td>
-                            <td>$<%= campaign.spend%></td>
-                            <td><%= campaign.clicks %></td>
-                            <td><%= campaign.impressions %></td>
+                            <td>₹ <%= campaign.budget.budget  %> <%= campaign.budget.budgetType  %></td>
+                            <!-- <td class="bid-amount">$<%= campaign.currentBid %></td> -->
+                            <!-- <td>$<%= campaign.sales%></td> -->
+                            <!-- <td>$<%= campaign.spend%></td> -->
+                            <!-- <td><%= campaign.clicks %></td>
+                            <td><%= campaign.impressions %></td> -->
                             <td>
                                 <% const roi = campaign.roi || (campaign.spend > 0 ? campaign.sales / campaign.spend : 0); %>
                                 <span class="roi-badge <%= roi >= 3 ? 'high' : roi <= 1 ? 'low' : 'medium' %>">
@@ -71,7 +73,7 @@
         if (!confirm('Sync campaign data from Amazon?')) return;
         
         try {
-            const response = await fetch('/api/campaigns/sync', { method: 'POST' });
+            const response = await fetch('/api/campaigns/sync', { method: 'POST', withCredentials: true });
             const result = await response.json();
             alert(result.message);
             location.reload();
@@ -82,9 +84,8 @@
 
     async function adjustBids() {
         if (!confirm('Manually trigger bid adjustment for all campaigns?')) return;
-        
         try {
-            const response = await fetch('/api/campaigns/adjust-bids', { method: 'POST' });
+            const response = await fetch('/api/campaigns/adjust-bids', { method: 'POST',withCredentials: true });
             const result = await response.json();
             alert(result.message);
             location.reload();

@@ -6,46 +6,43 @@ import { AuthService } from '../services/auth.service';
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   /**
    * Login page
    */
   @Get('login')
   async loginPage(@Session() session: Record<string, any>, @Res() res: Response) {
-    // Check if refresh token is available in environment
     const envRefreshToken = process.env.AMAZON_REFRESH_TOKEN;
-    
+    const profileId = process.env.AMAZON_PROFILE_ID;
+
     if (envRefreshToken && !session.authenticated) {
       this.logger.log('Refresh token found in environment, attempting auto-login');
-      
       try {
-        // Use refresh token to get new access token
         const tokens = await this.authService.refreshAccessToken(envRefreshToken);
-        console.log(tokens,"tokens")
-        // Get user profiles
         const profiles = await this.authService.getProfiles(tokens.access_token);
-        
-        // Store in session
         session.accessToken = tokens.access_token;
         session.refreshToken = tokens.refresh_token || envRefreshToken;
         session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
         session.profiles = profiles;
         session.authenticated = true;
-        
+
         this.logger.log('Auto-login successful, redirecting to profile selection');
+        if (profileId) {
+          session.selectedProfile = profiles.find(p => p.profileId.toString() === profileId);
+          return res.redirect('/');
+        }
         return res.redirect('/select-profile');
       } catch (error) {
         this.logger.error('Auto-login failed, showing login page', error);
-        // Continue to show login page if auto-login fails
       }
     }
-    
+
     // If already authenticated, redirect to select profile
     if (session.authenticated) {
       return res.redirect('/select-profile');
     }
-    
+
     // Show login page
     return res.render('login', {
       title: 'Login to Amazon Advertising',
@@ -87,11 +84,11 @@ export class AuthController {
       // Exchange code for tokens
       const tokens = await this.authService.exchangeCodeForTokens(code);
 
-      
+
       // Get user profiles
       const profiles = await this.authService.getProfiles(tokens.access_token);
-      console.log(tokens,"token")
-      console.log(profiles,"profiles")
+      console.log(tokens, "token")
+      console.log(profiles, "profiles")
 
       // Store in session
       session.accessToken = tokens.access_token;

@@ -10,13 +10,37 @@ import { ProfileController } from './controllers/profile.controller';
 import { AuthController } from './controllers/auth.controller';
 import { Campaign, CampaignSchema } from './schemas/campaign.schema';
 import { BidAdjustmentLog, BidAdjustmentLogSchema } from './schemas/bid-adjustment-log.schema';
-import { AmazonApiService } from './services/amazon-api.service';
-import { BidAdjustmentService } from './services/bid-adjustment.service';
+import { CampaignReport, CampaignReportSchema } from './schemas/report.schema';
+import { AmazonApiService } from './services/amazon/amazon-api.service';
+import { BidAdjustmentService } from './services/amazon/bid-adjustment.service';
 import { CronService } from './services/cron.service';
 import { AuthService } from './services/auth.service';
+import { BullModule } from '@nestjs/bullmq';
+import { AmazonSyncService } from './services/amazon/amazon-sync.service';
+import { AdGroup, AdGroupSchema } from './schemas/ad-group.schema';
+import { Ad, AdSchema } from './schemas/ad.schema';
+import { AmazonSyncProcessor } from './queue/consumer/amazon-sync.processor';
+import { BidProcessor } from './queue/consumer/bid.processor';
+import { ReportProcessor } from './queue/consumer/report.processor';
+import { CampaignService } from './services/campaign.service';
+import { SyncProducer } from './queue/producer/sync.producer';
+import { ReportProducer } from './queue/producer/report.producer';
+import { BidProducer } from './queue/producer/bid.producer';
+import { ReportService } from './services/report.service';
 
 @Module({
   imports: [
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    BullModule.registerQueue(
+      { name: 'campaignSync' },
+      { name: 'reportProcessor' },
+      { name: 'bidProcessor' }
+    ),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -25,10 +49,13 @@ import { AuthService } from './services/auth.service';
     MongooseModule.forFeature([
       { name: Campaign.name, schema: CampaignSchema },
       { name: BidAdjustmentLog.name, schema: BidAdjustmentLogSchema },
+      { name: CampaignReport.name, schema: CampaignReportSchema },
+      { name: AdGroup.name, schema: AdGroupSchema },
+      { name: Ad.name, schema: AdSchema },
     ]),
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController, CampaignController, ViewController, ProfileController, AuthController],
-  providers: [AppService, AmazonApiService, BidAdjustmentService, CronService, AuthService],
+  providers: [AppService, AmazonApiService, BidAdjustmentService, CronService, AuthService, AmazonSyncService, AmazonSyncProcessor, BidProcessor, ReportProcessor, CampaignService, SyncProducer, ReportProducer, BidProducer, ReportService],
 })
-export class AppModule {}
+export class AppModule { }

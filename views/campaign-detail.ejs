@@ -7,70 +7,215 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <h1 class="logo">📊 Amazon Bid Manager</h1>
-            <ul class="nav-links">
-                <li><a href="/">Dashboard</a></li>
-                <li><a href="/campaigns">Campaigns</a></li>
-                <li><a href="/logs">Logs</a></li>
-            </ul>
-        </div>
-    </nav>
+    <%- include('partials/header', { selectedProfile, profiles, currentPage: 'campaigns' }) %>
     
     <main class="container">
         <% if (campaign) { %>
-            <div class="page-header">
-                <div>
-                    <a href="/campaigns" class="back-link">← Back to Campaigns</a>
-                    <h2><%= campaign.campaignName %></h2>
-                    <p class="subtitle">Campaign ID: <%= campaign.campaignId %></p>
+            <a href="/campaigns" class="back-link-compact">← Back</a>
+
+            <!-- Campaign Info Header Card -->
+            <div class="campaign-header-card">
+                <div class="info-item">
+                    <span class="info-label">Campaign:</span>
+                    <span class="info-value campaign-name"><%= campaign.name %></span>
                 </div>
-                <span class="status-badge <%= campaign.status %>">
-                    <%= campaign.status %>
-                </span>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <span class="info-label">ID:</span>
+                    <span class="info-value"><%= campaign.campaignId %></span>
+                </div>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <span class="info-label">Budget:</span>
+                    <span class="info-value">
+                        <% if (campaign.budget) { %>
+                            $<%= campaign.budget.budget %>
+                        <% } else { %>
+                            N/A
+                        <% } %>
+                    </span>
+                </div>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <span class="info-label">Budget Type:</span>
+                    <span class="info-value"><%= campaign.budgetType || 'N/A' %></span>
+                </div>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <span class="info-label">Targeting:</span>
+                    <span class="info-value"><%= campaign.targetingType || 'N/A' %></span>
+                </div>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <span class="info-label">Start:</span>
+                    <span class="info-value">
+                        <%= campaign.startDate ? new Date(campaign.startDate).toLocaleDateString() : 'N/A' %>
+                    </span>
+                </div>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <span class="info-label">End:</span>
+                    <span class="info-value">
+                        <%= campaign.endDate ? new Date(campaign.endDate).toLocaleDateString() : 'Ongoing' %>
+                    </span>
+                </div>
+                <% if (campaign.portfolioId) { %>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <span class="info-label">Portfolio:</span>
+                    <span class="info-value"><%= campaign.portfolioId %></span>
+                </div>
+                <% } %>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <span class="info-label">State:</span>
+                    <span class="status-badge <%= campaign.state ? campaign.state.toLowerCase() : '' %>">
+                        <%= campaign.state || 'N/A' %>
+                    </span>
+                </div>
             </div>
 
-            <div class="detail-grid">
-                <div class="detail-card">
-                    <h3>Keyword</h3>
-                    <p class="detail-value"><%= campaign.keyword %></p>
+            <!-- Campaign Performance Metrics -->
+            <% if (metrics) { %>
+            <div class="section">
+                <div class="section-header">
+                    <h3>Performance Metrics</h3>
+                    <div class="filter-controls">
+                        <div class="filter-tabs">
+                            <button class="filter-tab <%= (!period || period === 'daily') ? 'active' : '' %>" onclick="window.location.href='/campaigns/<%= campaignId %>?period=daily'">Daily</button>
+                            <button class="filter-tab <%= period === 'weekly' ? 'active' : '' %>" onclick="window.location.href='/campaigns/<%= campaignId %>?period=weekly'">Weekly</button>
+                            <button class="filter-tab <%= period === 'monthly' ? 'active' : '' %>" onclick="window.location.href='/campaigns/<%= campaignId %>?period=monthly'">Monthly</button>
+                        </div>
+                        <div class="date-filter">
+                            <input type="date" id="startDate" class="date-input" value="<%= startDate || '' %>" />
+                            <span class="date-separator">to</span>
+                            <input type="date" id="endDate" class="date-input" value="<%= endDate || '' %>" />
+                            <button class="btn-filter" onclick="applyDateFilter()">Apply</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="detail-card">
-                    <h3>Current Bid</h3>
-                    <p class="detail-value">$<%= campaign.currentBid.toFixed(2) %></p>
+                <script>
+                    function applyDateFilter() {
+                        const startDate = document.getElementById('startDate').value;
+                        const endDate = document.getElementById('endDate').value;
+                        if (startDate && endDate) {
+                            window.location.href = '/campaigns/<%= campaignId %>?period=custom&startDate=' + startDate + '&endDate=' + endDate;
+                        } else {
+                            alert('Please select both start and end dates');
+                        }
+                    }
+                </script>
+                <div class="metrics-list">
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">📊</div>
+                        <div class="metric-content">
+                            <span class="metric-label">Impressions</span>
+                            <span class="metric-value"><%= metrics.impressions.toLocaleString() %></span>
+                        </div>
+                    </div>
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">👆</div>
+                        <div class="metric-content">
+                            <span class="metric-label">Clicks</span>
+                            <span class="metric-value"><%= metrics.clicks.toLocaleString() %></span>
+                        </div>
+                    </div>
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">💰</div>
+                        <div class="metric-content">
+                            <span class="metric-label">Spend</span>
+                            <span class="metric-value">$<%= metrics.spend.toFixed(2) %></span>
+                        </div>
+                    </div>
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">💵</div>
+                        <div class="metric-content">
+                            <span class="metric-label">Sales (14d)</span>
+                            <span class="metric-value">$<%= metrics.sales14d.toFixed(2) %></span>
+                        </div>
+                    </div>
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">🎯</div>
+                        <div class="metric-content">
+                            <span class="metric-label">CPC</span>
+                            <span class="metric-value">$<%= metrics.costPerClick.toFixed(2) %></span>
+                        </div>
+                    </div>
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">📈</div>
+                        <div class="metric-content">
+                            <span class="metric-label">CTR</span>
+                            <span class="metric-value"><%= metrics.clickThroughRate.toFixed(2) %>%</span>
+                        </div>
+                    </div>
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">🔄</div>
+                        <div class="metric-content">
+                            <span class="metric-label">ROAS (14d)</span>
+                            <span class="metric-value"><%= metrics.roas14d.toFixed(2) %></span>
+                        </div>
+                    </div>
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">📉</div>
+                        <div class="metric-content">
+                            <span class="metric-label">ACOS (14d)</span>
+                            <span class="metric-value"><%= metrics.acos14d.toFixed(2) %>%</span>
+                        </div>
+                    </div>
+                    <div class="metric-card-compact">
+                        <div class="metric-icon">✅</div>
+                        <div class="metric-content">
+                            <span class="metric-label">Conversions (14d)</span>
+                            <span class="metric-value"><%= metrics.conversions14d %></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="detail-card">
-                    <h3>Sales</h3>
-                    <p class="detail-value">$<%= campaign.sales.toFixed(2) %></p>
-                </div>
-                <div class="detail-card">
-                    <h3>Spend</h3>
-                    <p class="detail-value">$<%= campaign.spend.toFixed(2) %></p>
-                </div>
-                <div class="detail-card">
-                    <h3>Clicks</h3>
-                    <p class="detail-value"><%= campaign.clicks %></p>
-                </div>
-                <div class="detail-card">
-                    <h3>Impressions</h3>
-                    <p class="detail-value"><%= campaign.impressions.toLocaleString() %></p>
-                </div>
-                <div class="detail-card">
-                    <h3>ROI</h3>
-                    <% const roi = campaign.roi || (campaign.spend > 0 ? campaign.sales / campaign.spend : 0); %>
-                    <p class="detail-value">
-                        <span class="roi-badge <%= roi >= 3 ? 'high' : roi <= 1 ? 'low' : 'medium' %>">
-                            <%= roi.toFixed(2) %>
-                        </span>
-                    </p>
-                </div>
-                <div class="detail-card">
-                    <h3>Last Adjusted</h3>
-                    <p class="detail-value">
-                        <%= campaign.lastAdjustedAt ? new Date(campaign.lastAdjustedAt).toLocaleString() : 'Never' %>
-                    </p>
-                </div>
+            </div>
+            <% } %>
+
+            <!-- Ad Groups Section -->
+            <div class="section">
+                <h3>Ad Groups</h3>
+                <% if (adGroups && adGroups.length > 0) { %>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ad Group Name</th>
+                                    <th>Ad Group ID</th>
+                                    <th>State</th>
+                                    <th>Default Bid</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% adGroups.forEach(adGroup => { %>
+                                    <tr>
+                                        <td><%= adGroup.name %></td>
+                                        <td><%= adGroup.adGroupId %></td>
+                                        <td>
+                                            <span class="status-badge <%= adGroup.state.toLowerCase() %>">
+                                                <%= adGroup.state %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <% if (adGroup.defaultBid) { %>
+                                                $<%= adGroup.defaultBid.toFixed(2) %>
+                                            <% } else { %>
+                                                N/A
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>" class="btn-small">View Ads</a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <p class="no-data">No ad groups found for this campaign.</p>
+                <% } %>
             </div>
 
             <div class="section">
@@ -141,10 +286,6 @@
         <% } %>
     </main>
     
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Amazon Bid Manager - Automated ROI-based Bidding</p>
-        </div>
-    </footer>
+    <%- include('partials/footer') %>
 </body>
 </html>

@@ -11,19 +11,19 @@ export class BidAdjustmentLog {
   @Prop({ required: true })
   keyword: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   oldBid: number;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   newBid: number;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   roi: number;
 
   @Prop({ required: true })
   reason: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   adjustmentPercentage: number;
 
   @Prop({ default: 'success' })

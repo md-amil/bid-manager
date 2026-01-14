@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Group <%= adGroup.adGroupId %> - Product Ads</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { selectedProfile, profiles, currentPage: 'campaigns' }) %>
+    
+    <main class="container">
+        <a href="/campaigns/<%= campaignId %>" class="back-link-compact">← Back</a>
+        
+        <div class="campaign-header-card">
+            <div class="info-item">
+                <span class="info-label">Ad Group ID:</span>
+                <span class="info-value"><%= adGroup.adGroupId %></span>
+            </div>
+            <% if (campaign) { %>
+            <div class="info-divider"></div>
+            <div class="info-item">
+                <span class="info-label">Campaign:</span>
+                <span class="info-value"><%= campaign.campaignName %></span>
+            </div>
+            <% } %>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=ads" class="tab <%= selectedTab === 'ads' ? 'active' : '' %>">Ads</a>
+            <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=targeting" class="tab <%= selectedTab === 'targeting' ? 'active' : '' %>">Targeting</a>
+            <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=negative" class="tab <%= selectedTab === 'negative' ? 'active' : '' %>">Negative Targeting</a>
+        </div>
+
+        <!-- Ads Tab Content -->
+        <% if (selectedTab === 'ads') { %>
+        <div class="section">
+            <h3>Product Ads</h3>
+            <% if (productAds && productAds.length > 0) { %>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ad ID</th>
+                                <th>ASIN</th>
+                                <th>SKU</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% productAds.forEach(ad => { %>
+                                <tr>
+                                    <td><%= ad.adId %></td>
+                                    <td><%= ad.asin || 'N/A' %></td>
+                                    <td><%= ad.sku || 'N/A' %></td>
+                                    <td>
+                                        <span class="status-badge <%= ad.state.toLowerCase() %>">
+                                            <%= ad.state %>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <p class="no-data">No product ads found for this ad group.</p>
+            <% } %>
+        </div>
+        <% } %>
+
+        <!-- Targeting Tab Content -->
+        <% if (selectedTab === 'targeting') { %>
+        <div class="section">
+            <h3>Keywords (Targeting)</h3>
+            <% if (keywords && keywords.length > 0) { %>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Keyword ID</th>
+                                <th>Keyword Text</th>
+                                <th>Match Type</th>
+                                <th>State</th>
+                                <th>Bid</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% keywords.forEach(keyword => { %>
+                                <tr>
+                                    <td><%= keyword.keywordId %></td>
+                                    <td><%= keyword.keywordText || 'N/A' %></td>
+                                    <td><%= keyword.matchType || 'N/A' %></td>
+                                    <td>
+                                        <span class="status-badge <%= keyword.state.toLowerCase() %>">
+                                            <%= keyword.state %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <% if (keyword.bid) { %>
+                                            $<%= keyword.bid.toFixed(2) %>
+                                        <% } else { %>
+                                            N/A
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <p class="no-data">No keywords found for this ad group.</p>
+            <% } %>
+        </div>
+        <% } %>
+
+        <!-- Negative Targeting Tab Content -->
+        <% if (selectedTab === 'negative') { %>
+        <div class="section">
+            <h3>Negative Keywords</h3>
+            <% if (negativeKeywords && negativeKeywords.length > 0) { %>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Keyword ID</th>
+                                <th>Keyword Text</th>
+                                <th>Match Type</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% negativeKeywords.forEach(keyword => { %>
+                                <tr>
+                                    <td><%= keyword.keywordId %></td>
+                                    <td><%= keyword.keywordText || 'N/A' %></td>
+                                    <td><%= keyword.matchType || 'N/A' %></td>
+                                    <td>
+                                        <span class="status-badge <%= keyword.state.toLowerCase() %>">
+                                            <%= keyword.state %>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <p class="no-data">No negative keywords found for this ad group.</p>
+            <% } %>
+        </div>
+        <% } %>
+    </main>
+    
+    <%- include('partials/footer') %>
+</body>
+</html>

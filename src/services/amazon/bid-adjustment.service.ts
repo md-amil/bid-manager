@@ -1,10 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Campaign, CampaignDocument } from '../schemas/campaign.schema';
-import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../schemas/bid-adjustment-log.schema';
+import { Campaign, CampaignDocument } from '../../schemas/campaign.schema';
+import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../../schemas/bid-adjustment-log.schema';
 import { ConfigService } from '@nestjs/config';
 import { AmazonApiService } from './amazon-api.service';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class BidAdjustmentService {
@@ -13,9 +15,10 @@ export class BidAdjustmentService {
   constructor(
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     @InjectModel(BidAdjustmentLog.name) private bidLogModel: Model<BidAdjustmentLogDocument>,
+    @InjectQueue('campaignSync') private syncQueue: Queue,
     private configService: ConfigService,
-    private amazonApiService: AmazonApiService,
-  ) {}
+    // private amazonApiService: AmazonApiService,
+  ) { }
 
   calculateROI(sales: number, spend: number): number {
     if (spend === 0) return 0;
@@ -72,68 +75,69 @@ export class BidAdjustmentService {
   }
 
   async adjustBidForCampaign(campaign: CampaignDocument): Promise<void> {
-    try {
-      // Calculate ROI
-      const roi = this.calculateROI(campaign.sales, campaign.spend);
-      
-      // Update campaign ROI
-      campaign.roi = roi;
-      await campaign.save();
+    return
+    // try {
+    //   // Calculate ROI
+    //   const roi = this.calculateROI(campaign.sales, campaign.spend);
 
-      // Calculate new bid
-      const { newBid, reason, percentage } = this.calculateNewBid(campaign.currentBid, roi);
+    //   // Update campaign ROI
+    //   campaign.roi = roi;
+    //   await campaign.save();
 
-      // Only adjust if bid has changed
-      if (newBid !== campaign.currentBid) {
-        this.logger.log(
-          `Adjusting bid for campaign ${campaign.campaignId} (${campaign.keyword}): ` +
-          `${campaign.currentBid} -> ${newBid} (ROI: ${roi.toFixed(2)})`
-        );
+    //   // Calculate new bid
+    //   const { newBid, reason, percentage } = this.calculateNewBid(campaign.currentBid, roi);
 
-        // Update bid via Amazon API
-        try {
-          await this.amazonApiService.updateKeywordBid(campaign.campaignId, newBid);
+    //   // Only adjust if bid has changed
+    //   if (newBid !== campaign.currentBid) {
+    //     this.logger.log(
+    //       `Adjusting bid for campaign ${campaign.campaignId} (${campaign.keyword}): ` +
+    //       `${campaign.currentBid} -> ${newBid} (ROI: ${roi.toFixed(2)})`
+    //     );
 
-          // Log successful adjustment
-          await this.logBidAdjustment(
-            campaign,
-            campaign.currentBid,
-            newBid,
-            roi,
-            reason,
-            percentage,
-            'success'
-          );
+    //     // Update bid via Amazon API
+    //     try {
+    //       // await this.amazonApiService.updateKeywordBid(campaign.campaignId, newBid);
 
-          // Update campaign with new bid
-          campaign.currentBid = newBid;
-          campaign.lastAdjustedAt = new Date();
-          await campaign.save();
+    //       // Log successful adjustment
+    //       await this.logBidAdjustment(
+    //         campaign,
+    //         campaign.currentBid,
+    //         newBid,
+    //         roi,
+    //         reason,
+    //         percentage,
+    //         'success'
+    //       );
 
-        } catch (apiError) {
-          this.logger.error(`Failed to update bid via Amazon API for ${campaign.campaignId}`, apiError);
-          
-          // Log failed adjustment
-          await this.logBidAdjustment(
-            campaign,
-            campaign.currentBid,
-            newBid,
-            roi,
-            reason,
-            percentage,
-            'failed',
-            apiError.message
-          );
-        }
-      } else {
-        this.logger.log(
-          `No bid adjustment needed for campaign ${campaign.campaignId} ` +
-          `(ROI: ${roi.toFixed(2)})`
-        );
-      }
-    } catch (error) {
-      this.logger.error(`Error adjusting bid for campaign ${campaign.campaignId}`, error);
-    }
+    //       // Update campaign with new bid
+    //       campaign.currentBid = newBid;
+    //       campaign.lastAdjustedAt = new Date();
+    //       await campaign.save();
+
+    //     } catch (apiError) {
+    //       this.logger.error(`Failed to update bid via Amazon API for ${campaign.campaignId}`, apiError);
+
+    //       // Log failed adjustment
+    //       await this.logBidAdjustment(
+    //         campaign,
+    //         campaign.currentBid,
+    //         newBid,
+    //         roi,
+    //         reason,
+    //         percentage,
+    //         'failed',
+    //         apiError.message
+    //       );
+    //     }
+    //   } else {
+    //     this.logger.log(
+    //       `No bid adjustment needed for campaign ${campaign.campaignId} ` +
+    //       `(ROI: ${roi.toFixed(2)})`
+    //     );
+    //   }
+    // } catch (error) {
+    //   this.logger.error(`Error adjusting bid for campaign ${campaign.campaignId}`, error);
+    // }
   }
 
   private async logBidAdjustment(
@@ -148,7 +152,7 @@ export class BidAdjustmentService {
   ): Promise<void> {
     const log = new this.bidLogModel({
       campaignId: campaign.campaignId,
-      keyword: campaign.keyword,
+      // keyword: campaign.keyword,
       oldBid,
       newBid,
       roi,
@@ -161,24 +165,21 @@ export class BidAdjustmentService {
     await log.save();
   }
 
-  async syncCampaignData(): Promise<void> {
-    this.logger.log('Syncing campaign data from Amazon API');
-
-    try {
-      const endDate = new Date().toISOString();
-      const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(); // Last 7 days
-
-      // Get performance report
-      const report = await this.amazonApiService.getCampaigns(startDate, endDate);
-      console.log(report.campaigns)
-      return report.campaigns;
-      // Update campaigns in database
-      // Note: This is simplified - you'll need to parse the actual report format
-      // if (report && report.data) {
-      //   this.logger.log('Campaign data synced successfully');
-      // }
-    } catch (error) {
-      this.logger.error('Error syncing campaign data', );
-    }
-  }
+  // async syncCampaignData(scopeId:string): Promise<any> {
+  //   this.logger.log('Syncing campaign data from Amazon API');
+  //   try {
+  //     const endDate = new Date().toISOString();
+  //     const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  //     const job = await this.syncQueue.add('sync', {
+  //       scopeId:'3838241482724308',
+  //       endDate,
+  //       startDate,
+  //     });
+  //     console.log('Sync job added to queue with ID:', job.id);
+  //     return job;
+  //   } catch (error) {
+  //     this.logger.error('Error syncing campaign data',);
+  //   }
+  // }
 }
+

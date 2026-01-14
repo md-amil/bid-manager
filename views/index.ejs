@@ -1,7 +1,6 @@
 <%- include('partials/header', { currentPage: 'dashboard', selectedProfile, profiles }) %>
 
 <h2>Dashboard</h2>
-        
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Campaigns</h3>
@@ -33,11 +32,10 @@
                 <table class="campaign-table">
                     <thead>
                         <tr>
+                             <th>Campaign ID</th>
+                            
                             <th>Campaign</th>
-                            <th>Keyword</th>
-                            <th>Current Bid</th>
-                            <th>Sales</th>
-                            <th>Spend</th>
+                            <th>Budget</th>
                             <th>ROI</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -46,11 +44,11 @@
                     <tbody>
                         <% campaigns.slice(0, 5).forEach(campaign => { %>
                             <tr>
-                                <td><%= campaign.campaignName %></td>
-                                <td><%= campaign.keyword %></td>
-                                <td>$<%= campaign.currentBid.toFixed(2) %></td>
-                                <td>$<%= campaign.sales.toFixed(2) %></td>
-                                <td>$<%= campaign.spend.toFixed(2) %></td>
+                                <td><%= campaign.campaignId %></td>
+                                <td><%= campaign.name %></td>
+
+                                                                <td>$<%= campaign.budget.budget %></td>
+
                                 <td>
                                     <% const roi = campaign.roi || (campaign.spend > 0 ? campaign.sales / campaign.spend : 0); %>
                                     <span class="roi-badge <%= roi >= 3 ? 'high' : roi <= 1 ? 'low' : 'medium' %>">
@@ -58,8 +56,8 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="status-badge <%= campaign.status %>">
-                                        <%= campaign.status %>
+                                    <span class="status-badge <%= campaign.state %>">
+                                        <%= campaign.state %>
                                     </span>
                                 </td>
                                 <td>

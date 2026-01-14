@@ -22,6 +22,7 @@
     "get-token": "ts-node -r tsconfig-paths/register src/scripts/get-amazon-token.ts"
   },
   "dependencies": {
+    "@nestjs/bullmq": "^11.0.4",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -31,6 +32,7 @@
     "@types/express-session": "^1.18.2",
     "amazon-sp-api": "^1.2.0",
     "axios": "^1.13.2",
+    "bullmq": "^5.66.4",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express-session": "^1.18.2",
