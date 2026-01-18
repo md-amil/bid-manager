@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type CampaignReportDocument = CampaignReport & Document;
+export type ReportDocument = CampaignReport & Document;
 
 @Schema({
   collection: 'campaign_reports',
@@ -86,16 +86,8 @@ export class CampaignReport {
   @Prop({ type: Number, default: null })
   acosClicks14d: number;
 
-  @Prop() roasClicks14d: number;
-
-  /* -------- Kindle / Borrows -------- */
-  // @Prop() qualifiedBorrows: number;
-  // @Prop() royaltyQualifiedBorrows: number;
-  // @Prop() kindleEditionNormalizedPagesRead14d: number;
-  // @Prop() kindleEditionNormalizedPagesRoyalties14d: number;
-
-  /* -------- Engagement -------- */
-  // @Prop() addToList: number;
+  @Prop({ type: Number, default: null })
+  roasClicks14d: number;
 }
 
 export const CampaignReportSchema =

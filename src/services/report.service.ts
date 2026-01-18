@@ -12,9 +12,18 @@ export class ReportService {
   ) { }
 
 
-  async createReport(payload:any){
+  async createReport(payload:any[]){
     this.logger.log('Creating report');
-    this.reportModal.create(payload)
+    const bulkWrite = await this.reportModal.bulkWrite(
+      payload.map(doc => ({
+        updateOne: {
+          filter: { campaignId: doc.campaignId, date: doc.date },
+          update: { $set: doc },
+          upsert: true,
+        }
+      }))
+    );
+    return payload;
   }
 
 

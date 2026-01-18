@@ -219,17 +219,18 @@
             </div>
 
             <div class="section">
-                <h3>Bid Adjustment History</h3>
+                <h3>Optimization History</h3>
                 <% if (logs && logs.length > 0) { %>
                     <div class="table-responsive">
                         <table class="log-table">
                             <thead>
                                 <tr>
                                     <th>Timestamp</th>
-                                    <th>Old Bid</th>
-                                    <th>New Bid</th>
+                                    <th>Type</th>
+                                    <th>Action</th>
+                                    <th>Old Value</th>
+                                    <th>New Value</th>
                                     <th>Change</th>
-                                    <th>ROI</th>
                                     <th>Reason</th>
                                     <th>Status</th>
                                 </tr>
@@ -243,23 +244,53 @@
                                                 <span class="time"><%= new Date(log.createdAt).toLocaleTimeString() %></span>
                                             </div>
                                         </td>
-                                        <td>$<%= log.oldBid.toFixed(2) %></td>
-                                        <td>$<%= log.newBid.toFixed(2) %></td>
                                         <td>
-                                            <% 
-                                                const change = ((log.newBid - log.oldBid) / log.oldBid * 100).toFixed(1);
-                                                const changeClass = change > 0 ? 'increase' : 'decrease';
-                                            %>
-                                            <span class="change <%= changeClass %>">
-                                                <%= change > 0 ? '+' : '' %><%= change %>%
+                                            <span class="type-badge <%= log.type.toLowerCase().replace('_', '-') %>">
+                                                <%= log.type.replace('_', ' ') %>
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="roi-badge <%= log.roi >= 3 ? 'high' : log.roi <= 1 ? 'low' : 'medium' %>">
-                                                <%= log.roi.toFixed(2) %>
-                                            </span>
+                                            <% if (log.action) { %>
+                                                <span class="action-badge"><%= log.action %></span>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
                                         </td>
-                                        <td><%= log.reason %></td>
+                                        <td>
+                                            <% if (log.oldValue !== null && log.oldValue !== undefined) { %>
+                                                $<%= log.oldValue.toFixed(2) %>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (log.newValue !== null && log.newValue !== undefined) { %>
+                                                $<%= log.newValue.toFixed(2) %>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (log.adjustmentPercentage !== null && log.adjustmentPercentage !== undefined) { %>
+                                                <% 
+                                                    const changeClass = log.adjustmentPercentage > 0 ? 'increase' : 'decrease';
+                                                %>
+                                                <span class="change <%= changeClass %>">
+                                                    <%= log.adjustmentPercentage > 0 ? '+' : '' %><%= log.adjustmentPercentage.toFixed(1) %>%
+                                                </span>
+                                            <% } else if (log.oldValue && log.newValue) { %>
+                                                <% 
+                                                    const change = ((log.newValue - log.oldValue) / log.oldValue * 100).toFixed(1);
+                                                    const changeClass = change > 0 ? 'increase' : 'decrease';
+                                                %>
+                                                <span class="change <%= changeClass %>">
+                                                    <%= change > 0 ? '+' : '' %><%= change %>%
+                                                </span>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </td>
+                                        <td class="reason-cell"><%= log.reason %></td>
                                         <td>
                                             <span class="status-badge <%= log.status %>">
                                                 <%= log.status %>
@@ -274,7 +305,7 @@
                         </table>
                     </div>
                 <% } else { %>
-                    <p class="no-data">No bid adjustments yet for this campaign.</p>
+                    <p class="no-data">No optimization history yet for this campaign.</p>
                 <% } %>
             </div>
         <% } else { %>

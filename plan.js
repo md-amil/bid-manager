@@ -41,25 +41,25 @@ class AmazonBidAutomation {
     };
   }
 
-  async getKeywords(adGroupId) {
-    try {
-      const url = `${this.baseUrl}/sp/adGroups/${adGroupId}/keywords`;
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: this.getHeaders()
-      });
+  // async getKeywords(adGroupId) {
+  //   try {
+  //     const url = `${this.baseUrl}/sp/adGroups/${adGroupId}/keywords`;
+  //     const response = await fetch(url, {
+  //       method: 'GET',
+  //       headers: this.getHeaders()
+  //     });
 
-      if (response.ok) {
-        return await response.json();
-      } else {
-        console.error('Error getting keywords:', await response.text());
-        return [];
-      }
-    } catch (error) {
-      console.error('Fetch error:', error);
-      return [];
-    }
-  }
+  //     if (response.ok) {
+  //       return await response.json();
+  //     } else {
+  //       console.error('Error getting keywords:', await response.text());
+  //       return [];
+  //     }
+  //   } catch (error) {
+  //     console.error('Fetch error:', error);
+  //     return [];
+  //   }
+  // }
 
   async getKeywordMetrics(startDate, endDate) {
     try {

@@ -1,22 +1,24 @@
 import { Controller, Get, Post, Body, Param, Request, Req } from '@nestjs/common';
-import { BidAdjustmentService } from '../services/amazon/bid-adjustment.service';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
 import { Campaign, CampaignDocument } from '../schemas/campaign.schema';
 import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../schemas/bid-adjustment-log.schema';
 import { AmazonApiService } from 'src/services/amazon/amazon-api.service';
-import { AmazonSyncService } from 'src/services/amazon/amazon-sync.service';
-import { CampaignService } from 'src/services/campaign.service';
 import { SyncProducer } from 'src/queue/producer/sync.producer';
 import { ReportProducer } from 'src/queue/producer/report.producer';
+import { BidService } from 'src/services/amazon/bid.service';
+import { ReportDocument } from 'src/schemas/report.schema';
+import { CampaignApiService } from 'src/services/amazon/campaign-api.service';
+
 
 @Controller('api/campaigns')
 export class CampaignController {
   constructor(
     // private campaignService: CampaignService,
-    private amazonApi: AmazonApiService,
+    private campaignApi: CampaignApiService,
     private readonly syncProducer: SyncProducer,
     private readonly reportProducer: ReportProducer,
+    private readonly bidService: BidService,
 
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     @InjectModel(BidAdjustmentLog.name) private bidLogModel: Model<BidAdjustmentLogDocument>,
@@ -24,10 +26,10 @@ export class CampaignController {
   ) { }
 
   @Get()
-  async getAllCampaigns(@Req() request:Request) {
-    console.log({request})
+  async getAllCampaigns(@Req() request: Request) {
+    console.log({ request })
     return this.campaignModel.find({}).exec();
-    return await this.amazonApi.getCampaigns();
+    return await this.campaignApi.getCampaigns();
   }
 
   @Post()
@@ -38,19 +40,17 @@ export class CampaignController {
 
   @Post('sync')
   async syncCampaigns(@Request() req: any) {
-    console.log(req.session.selectedProfile,'session')
-    // return 
+    console.log(req.session.selectedProfile, 'session')
     const job = await this.syncProducer.syncCampaignData(req.session.selectedProfile.profileId);
-    return { message: 'Campaign sync initiated', job:job.id};
+    return { message: 'Campaign sync initiated', job: job.id };
   }
 
   @Post('adjust-bids')
   async adjustBids(@Request() req: any) {
     const profile = req.session.selectedProfile
-    if(!profile) return { message: 'NO Profile found' };
-
+    if (!profile) return { message: 'NO Profile found' };
     const response = await this.reportProducer.generateReport(req.session.selectedProfile.profileId);
-    return { message: 'Bid adjustment completed',ack:response?.id };
+    return { message: 'Bid adjustment completed', ack: response?.id };
   }
 
   @Get(':id')
@@ -77,4 +77,8 @@ export class CampaignController {
   }
 
 
+  @Get('decide-budget')
+  async calculateBudget() {
+    // return this.bidService.budgetDisicion(json[0] as any)
+  }
 }

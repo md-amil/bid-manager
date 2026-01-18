@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { AmazonApiService } from './amazon/amazon-api.service';
 import { Campaign, CampaignDocument } from 'src/schemas/campaign.schema';
+import { AdGroup, AdGroupDocument } from 'src/schemas/ad-group.schema';
 
 @Injectable()
 export class CampaignService {
@@ -14,8 +15,9 @@ export class CampaignService {
   constructor(
     @InjectQueue('campaignSync') private syncQueue: Queue,
     @InjectQueue('reportProcessor') private reportQueue: Queue,
-
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
+    @InjectModel(AdGroup.name) private adgroup: Model<AdGroupDocument>,
+
   ) { }
 
   // async syncCampaignData(scopeId: string = '3838241482724308'): Promise<any> {
@@ -54,12 +56,24 @@ export class CampaignService {
         }
       }
     ]);
-    console.log(data[0], 'aggregateddata');
     return data[0];
     // return this.campaignModel.find({scopeId,campaignId}).populate('').sort({ createdAt: -1 }).exec();
   }
-  async getAdgroupsByCampaign(campaignId: string) {
-    // Implement logic to get ad groups by campaign ID
+
+
+  async getAdGroupBy($match, populate: string[]) {
+    const args: any[] = [{ $match }]
+    for (const  pop of populate) {
+      args.push({
+        $lookup: {
+          from: pop,
+          localField:'adGroupId',
+          foreignField: 'adGroupId',
+          as: pop,
+        },
+      })
+    }
+    return this.adgroup.aggregate(args)
   }
 
   async generateReport() {

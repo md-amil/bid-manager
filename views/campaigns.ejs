@@ -8,6 +8,116 @@
     </div>
 </div>
 
+<!-- Filters -->
+<div class="filters-section">
+    <div class="filters-container">
+        <form id="campaignFilters" class="filter-form">
+            <div class="filter-inputs">
+                <div class="filter-group search-group">
+                    <label for="filterName">
+                        <i class="fas fa-search"></i>
+                        Search
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="filterName" 
+                            name="name" 
+                            placeholder="Search campaigns..." 
+                            value="<%= filterName %>"
+                            class="search-input"
+                        >
+                        <% if (filterName) { %>
+                            <button type="button" class="clear-input" onclick="clearSearchInput()" title="Clear search">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <div class="filter-group status-group">
+                    <label for="filterStatus">
+                        <i class="fas fa-toggle-on"></i>
+                        Status
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="filterStatus" name="status" class="status-select">
+                            <option value="">All Statuses</option>
+                            <option value="enabled" <%= filterStatus === 'enabled' ? 'selected' : '' %>>
+                                ✓ Enabled
+                            </option>
+                            <option value="paused" <%= filterStatus === 'paused' ? 'selected' : '' %>>
+                                ⏸ Paused
+                            </option>
+                            <option value="archived" <%= filterStatus === 'archived' ? 'selected' : '' %>>
+                                📦 Archived
+                            </option>
+                        </select>
+                        <i class="fas fa-chevron-down select-icon"></i>
+                    </div>
+                </div>
+                
+                <div class="filter-group targeting-group">
+                    <label for="filterTargeting">
+                        <i class="fas fa-bullseye"></i>
+                        Targeting
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="filterTargeting" name="targeting" class="status-select">
+                            <option value="">All Types</option>
+                            <option value="AUTO" <%= filterTargeting === 'AUTO' ? 'selected' : '' %>>
+                                🤖 Auto
+                            </option>
+                            <option value="MANUAL" <%= filterTargeting === 'MANUAL' ? 'selected' : '' %>>
+                                🎯 Manual
+                            </option>
+                        </select>
+                        <i class="fas fa-chevron-down select-icon"></i>
+                    </div>
+                </div>
+                
+                <div class="filter-actions">
+                    <button type="submit" class="btn-apply">
+                        <i class="fas fa-check"></i>
+                        Apply
+                    </button>
+                    <button type="button" class="btn-clear" onclick="clearFilters()">
+                        <i class="fas fa-redo"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+            
+            <% if (filterName || filterStatus || filterTargeting) { %>
+                <div class="active-filters">
+                    <span class="active-filters-label">Active:</span>
+                    <% if (filterName) { %>
+                        <span class="filter-tag">
+                            <i class="fas fa-search"></i>
+                            "<%= filterName %>"
+                            <button onclick="clearFilter('name')" class="remove-filter">×</button>
+                        </span>
+                    <% } %>
+                    <% if (filterStatus) { %>
+                        <span class="filter-tag">
+                            <i class="fas fa-toggle-on"></i>
+                            <%= filterStatus %>
+                            <button onclick="clearFilter('status')" class="remove-filter">×</button>
+                        </span>
+                    <% } %>
+                    <% if (filterTargeting) { %>
+                        <span class="filter-tag">
+                            <i class="fas fa-bullseye"></i>
+                            <%= filterTargeting %>
+                            <button onclick="clearFilter('targeting')" class="remove-filter">×</button>
+                        </span>
+                    <% } %>
+                </div>
+            <% } %>
+        </form>
+    </div>
+</div>
+
         <div class="table-responsive">
             <table class="campaign-table">
                 <thead>
@@ -15,6 +125,7 @@
                         <th>S.No</th>
                         <th>Campaign ID</th>
                         <th>Campaign Name</th>
+                        <th>Targeting Type</th>
                         <th>Budget</th>
                         <!-- <th>Current Bid</th> -->
                         <!-- <th>Sales</th> -->
@@ -33,6 +144,17 @@
                             <td><%= i+1 %></td>
                             <td><%= campaign.campaignId %></td>
                             <td><strong><%= campaign.name %></strong></td>
+                            <td>
+                                <span class="targeting-badge <%= campaign.targetingType ? campaign.targetingType.toLowerCase() : 'unknown' %>">
+                                    <% if (campaign.targetingType === 'AUTO') { %>
+                                        🤖 Auto
+                                    <% } else if (campaign.targetingType === 'MANUAL') { %>
+                                        🎯 Manual
+                                    <% } else { %>
+                                        ❓ Unknown
+                                    <% } %>
+                                </span>
+                            </td>
                             <td>₹ <%= campaign.budget.budget  %> <%= campaign.budget.budgetType  %></td>
                             <!-- <td class="bid-amount">$<%= campaign.currentBid %></td> -->
                             <!-- <td>$<%= campaign.sales%></td> -->
@@ -46,7 +168,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="status-badge <%= campaign.status %>">
+                                <span class="status-badge <%= campaign.state.toLowerCase() %>">
                                     <%= campaign.state %>
                                 </span>
                             </td>
@@ -54,7 +176,7 @@
                                 <%= campaign.lastAdjustedAt ? new Date(campaign.lastAdjustedAt).toLocaleDateString() : 'Never' %>
                             </td>
                             <td>
-                                <a href="/campaigns/<%= campaign.campaignId %>" class="btn-small">View Details</a>
+                                <a href="/campaigns/<%= campaign.campaignId %>" class="btn-small">View</a>
                             </td>
                         </tr>
                     <% }); %>
@@ -69,6 +191,42 @@
             </div>
         <% } %>
 <script>
+    // Handle form submission
+    document.getElementById('campaignFilters').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const params = new URLSearchParams();
+        
+        for (let [key, value] of formData.entries()) {
+            if (value) {
+                params.append(key, value);
+            }
+        }
+        
+        window.location.search = params.toString();
+    });
+    
+    // Clear all filters
+    function clearFilters() {
+        document.getElementById('filterName').value = '';
+        document.getElementById('filterStatus').value = '';
+        document.getElementById('filterTargeting').value = '';
+        window.location.href = '/campaigns';
+    }
+    
+    // Clear specific filter
+    function clearFilter(filterType) {
+        const params = new URLSearchParams(window.location.search);
+        params.delete(filterType);
+        window.location.search = params.toString();
+    }
+    
+    // Clear search input
+    function clearSearchInput() {
+        document.getElementById('filterName').value = '';
+        document.getElementById('filterName').focus();
+    }
+    
     async function syncCampaigns() {
         if (!confirm('Sync campaign data from Amazon?')) return;
         

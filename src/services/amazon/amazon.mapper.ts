@@ -1,24 +1,17 @@
 export class AmazonMapper {
-  static campaign(c: any,scopeId: string) {
+  static campaign(c: any, scopeId: string) {
     return {
       ...c,
       scopeId,
-      // startDate: c.startDate,
-      // campaignId: c.campaignId,
-      // name: c.name,
-      // state: c.state,
-      // budget: c.budget,
-      // marketplace: c.marketplaceId,
-      // rawAmazonData: c,
     };
   }
 
-            
-  static adGroup(g: any, scopeId:string,) {
+
+  static adGroup(g: any, scopeId: string) {
     return {
       scopeId,
       amazonAdGroupId: g.adGroupId,
-      campaignId:g.campaignId,
+      campaignId: g.campaignId,
       name: g.name,
       state: g.state,
       defaultBid: g.defaultBid,
@@ -26,7 +19,7 @@ export class AmazonMapper {
     };
   }
 
-  static ad(a: any,scopeId:string,) {
+  static ad(a: any, scopeId: string,) {
     return {
       scopeId,
       amazonAdId: a.adId,
@@ -38,23 +31,45 @@ export class AmazonMapper {
     };
   }
 
-  static keyword(a: any, campaignId: any, adGroupId: any,scopeId:string,) {
+  static keyword(a: any,  scopeId: string,type:-1|1 = 1) {
     return {
+      type,
       scopeId,
-      amazonAdId: a.adId,
-      campaignId,
-      adGroupId,
-      asin: a.asin,
-      status: a.state,
-      rawAmazonData: a,
+      ...a
+      // amazonAdId: a.adId,
+      // campaignId,
+      // adGroupId,
+      // asin: a.asin,
+      // status: a.state,
+      // rawAmazonData: a,
+    };
+  }
+  static target(a: any,  scopeId: string,type:-1|1 = 1) {
+    return {
+      type,
+      scopeId,
+      ...a
     };
   }
 
-  static profile(p: any) { 
+  static profile(p: any) {
     return {
       profileId: p.profileId,
       sellerName: p.sellerName,
       marketplaceId: p.marketplaceId,
     };
   }
+
+  static reportFromCampaign(matrics: any) {
+    return {}
+  }
+
+  static reportFromAdgroup(matrics: any) {
+    return {}
+  }
+
+  static reportFromKeyword(matrics: any) {
+    return {}
+  }
+
 }

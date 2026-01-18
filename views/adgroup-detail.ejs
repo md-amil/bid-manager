@@ -15,22 +15,18 @@
         <div class="campaign-header-card">
             <div class="info-item">
                 <span class="info-label">Ad Group ID:</span>
-                <span class="info-value"><%= adGroup.adGroupId %></span>
+                <span class="info-value"><%= adGroup.adGroupId %></span>|
+                 <span class="info-label">Campaign ID:</span>
+                <span class="info-value"><%=campaignId %></span>|
+                 <span class="info-label">Ad Group Name:</span>
+                <span class="info-value"><%= adGroup.name %></span>
             </div>
-            <% if (campaign) { %>
-            <div class="info-divider"></div>
-            <div class="info-item">
-                <span class="info-label">Campaign:</span>
-                <span class="info-value"><%= campaign.campaignName %></span>
-            </div>
-            <% } %>
         </div>
-
         <!-- Tab Navigation -->
         <div class="tab-navigation">
             <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=ads" class="tab <%= selectedTab === 'ads' ? 'active' : '' %>">Ads</a>
+            <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=keywords" class="tab <%= selectedTab === 'keywords' ? 'active' : '' %>">Keywords</a>
             <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=targeting" class="tab <%= selectedTab === 'targeting' ? 'active' : '' %>">Targeting</a>
-            <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=negative" class="tab <%= selectedTab === 'negative' ? 'active' : '' %>">Negative Targeting</a>
         </div>
 
         <!-- Ads Tab Content -->
@@ -70,38 +66,83 @@
         </div>
         <% } %>
 
-        <!-- Targeting Tab Content -->
-        <% if (selectedTab === 'targeting') { %>
+        <!-- Keywords Tab Content -->
+        <% if (selectedTab === 'keywords') { %>
         <div class="section">
-            <h3>Keywords (Targeting)</h3>
+            <div class="section-header">
+                <h3>Keywords</h3>
+                <div class="keyword-filters">
+                    <div class="filter-group">
+                        <label for="typeFilter">
+                            <i class="fas fa-filter"></i>
+                            Type Filter
+                        </label>
+                        <select id="typeFilter" class="filter-select" onchange="filterKeywords()">
+                            <option value="all">All Keywords</option>
+                            <option value="positive">Positive Keywords</option>
+                            <option value="negative">Negative Keywords</option>
+                        </select>
+                    </div>
+                    <div class="filter-stats">
+                        <span id="keywordCount" class="count-badge">Total: <%= keywords.length %></span>
+                        <span id="positiveCount" class="count-badge positive">Positive: <span class="count">0</span></span>
+                        <span id="negativeCount" class="count-badge negative">Negative: <span class="count">0</span></span>
+                    </div>
+                </div>
+            </div>
+            
             <% if (keywords && keywords.length > 0) { %>
                 <div class="table-responsive">
-                    <table>
+                    <table id="keywordsTable" class="keyword-table">
                         <thead>
                             <tr>
                                 <th>Keyword ID</th>
                                 <th>Keyword Text</th>
                                 <th>Match Type</th>
+                                <th>Type</th>
                                 <th>State</th>
                                 <th>Bid</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% keywords.forEach(keyword => { %>
-                                <tr>
+                                <tr class="keyword-row" data-type="<%= keyword.type === 1 ? 'positive' : 'negative' %>">
                                     <td><%= keyword.keywordId %></td>
-                                    <td><%= keyword.keywordText || 'N/A' %></td>
-                                    <td><%= keyword.matchType || 'N/A' %></td>
+                                    <td><strong><%= keyword.keywordText || 'N/A' %></strong></td>
+                                    <td>
+                                        <span class="match-type-badge <%= keyword.matchType.toLowerCase() %>">
+                                            <%= keyword.matchType %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="type-badge <%= keyword.type === 1 ? 'positive' : 'negative' %>">
+                                            <%= keyword.type === 1 ? 'Positive' : 'Negative' %>
+                                        </span>
+                                    </td>
                                     <td>
                                         <span class="status-badge <%= keyword.state.toLowerCase() %>">
                                             <%= keyword.state %>
                                         </span>
                                     </td>
                                     <td>
-                                        <% if (keyword.bid) { %>
-                                            $<%= keyword.bid.toFixed(2) %>
+                                        <% if (keyword.type === 1 && keyword.bid) { %>
+                                            <span class="bid-amount">$<%= parseFloat(keyword.bid).toFixed(2) %></span>
+                                        <% } else if (keyword.type === 1) { %>
+                                            <span class="text-muted">N/A</span>
                                         <% } else { %>
-                                            N/A
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (keyword.type === 1) { %>
+                                            <button class="btn-small" onclick="editKeyword('<%= keyword.keywordId %>', '<%= keyword.bid %>')">
+                                                Edit Bid
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn-small btn-secondary" onclick="removeNegativeKeyword('<%= keyword.keywordId %>')">
+                                                Remove
+                                            </button>
                                         <% } %>
                                     </td>
                                 </tr>
@@ -110,36 +151,132 @@
                     </table>
                 </div>
             <% } else { %>
-                <p class="no-data">No keywords found for this ad group.</p>
+                <div class="empty-state">
+                    <p>No keywords found for this ad group.</p>
+                    <p>Keywords will appear here after they are synced from Amazon.</p>
+                    <div class="type-info">
+                        <p><strong>Positive Keywords (Type = 1)</strong>: Keywords you bid on</p>
+                        <p><strong>Negative Keywords (Type = -1)</strong>: Keywords to exclude</p>
+                    </div>
+                </div>
             <% } %>
         </div>
         <% } %>
 
-        <!-- Negative Targeting Tab Content -->
-        <% if (selectedTab === 'negative') { %>
+        <!-- Targeting Tab Content -->
+        <% if (selectedTab === 'targeting') { %>
         <div class="section">
-            <h3>Negative Keywords</h3>
-            <% if (negativeKeywords && negativeKeywords.length > 0) { %>
+            <div class="section-header">
+                <h3>Targeting</h3>
+                <div class="targeting-filters">
+                    <div class="filter-group">
+                        <label for="targetTypeFilter">
+                            <i class="fas fa-filter"></i>
+                            Type Filter
+                        </label>
+                        <select id="targetTypeFilter" class="filter-select" onchange="filterTargets()">
+                            <option value="all">All Targets</option>
+                            <option value="positive">Positive Targets</option>
+                            <option value="negative">Negative Targets</option>
+                        </select>
+                    </div>
+                    <div class="targeting-stats">
+                        <span id="targetCount" class="count-badge">Total: <%= targets.length %></span>
+                        <span id="positiveTargetCount" class="count-badge positive">Positive: <span class="count">0</span></span>
+                        <span id="negativeTargetCount" class="count-badge negative">Negative: <span class="count">0</span></span>
+                        <!-- <span class="count-badge auto">Auto: <span id="autoCount">0</span></span> -->
+                        <!-- <span class="count-badge manual">Manual: <span id="manualCount">0</span></span> -->
+                    </div>
+                </div>
+            </div>
+            
+            <% if (targets && targets.length > 0) { %>
                 <div class="table-responsive">
-                    <table>
+                    <table class="targeting-table">
                         <thead>
                             <tr>
-                                <th>Keyword ID</th>
-                                <th>Keyword Text</th>
-                                <th>Match Type</th>
+                                <th>Target ID</th>
+                                <th>Type</th>
+                                <th>Expression Type</th>
+                                <th>Expression</th>
+                                <th>Resolved Expression</th>
                                 <th>State</th>
+                                <th>Bid</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% negativeKeywords.forEach(keyword => { %>
-                                <tr>
-                                    <td><%= keyword.keywordId %></td>
-                                    <td><%= keyword.keywordText || 'N/A' %></td>
-                                    <td><%= keyword.matchType || 'N/A' %></td>
+                            <% targets.forEach(target => { %>
+                                <tr class="target-row" 
+                                    data-type="<%= target.type === 1 ? 'positive' : 'negative' %>"
+                                    data-expression-type="<%= target.expressionType ? target.expressionType.toLowerCase() : 'unknown' %>">
+                                    <td><%= target.targetId %></td>
                                     <td>
-                                        <span class="status-badge <%= keyword.state.toLowerCase() %>">
-                                            <%= keyword.state %>
+                                        <span class="type-badge <%= target.type === 1 ? 'positive' : 'negative' %>">
+                                            <%= target.type === 1 ? 'Positive' : 'Negative' %>
                                         </span>
+                                    </td>
+                                    <td>
+                                        <span class="expression-type-badge <%= target.expressionType ? target.expressionType.toLowerCase() : '-' %>">
+                                            <%= target.expressionType || '-' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <% if (target.expression && target.expression.length > 0) { %>
+                                            <div class="expression-list">
+                                                <% target.expression.forEach(expr => { %>
+                                                    <div class="expression-item">
+                                                        <span class="expression-type"><%= expr.type %></span>
+                                                        <% if (expr.value) { %>
+                                                            <span class="expression-value">: <%= expr.value %></span>
+                                                        <% } %>
+                                                    </div>
+                                                <% }); %>
+                                            </div>
+                                        <% } else { %>
+                                            <span class="text-muted">No expression</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (target.resolvedExpression && target.resolvedExpression.length > 0) { %>
+                                            <div class="expression-list">
+                                                <% target.resolvedExpression.forEach(expr => { %>
+                                                    <div class="expression-item">
+                                                        <span class="expression-type"><%= expr.type %></span>
+                                                        <% if (expr.value) { %>
+                                                            <span class="expression-value">: <%= expr.value %></span>
+                                                        <% } %>
+                                                    </div>
+                                                <% }); %>
+                                            </div>
+                                        <% } else { %>
+                                            <span class="text-muted">No resolved expression</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge <%= target.state.toLowerCase() %>">
+                                            <%= target.state %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <% if (target.type === 1 && target.bid) { %>
+                                            <span class="bid-amount">$<%= target.bid.toFixed(2) %></span>
+                                        <% } else if (target.type === 1) { %>
+                                            <span class="text-muted">N/A</span>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (target.type === 1) { %>
+                                            <button class="btn-small" onclick="editTargetBid('<%= target.targetId %>', '<%= target.bid || 0 %>')">
+                                                Edit Bid
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn-small btn-secondary" onclick="removeNegativeTarget('<%= target.targetId %>')">
+                                                Remove
+                                            </button>
+                                        <% } %>
                                     </td>
                                 </tr>
                             <% }); %>
@@ -147,11 +284,196 @@
                     </table>
                 </div>
             <% } else { %>
-                <p class="no-data">No negative keywords found for this ad group.</p>
+                <div class="empty-state">
+                    <p>No targeting found for this ad group.</p>
+                    <p>Targeting will appear here after they are synced from Amazon.</p>
+                    <div class="type-info">
+                        <p><strong>Positive Targets (Type = 1)</strong>: Targets you bid on</p>
+                        <p><strong>Negative Targets (Type = -1)</strong>: Targets to exclude</p>
+                        <p><strong>Auto Targeting</strong>: Amazon automatically targets relevant searches</p>
+                        <p><strong>Manual Targeting</strong>: You specify exact targeting criteria</p>
+                    </div>
+                </div>
             <% } %>
         </div>
         <% } %>
+
+        <!-- Negative Keywords Tab Content - REMOVED -->
+        <!-- All keywords are now shown in the Keywords & Targeting tab with filtering -->
     </main>
+    
+    <script>
+    function editKeyword(keywordId, currentBid) {
+        const newBid = prompt(`Enter new bid for keyword ${keywordId}:`, currentBid);
+        
+        if (newBid && !isNaN(newBid) && parseFloat(newBid) > 0) {
+            alert(`Bid for keyword ${keywordId} would be updated to $${parseFloat(newBid).toFixed(2)}`);
+            
+            // TODO: Implement actual API call to update keyword bid
+        } else if (newBid !== null) {
+            alert('Please enter a valid bid amount greater than 0');
+        }
+    }
+    
+    function removeNegativeKeyword(keywordId) {
+        if (confirm(`Are you sure you want to remove negative keyword ${keywordId}?`)) {
+            alert(`Negative keyword ${keywordId} would be removed`);
+            
+            // TODO: Implement actual API call to remove negative keyword
+        }
+    }
+    
+    function editTargetBid(targetId, currentBid) {
+        const newBid = prompt(`Enter new bid for target ${targetId}:`, currentBid);
+        
+        if (newBid && !isNaN(newBid) && parseFloat(newBid) > 0) {
+            alert(`Bid for target ${targetId} would be updated to $${parseFloat(newBid).toFixed(2)}`);
+            
+            // TODO: Implement actual API call to update target bid
+        } else if (newBid !== null) {
+            alert('Please enter a valid bid amount greater than 0');
+        }
+    }
+    
+    function removeTarget(targetId) {
+        if (confirm(`Are you sure you want to remove target ${targetId}?`)) {
+            alert(`Target ${targetId} would be removed`);
+            
+            // TODO: Implement actual API call to remove target
+        }
+    }
+    
+    function removeNegativeTarget(targetId) {
+        if (confirm(`Are you sure you want to remove negative target ${targetId}?`)) {
+            alert(`Negative target ${targetId} would be removed`);
+            
+            // TODO: Implement actual API call to remove negative target
+        }
+    }
+    
+    function filterTargets() {
+        const filterValue = document.getElementById('targetTypeFilter').value;
+        const rows = document.querySelectorAll('.target-row');
+        let visibleCount = 0;
+        let positiveCount = 0;
+        let negativeCount = 0;
+        // let autoCount = 0;
+        // let manualCount = 0;
+        
+        // Count all targets first
+        rows.forEach(row => {
+            const type = row.getAttribute('data-type');
+            const expressionType = row.getAttribute('data-expression-type');
+            
+            if (type === 'positive') positiveCount++;
+            if (type === 'negative') negativeCount++;
+            // if (expressionType === 'auto') autoCount++;
+            // if (expressionType === 'manual') manualCount++;
+        });
+        
+        // Filter rows
+        rows.forEach(row => {
+            const type = row.getAttribute('data-type');
+            let show = false;
+            
+            switch(filterValue) {
+                case 'all':
+                    show = true;
+                    break;
+                case 'positive':
+                    show = type === 'positive';
+                    break;
+                case 'negative':
+                    show = type === 'negative';
+                    break;
+            }
+            
+            if (show) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        // Update counts
+        document.getElementById('targetCount').textContent = `Total: ${visibleCount}`;
+        document.querySelector('#positiveTargetCount .count').textContent = positiveCount;
+        document.querySelector('#negativeTargetCount .count').textContent = negativeCount;
+        // document.getElementById('autoCount').textContent = autoCount;
+        // document.getElementById('manualCount').textContent = manualCount;
+    }
+    
+    function filterKeywords() {
+        const filterValue = document.getElementById('typeFilter').value;
+        const rows = document.querySelectorAll('.keyword-row');
+        let visibleCount = 0;
+        let positiveCount = 0;
+        let negativeCount = 0;
+        
+        // Count all keywords first
+        rows.forEach(row => {
+            const type = row.getAttribute('data-type');
+            if (type === 'positive') positiveCount++;
+            if (type === 'negative') negativeCount++;
+        });
+        
+        // Filter rows
+        rows.forEach(row => {
+            const type = row.getAttribute('data-type');
+            let show = false;
+            
+            switch(filterValue) {
+                case 'all':
+                    show = true;
+                    break;
+                case 'positive':
+                    show = type === 'positive';
+                    break;
+                case 'negative':
+                    show = type === 'negative';
+                    break;
+            }
+            
+            if (show) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        // Update counts
+        document.getElementById('keywordCount').textContent = `Total: ${visibleCount}`;
+        document.querySelector('#positiveCount .count').textContent = positiveCount;
+        document.querySelector('#negativeCount .count').textContent = negativeCount;
+    }
+    
+    function updateTargetingCounts() {
+        const rows = document.querySelectorAll('.target-row');
+        // let autoCount = 0;
+        // let manualCount = 0;
+        
+        // rows.forEach(row => {
+        //     const expressionType = row.getAttribute('data-expression-type');
+        //     if (expressionType === 'auto') autoCount++;
+        //     if (expressionType === 'manual') manualCount++;
+        // });
+        
+        // document.getElementById('autoCount').textContent = autoCount;
+        // document.getElementById('manualCount').textContent = manualCount;
+    }
+    
+    // Initialize filters and counts on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('typeFilter')) {
+            filterKeywords();
+        }
+        if (document.getElementById('targetTypeFilter')) {
+            filterTargets();
+        }
+    });
+    </script>
     
     <%- include('partials/footer') %>
 </body>

@@ -1,16 +1,20 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
-import { AmazonSyncService } from "../../services/amazon/amazon-sync.service";
-import { ReportService } from "src/services/report.service";
+// import { ReportService } from "src/services/report.service";
+import { BidService } from "src/services/amazon/bid.service";
+import { Engine } from "src/engine/core/rule.engine";
 
 @Processor('bidProcessor')
 export class BidProcessor  extends WorkerHost {
-    constructor(private readonly reportService: ReportService) {
+    
+    constructor(
+        private readonly engine:Engine,
+        private readonly bidService: BidService ) {
         super();
     }
 
     async process(job: Job, token?: string): Promise<any> {
-        return this.reportService.createReport(job.data)
+      return this.engine.run(job.data)
     }
 
     @OnWorkerEvent('active')
