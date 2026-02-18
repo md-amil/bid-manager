@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "seed": "ts-node -r tsconfig-paths/register src/scripts/seed-data.ts",
     "get-token": "ts-node -r tsconfig-paths/register src/scripts/get-amazon-token.ts",
-    "docs:dev": "vitepress dev",
+    "docs": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview"
   },

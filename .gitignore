@@ -48,3 +48,5 @@ tmp/
 *.bak
 *.swp
 *~
+
+sessions

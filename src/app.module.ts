@@ -41,6 +41,7 @@ import { CampaignApiService } from './services/amazon/campaign-api.service';
 import { Keyword, KeywordSchema } from './schemas/keyword.schema';
 import { Target, TargetSchema } from './schemas/target.schema';
 import { Engine } from './engine/core/rule.engine';
+import { EngineModule } from './engine/engine.module';
 import { AdGroupApiService } from './services/amazon/adgroup-api.service';
 import { Profile, ProfileSchema } from './schemas/profile.schema';
 import {
@@ -87,6 +88,7 @@ import {
       { name: Profile.name, schema: ProfileSchema },
     ]),
     ScheduleModule.forRoot(),
+    EngineModule,
   ],
   controllers: [
     AppController,
