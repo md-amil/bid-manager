@@ -1,4 +1,4 @@
-import { IRule } from "../core/rule.type";
+import { IRule } from '../core/rule.type';
 
 export const profitableBidRule: IRule = {
   id: 'TARGET_SCALE',
@@ -11,10 +11,10 @@ export const profitableBidRule: IRule = {
         applied: true,
         action: 'INCREASE_BID',
         value: 1.25,
-        reason: 'PROFITABLE_TARGET'
+        reason: 'PROFITABLE_TARGET',
       };
     }
 
     return { applied: false };
-  }
+  },
 };

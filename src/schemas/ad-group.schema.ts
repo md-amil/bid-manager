@@ -4,7 +4,7 @@ import { Campaign } from './campaign.schema';
 
 export type AdGroupDocument = AdGroup & Document;
 
-@Schema({ timestamps: true , _id:false})
+@Schema({ timestamps: true, _id: false })
 export class AdGroup {
   @Prop({ required: true, unique: true, index: true })
   adGroupId: string;
@@ -15,10 +15,9 @@ export class AdGroup {
   })
   campaignId: string;
 
-  @Prop({ required: true,  })
+  @Prop({ required: true })
   profileId: string;
 
-  
   @Prop({ required: true })
   name: string;
 
@@ -26,7 +25,7 @@ export class AdGroup {
   defaultBid: number;
 
   @Prop({})
-  state: 'PAUSED'|"ENABLED";
+  state: 'PAUSED' | 'ENABLED';
 }
 
 export const AdGroupSchema = SchemaFactory.createForClass(AdGroup);

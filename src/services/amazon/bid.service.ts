@@ -10,17 +10,16 @@ import { ReportDocument } from 'src/schemas/reports/report.schema';
 import { OptimizationLog } from 'src/schemas/optimization.schema';
 import { REASON } from 'src/utils/constant';
 
-
 type TCalWindow = '1d' | '7d' | '14d' | '30d';
 type MetricFn = (spend: number, sales: number) => number | null;
 type BudgetDecision = {
-  campaignId: number,
+  campaignId: number;
   currentBudget: number;
   newBudget: number;
   action: 'INCREASE' | 'DECREASE' | 'NO_CHANGE';
   utilization: number;
   reason: string;
-  signals:string[];
+  signals: string[];
 };
 
 @Injectable()
@@ -28,12 +27,13 @@ export class BidService {
   private readonly logger = new Logger(BidService.name);
 
   constructor(
-    @InjectModel(OptimizationLog.name) private optimization: Model<OptimizationLog>,
+    @InjectModel(OptimizationLog.name)
+    private optimization: Model<OptimizationLog>,
     private configService: ConfigService,
     // @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     // @InjectModel(BidAdjustmentLog.name) private bidLogModel: Model<BidAdjustmentLogDocument>,
     // @InjectQueue('campaignSync') private syncQueue: Queue,
-  ) { }
+  ) {}
 
   calculator(fn: MetricFn) {
     return (data: any, window: TCalWindow): number | null => {
@@ -46,11 +46,11 @@ export class BidService {
       };
       const sales = salesByWindow[window];
       return sales > 0 && spend > 0 ? +fn(spend, sales)!.toFixed(2) : null;
-    }
+    };
   }
 
   get getRoi() {
-    return this.calculator((spend, sales) => (((sales - spend) / spend) * 100));
+    return this.calculator((spend, sales) => ((sales - spend) / spend) * 100);
   }
   get getAcos() {
     return this.calculator((spend, sales) => (spend / sales) * 100);
@@ -60,8 +60,12 @@ export class BidService {
     return {
       highRTH: parseFloat(this.configService.get('HIGH_ROI_THRESHOLD', '3.0')),
       lowRTH: parseFloat(this.configService.get('LOW_ROI_THRESHOLD', '1.0')),
-      increasePct: parseFloat(this.configService.get('BID_INCREASE_PERCENTAGE', '15')),
-      decreasePct: parseFloat(this.configService.get('BID_DECREASE_PERCENTAGE', '10')),
+      increasePct: parseFloat(
+        this.configService.get('BID_INCREASE_PERCENTAGE', '15'),
+      ),
+      decreasePct: parseFloat(
+        this.configService.get('BID_DECREASE_PERCENTAGE', '10'),
+      ),
       targetAcos: parseFloat(this.configService.get('TARGET_ACOS', '30')),
       minUtil: parseFloat(this.configService.get('MIN_UTILIZATION', '0.3')),
       minBid: parseFloat(this.configService.get('MIN_BID_AMOUNT', '0.25')),
@@ -75,8 +79,6 @@ export class BidService {
   // }
 
   // calculateNewBid(currentBid: number, roi: number): { newBid: number; reason: string; percentage: number } {
-
-
 
   // }
 
@@ -98,7 +100,7 @@ export class BidService {
   // }
 
   async adjustBidForCampaign(campaign: CampaignDocument): Promise<void> {
-    return
+    return;
     // try {
     //   // Calculate ROI
     //   const roi = this.calculateROI(campaign.sales, campaign.spend);
@@ -288,15 +290,13 @@ export class BidService {
     // return updated
   }
 
-
-
   budgetDisicion(report: ReportDocument) {
     const spend = report.spend ?? 0;
     const clicks = report.clicks ?? 0;
     const sales = report.sales14d ?? 0;
-    const acos14d = (spend / sales * 100 || 0)
-    const budget = report.campaignBudgetAmount ?? 0
-    const { targetAcos, minUtil, increasePct, decreasePct, } = this.config;
+    const acos14d = (spend / sales) * 100 || 0;
+    const budget = report.campaignBudgetAmount ?? 0;
+    const { targetAcos, minUtil, increasePct, decreasePct } = this.config;
 
     if (budget <= 0) {
       return {
@@ -316,7 +316,7 @@ export class BidService {
         newBudget: +(budget * (1 + increasePct)).toFixed(2),
         action: 'INCREASE',
         reason: REASON.profit,
-      }
+      };
     }
   }
 
@@ -490,6 +490,4 @@ export class BidService {
   //     reason: 'WITHIN_TARGET_RANGE',
   //   };
   // }
-
-
 }

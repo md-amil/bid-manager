@@ -7,8 +7,14 @@ import { Queue } from 'bullmq';
 import { AmazonApiService } from './amazon/amazon-api.service';
 import { Campaign, CampaignDocument } from 'src/schemas/campaign.schema';
 import { AdGroup, AdGroupDocument } from 'src/schemas/ad-group.schema';
-import { CampaignReport, ReportDocument } from 'src/schemas/reports/report.schema';
-import { SearchTermDocument, SearchTermReport } from 'src/schemas/reports/search-term-report.schema';
+import {
+  CampaignReport,
+  ReportDocument,
+} from 'src/schemas/reports/report.schema';
+import {
+  SearchTermDocument,
+  SearchTermReport,
+} from 'src/schemas/reports/search-term-report.schema';
 
 @Injectable()
 export class CampaignService {
@@ -18,9 +24,9 @@ export class CampaignService {
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     @InjectModel(AdGroup.name) private adgroup: Model<AdGroupDocument>,
     @InjectModel(CampaignReport.name) private report: Model<ReportDocument>,
-        @InjectModel(SearchTermReport.name) private searchReport: Model<SearchTermDocument>,
-
-  ) { }
+    @InjectModel(SearchTermReport.name)
+    private searchReport: Model<SearchTermDocument>,
+  ) {}
 
   // async syncCampaignData(scopeId: string = '3838241482724308'): Promise<any> {
   //   this.logger.log('Syncing campaign data from Amazon API');
@@ -67,9 +73,8 @@ export class CampaignService {
         },
       },
     ]);
-    return response[0]
+    return response[0];
   }
-
 
   async findCampaignBundle(campaignId: string) {
     const response = await this.campaignModel.aggregate([
@@ -136,12 +141,11 @@ export class CampaignService {
       },
     ]);
 
-    return response[0]
+    return response[0];
   }
 
-
   async getCampaigns(scopeId: string) {
-    console.log({scopeId})
+    console.log({ scopeId });
     return this.campaignModel.find({ scopeId }).sort({ createdAt: -1 }).exec();
   }
 
@@ -149,23 +153,23 @@ export class CampaignService {
     const data = await this.campaignModel.aggregate([
       {
         $match: {
-          campaignId
-        }
+          campaignId,
+        },
       },
       {
         $lookup: {
           from: 'adgroups',
           localField: 'campaignId',
           foreignField: 'campaignId',
-          as: 'adGroups'
-        }
-      }
+          as: 'adGroups',
+        },
+      },
     ]);
     return data[0];
   }
 
   async getCampaignBy($match: PipelineStage.Match, populate: string[]) {
-    const pipeline: PipelineStage[] = [{ $match }]
+    const pipeline: PipelineStage[] = [{ $match }];
     for (const pop of populate) {
       pipeline.push({
         $lookup: {
@@ -174,14 +178,14 @@ export class CampaignService {
           foreignField: 'campaignId',
           as: pop,
         },
-      })
+      });
     }
     const data = await this.campaignModel.aggregate(pipeline);
     return data[0];
   }
 
   async getAdGroupBy($match, populate: string[]) {
-    const args: any[] = [{ $match }]
+    const args: any[] = [{ $match }];
     for (const pop of populate) {
       args.push({
         $lookup: {
@@ -190,9 +194,9 @@ export class CampaignService {
           foreignField: 'adGroupId',
           as: pop,
         },
-      })
+      });
     }
-    return this.adgroup.aggregate(args)
+    return this.adgroup.aggregate(args);
   }
 
   async getLatestReportSum() {
@@ -200,20 +204,20 @@ export class CampaignService {
       { $sort: { date: -1 } },
       {
         $group: {
-          _id: "$date",
-          spend: { $sum: "$spend" },
-          sales14d: { $sum: "$sales14d" }
-        }
+          _id: '$date',
+          spend: { $sum: '$spend' },
+          sales14d: { $sum: '$sales14d' },
+        },
       },
       {
         $group: {
           _id: null,
-          totalSpend: { $sum: "$spend" },
-          totalSales14d: { $sum: "$sales14d" }
-        }
-      }
+          totalSpend: { $sum: '$spend' },
+          totalSales14d: { $sum: '$sales14d' },
+        },
+      },
     ]);
-    return result[0]
+    return result[0];
   }
 
   // async generateReport() {

@@ -4,7 +4,7 @@ import mongoose, { Document } from 'mongoose';
 
 export type CampaignDocument = Campaign & Document;
 
-@Schema({ timestamps: false,_id:false })
+@Schema({ timestamps: false, _id: false })
 export class Budget {
   @Prop({ required: true })
   budget: number;
@@ -12,7 +12,6 @@ export class Budget {
   @Prop({ required: true })
   budgetType: string;
 }
-
 
 @Schema({ timestamps: false, _id: false })
 export class DynamicBidding {
@@ -30,22 +29,22 @@ export class DynamicBidding {
   strategy: string;
 }
 
-export enum State{
-  PAUSED="PAUSED",
-  ACTIVE="ACTIVE"
+export enum State {
+  PAUSED = 'PAUSED',
+  ACTIVE = 'ACTIVE',
 }
 
-export enum TargetingType{
-   AUTO = 'AUTO',
-   MANUAL='MANUAL'
+export enum TargetingType {
+  AUTO = 'AUTO',
+  MANUAL = 'MANUAL',
 }
 
-@Schema({ timestamps: true, _id:false })
+@Schema({ timestamps: true, _id: false })
 export class Campaign {
-  @Prop({ required: true, primaryKey:true })
+  @Prop({ required: true, primaryKey: true })
   campaignId: string;
 
-  @Prop({ required: true})
+  @Prop({ required: true })
   scopeId: string;
 
   @Prop({ required: true })
@@ -55,22 +54,22 @@ export class Campaign {
   budget: Budget;
 
   @Prop({ type: DynamicBidding, required: false })
-  dynamicBidding:DynamicBidding
+  dynamicBidding: DynamicBidding;
 
-  @Prop({  required: false })
+  @Prop({ required: false })
   marketplaceBudgetAllocation: string;
 
-  @Prop({  required: false })
-  startDate:Date
+  @Prop({ required: false })
+  startDate: Date;
 
-  @Prop({  required: false })
-  state: 'PAUSED'|"ENABLED"
+  @Prop({ required: false })
+  state: 'PAUSED' | 'ENABLED';
 
   // @Prop({  required: false })
   // tags: string
 
-  @Prop({  required: false })
-  targetingType: TargetingType
+  @Prop({ required: false })
+  targetingType: TargetingType;
 
   // spend:number
   // sales:number
@@ -83,5 +82,3 @@ export class Campaign {
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);
-
-

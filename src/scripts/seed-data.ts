@@ -21,7 +21,7 @@ async function seedData() {
         campaignName: 'Summer Sale Campaign',
         adGroupId: 'adg_001',
         keyword: 'wireless headphones',
-        currentBid: 2.50,
+        currentBid: 2.5,
         sales: 1500,
         spend: 300,
         clicks: 250,
@@ -45,7 +45,7 @@ async function seedData() {
         campaignName: 'Tech Accessories',
         adGroupId: 'adg_003',
         keyword: 'phone case',
-        currentBid: 1.20,
+        currentBid: 1.2,
         sales: 250,
         spend: 300,
         clicks: 320,
@@ -57,7 +57,7 @@ async function seedData() {
         campaignName: 'Gaming Products',
         adGroupId: 'adg_004',
         keyword: 'gaming mouse',
-        currentBid: 3.00,
+        currentBid: 3.0,
         sales: 2400,
         spend: 600,
         clicks: 400,
@@ -69,7 +69,7 @@ async function seedData() {
         campaignName: 'Office Supplies',
         adGroupId: 'adg_005',
         keyword: 'ergonomic keyboard',
-        currentBid: 2.20,
+        currentBid: 2.2,
         sales: 500,
         spend: 550,
         clicks: 280,
@@ -93,7 +93,9 @@ async function seedData() {
       console.log(`Sales: $${campaign.sales}`);
       console.log(`Spend: $${campaign.spend}`);
       console.log(`ROI: ${roi.toFixed(2)}`);
-      console.log(`Status: ${roi >= 3.0 ? 'High ROI - Will Increase Bid' : roi <= 1.0 ? 'Low ROI - Will Decrease Bid' : 'Normal - No Change'}`);
+      console.log(
+        `Status: ${roi >= 3.0 ? 'High ROI - Will Increase Bid' : roi <= 1.0 ? 'Low ROI - Will Decrease Bid' : 'Normal - No Change'}`,
+      );
     });
 
     await mongoose.disconnect();

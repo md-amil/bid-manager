@@ -1,7 +1,8 @@
-import { ReportDocument } from "src/schemas/reports/report.schema";
+import { ReportDocument } from 'src/schemas/reports/report.schema';
 
 export function buildContext(metrics: ReportDocument) {
-  const { impressions, spend, sales14d, clicks, campaignBudgetAmount } = metrics
+  const { impressions, spend, sales14d, clicks, campaignBudgetAmount } =
+    metrics;
   return {
     entityId: metrics.campaignId.toString(),
     entityType: 'CAMPAIGN' as const,
@@ -14,8 +15,8 @@ export function buildContext(metrics: ReportDocument) {
       impressions,
     },
     current: {
-      budget: metrics.campaignBudgetAmount
+      budget: metrics.campaignBudgetAmount,
     },
-    meta: { isAuto: true }
+    meta: { isAuto: true },
   };
 }

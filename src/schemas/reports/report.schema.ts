@@ -11,7 +11,7 @@ export class CampaignReport {
   @Prop({ required: true, index: true })
   date: string;
 
-  @Prop({ref: Campaign.name, required: true, index: true })
+  @Prop({ ref: Campaign.name, required: true, index: true })
   campaignId: string;
 
   @Prop()
@@ -67,8 +67,6 @@ export class CampaignReport {
   // @Prop() unitsSoldSameSku14d: number;
   // @Prop() unitsSoldSameSku30d: number;
 
-
-
   // @Prop() attributedSalesSameSku1d: number;
   // @Prop() attributedSalesSameSku7d: number;
   // @Prop() attributedSalesSameSku14d: number;
@@ -77,5 +75,3 @@ export class CampaignReport {
 
 export const CampaignReportSchema =
   SchemaFactory.createForClass(CampaignReport);
-
-

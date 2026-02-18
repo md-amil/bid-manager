@@ -1,19 +1,17 @@
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type KeywordDocument = Keyword & Document;
 
 enum MatchType {
-  EXACT = "EXACT",
-  PHRASE = "PHRASE",
-  BROAD = "BROAD"
+  EXACT = 'EXACT',
+  PHRASE = 'PHRASE',
+  BROAD = 'BROAD',
 }
 
-
 enum Type {
-  NEGATIVE = "-1",
-  POSITIVE = "1",
+  NEGATIVE = '-1',
+  POSITIVE = '1',
 }
 
 @Schema({ timestamps: true })
@@ -23,7 +21,6 @@ export class Keyword extends Document {
 
   @Prop({ required: true, index: true })
   profileId: string;
-
 
   @Prop({ required: true })
   campaignId: string;
@@ -49,9 +46,9 @@ export class Keyword extends Document {
     enum: [-1, 1],
     required: true,
   })
-  type: Type
+  type: Type;
 
-  @Prop({ required: true, })
+  @Prop({ required: true })
   state: string;
 }
 

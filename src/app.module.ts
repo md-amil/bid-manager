@@ -9,8 +9,14 @@ import { ViewController } from './controllers/view.controller';
 import { ProfileController } from './controllers/profile.controller';
 import { AuthController } from './controllers/auth.controller';
 import { Campaign, CampaignSchema } from './schemas/campaign.schema';
-import { BidAdjustmentLog, BidAdjustmentLogSchema } from './schemas/bid-adjustment-log.schema';
-import { CampaignReport, CampaignReportSchema, } from './schemas/reports/report.schema';
+import {
+  BidAdjustmentLog,
+  BidAdjustmentLogSchema,
+} from './schemas/bid-adjustment-log.schema';
+import {
+  CampaignReport,
+  CampaignReportSchema,
+} from './schemas/reports/report.schema';
 import { AmazonApiService } from './services/amazon/amazon-api.service';
 import { BidService } from './services/amazon/bid.service';
 import { CronService } from './services/cron.service';
@@ -27,15 +33,24 @@ import { SyncProducer } from './queue/producer/sync.producer';
 import { ReportProducer } from './queue/producer/report.producer';
 import { ReportService } from './services/report.service';
 import { BidProducer } from './queue/producer/bid.producer';
-import { OptimizationLog, OptimizationLogSchema } from './schemas/optimization.schema';
+import {
+  OptimizationLog,
+  OptimizationLogSchema,
+} from './schemas/optimization.schema';
 import { CampaignApiService } from './services/amazon/campaign-api.service';
 import { Keyword, KeywordSchema } from './schemas/keyword.schema';
 import { Target, TargetSchema } from './schemas/target.schema';
 import { Engine } from './engine/core/rule.engine';
 import { AdGroupApiService } from './services/amazon/adgroup-api.service';
 import { Profile, ProfileSchema } from './schemas/profile.schema';
-import { KeywordReport, KeywordReportSchema } from './schemas/reports/keyword-report.schema';
-import { SearchTermReport, SearchTermReportSchema } from './schemas/reports/search-term-report.schema';
+import {
+  KeywordReport,
+  KeywordReportSchema,
+} from './schemas/reports/keyword-report.schema';
+import {
+  SearchTermReport,
+  SearchTermReportSchema,
+} from './schemas/reports/search-term-report.schema';
 
 @Module({
   imports: [
@@ -48,13 +63,15 @@ import { SearchTermReport, SearchTermReportSchema } from './schemas/reports/sear
     BullModule.registerQueue(
       { name: 'campaignSync' },
       { name: 'reportProcessor' },
-      { name: 'bidProcessor' }
+      { name: 'bidProcessor' },
     ),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/bid-manager'),
+    MongooseModule.forRoot(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/bid-manager',
+    ),
     MongooseModule.forFeature([
       { name: OptimizationLog.name, schema: OptimizationLogSchema },
       { name: Campaign.name, schema: CampaignSchema },
@@ -65,14 +82,37 @@ import { SearchTermReport, SearchTermReportSchema } from './schemas/reports/sear
       { name: Keyword.name, schema: KeywordSchema },
       { name: Target.name, schema: TargetSchema },
       { name: KeywordReport.name, schema: KeywordReportSchema },
-       { name: SearchTermReport.name, schema: SearchTermReportSchema },
+      { name: SearchTermReport.name, schema: SearchTermReportSchema },
 
       { name: Profile.name, schema: ProfileSchema },
-
     ]),
     ScheduleModule.forRoot(),
   ],
-  controllers: [AppController, CampaignController, ViewController, ProfileController, AuthController],
-  providers: [AppService,AdGroupApiService, AmazonApiService,Engine, CampaignApiService,BidService, CronService, AuthService, AmazonSyncService, AmazonSyncProcessor, BidProcessor, ReportProcessor, CampaignService, SyncProducer, ReportProducer, BidProducer, ReportService],
+  controllers: [
+    AppController,
+    CampaignController,
+    ViewController,
+    ProfileController,
+    AuthController,
+  ],
+  providers: [
+    AppService,
+    AdGroupApiService,
+    AmazonApiService,
+    Engine,
+    CampaignApiService,
+    BidService,
+    CronService,
+    AuthService,
+    AmazonSyncService,
+    AmazonSyncProcessor,
+    BidProcessor,
+    ReportProcessor,
+    CampaignService,
+    SyncProducer,
+    ReportProducer,
+    BidProducer,
+    ReportService,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

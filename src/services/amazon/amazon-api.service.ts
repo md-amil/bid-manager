@@ -8,12 +8,11 @@ export interface ReportResponse {
   url?: string;
   name?: string;
   configuration: {
-    reportTypeId: 'spCampaigns'|'spKeywords'|'spSearchTerm'
+    reportTypeId: 'spCampaigns' | 'spKeywords' | 'spSearchTerm';
   };
   startDate?: string;
   endDate?: string;
 }
-
 
 export interface TokenResponse {
   access_token: string;
@@ -21,7 +20,6 @@ export interface TokenResponse {
   token_type: string;
   expires_in: number;
 }
-
 
 export interface IFilter {
   nextToken?: string;
@@ -32,7 +30,6 @@ export interface IFilter {
   keywordId?: string[];
 }
 
-
 export interface ReportPayload {
   scopeId: string;
   name: string;
@@ -42,7 +39,7 @@ export interface ReportPayload {
 
 export interface ReportConfig {
   scopeId?: string;
-  reportTypeId: 'spCampaigns' | 'spKeywords'| 'spSearchTerm';
+  reportTypeId: 'spCampaigns' | 'spKeywords' | 'spSearchTerm';
   groupBy: string[];
   columns: string[];
 }
@@ -62,7 +59,6 @@ export interface AmazonProfile {
   };
 }
 
-
 @Injectable()
 export class AmazonApiService {
   protected readonly logger = new Logger(AmazonApiService.name);
@@ -77,60 +73,79 @@ export class AmazonApiService {
 
   constructor(protected configService: ConfigService) {
     this.clientId = this.configService.get<string>('AMAZON_CLIENT_ID') || '';
-    this.clientSecret = this.configService.get<string>('AMAZON_CLIENT_SECRET') || '';
-    this.refreshToken = this.configService.get<string>('AMAZON_REFRESH_TOKEN') || '';
+    this.clientSecret =
+      this.configService.get<string>('AMAZON_CLIENT_SECRET') || '';
+    this.refreshToken =
+      this.configService.get<string>('AMAZON_REFRESH_TOKEN') || '';
     this.scopeId = this.configService.get<string>('AMAZON_PROFILE_ID') || '';
-    this.accessToken = this.configService.get('ACCESS_TOKEN') || ''
-    this.tokenExpiresAt = +this.configService.get('TOKEN_EXPIRY')
+    this.accessToken = this.configService.get('ACCESS_TOKEN') || '';
+    this.tokenExpiresAt = +this.configService.get('TOKEN_EXPIRY');
 
-    this.tokenUrl = this.configService.get<string>('AMAZON_TOKEN_URL', 'https://api.amazon.com/auth/o2/token');
-    if (!this.clientId || !this.clientSecret || !this.refreshToken || !this.scopeId) {
-      this.logger.warn('Amazon API credentials not configured. Please set AMAZON_CLIENT_ID, AMAZON_CLIENT_SECRET, AMAZON_REFRESH_TOKEN, and AMAZON_PROFILE_ID in your .env file');
+    this.tokenUrl = this.configService.get<string>(
+      'AMAZON_TOKEN_URL',
+      'https://api.amazon.com/auth/o2/token',
+    );
+    if (
+      !this.clientId ||
+      !this.clientSecret ||
+      !this.refreshToken ||
+      !this.scopeId
+    ) {
+      this.logger.warn(
+        'Amazon API credentials not configured. Please set AMAZON_CLIENT_ID, AMAZON_CLIENT_SECRET, AMAZON_REFRESH_TOKEN, and AMAZON_PROFILE_ID in your .env file',
+      );
     }
     this.httpClient = this.createClient();
   }
 
   get headers() {
     return {
-      'campaigns': 'application/vnd.spcampaign.v3+json',
-      'adGroups': 'application/vnd.spadGroup.v3+json',
-      'productAds': 'application/vnd.spproductAd.v3+json',
-      'keywords': 'application/vnd.spkeyword.v3+json',
-      'negativeKeywords': 'application/vnd.spnegativeKeyword.v3+json',
-      'targets': 'application/vnd.sptargetingClause.v3+json',
-      'negativeTargets': 'application/vnd.spnegativeTargetingClause.v3+json'
-    }
+      campaigns: 'application/vnd.spcampaign.v3+json',
+      adGroups: 'application/vnd.spadGroup.v3+json',
+      productAds: 'application/vnd.spproductAd.v3+json',
+      keywords: 'application/vnd.spkeyword.v3+json',
+      negativeKeywords: 'application/vnd.spnegativeKeyword.v3+json',
+      targets: 'application/vnd.sptargetingClause.v3+json',
+      negativeTargets: 'application/vnd.spnegativeTargetingClause.v3+json',
+    };
   }
   private createClient(session?: any) {
-    const baseURL = this.configService.get<string>('AMAZON_ADVERTISING_API_URL', 'https://advertising-api-eu.amazon.com');
+    const baseURL = this.configService.get<string>(
+      'AMAZON_ADVERTISING_API_URL',
+      'https://advertising-api-eu.amazon.com',
+    );
     const client = axios.create({
       baseURL,
       headers: {
-        'Accept': 'application/vnd.spCampaign.v3+json',
+        Accept: 'application/vnd.spCampaign.v3+json',
         'Content-Type': 'application/vnd.spcampaign.v3+json',
-        'Amazon-Advertising-API-ClientId': this.clientId
+        'Amazon-Advertising-API-ClientId': this.clientId,
       },
     });
 
-    client.interceptors.request.use(async (request) => {
-      const accept = this.headers[request.url!.split('/')[2]] ?? 'application/json'
+    client.interceptors.request.use(
+      async (request) => {
+        const accept =
+          this.headers[request.url!.split('/')[2]] ?? 'application/json';
 
-      if (!this.accessToken || Date.now() >= this.tokenExpiresAt) {
-        const data = await this.refreshAccessToken();
-        this.accessToken = data.access_token;
-        console.log("token will expire in ", data.expires_in)
-        this.tokenExpiresAt = Date.now() + (data.expires_in - 300) * 1000;
-        console.log(this.tokenExpiresAt)
-      }
-      request.headers['Authorization'] = `Bearer ${this.accessToken}`
-      request.headers['Content-Type'] = accept
-      request.headers['Accept'] = accept
-      return request
-    }, (error) => Promise.reject(error))
-    return client
+        if (!this.accessToken || Date.now() >= this.tokenExpiresAt) {
+          const data = await this.refreshAccessToken();
+          this.accessToken = data.access_token;
+          console.log('token will expire in ', data.expires_in);
+          this.tokenExpiresAt = Date.now() + (data.expires_in - 300) * 1000;
+          console.log(this.tokenExpiresAt);
+        }
+        request.headers['Authorization'] = `Bearer ${this.accessToken}`;
+        request.headers['Content-Type'] = accept;
+        request.headers['Accept'] = accept;
+        return request;
+      },
+      (error) => Promise.reject(error),
+    );
+    return client;
   }
 
-   async refreshAccessToken() {
+  async refreshAccessToken() {
     try {
       const params = new URLSearchParams({
         grant_type: 'refresh_token',
@@ -146,20 +161,23 @@ export class AmazonApiService {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-        }
+        },
       );
-      console.log("newly created access token", response.data)
+      console.log('newly created access token', response.data);
       this.logger.log('Access token refreshed successfully');
-      return response.data
+      return response.data;
     } catch (error) {
-      this.logger.error('Failed to refresh access token', error.response?.data || error.message);
+      this.logger.error(
+        'Failed to refresh access token',
+        error.response?.data || error.message,
+      );
       throw new Error('Failed to authenticate with Amazon Advertising API');
     }
   }
 
   async getProfiles(): Promise<AmazonProfile[]> {
     try {
-      const response = await this.httpClient.get('/v2/profiles')
+      const response = await this.httpClient.get('/v2/profiles');
       return response.data;
     } catch (error) {
       this.logger.error('Failed to get profiles', error);
@@ -168,70 +186,74 @@ export class AmazonApiService {
   }
 
   protected filterBuilder(filter: IFilter) {
-    const { nextToken, ...f } = filter
-    return Object.keys(f).reduce((pay, key) => {
-      if (filter[key].length === 0) return pay
-      pay[key + 'Filter'] = {
-        include: filter[key]
-      }
-      return pay
-    }, { ...(nextToken && { nextToken }) } as any)
+    const { nextToken, ...f } = filter;
+    return Object.keys(f).reduce(
+      (pay, key) => {
+        if (filter[key].length === 0) return pay;
+        pay[key + 'Filter'] = {
+          include: filter[key],
+        };
+        return pay;
+      },
+      { ...(nextToken && { nextToken }) } as any,
+    );
   }
 
   protected scopeBuilder(scopeId: string = this.scopeId) {
     return {
       headers: {
         'Amazon-Advertising-API-Scope': scopeId,
-      }
-    }
+      },
+    };
   }
 
   async getProductMeta(asins: string[] | string) {
     try {
-      const response = await this.httpClient.post(
-        '/product/metadata', {
-        "asins": Array.isArray(asins) ? asins : [asins],
-        "adType": "SP",
-        "pageSize": 5,
-        "pageIndex": 0
-      })
-      return response.data
+      const response = await this.httpClient.post('/product/metadata', {
+        asins: Array.isArray(asins) ? asins : [asins],
+        adType: 'SP',
+        pageSize: 5,
+        pageIndex: 0,
+      });
+      return response.data;
     } catch (e) {
-      this.logger.error('Failed to get keywords', e.response?.data || e.message);
+      this.logger.error(
+        'Failed to get keywords',
+        e.response?.data || e.message,
+      );
     }
   }
-
 
   async generateReport(payload: ReportPayload, config: ReportConfig) {
     try {
       const response = await this.httpClient.post<ReportResponse>(
         '/reporting/reports',
         {
-          "configuration": {
-            "adProduct": "SPONSORED_PRODUCTS",
-            "timeUnit": "DAILY",
-            "format": "GZIP_JSON",
-            ...config
+          configuration: {
+            adProduct: 'SPONSORED_PRODUCTS',
+            timeUnit: 'DAILY',
+            format: 'GZIP_JSON',
+            ...config,
           },
           ...payload,
         },
-        this.scopeBuilder(payload.scopeId)
+        this.scopeBuilder(payload.scopeId),
       );
       return response.data;
     } catch (error) {
-      this.logger.error('Failed to generate report', error.response?.data || error.message);
+      this.logger.error(
+        'Failed to generate report',
+        error.response?.data || error.message,
+      );
       throw error;
     }
   }
-
-
 
   // async getAdGroupsByCampaign(campaignId: string, scopeId: string = this.scopeId) {
   //   return this.getAdGroups(scopeId, {
   //     campaignId: [campaignId]
   //   });
   // }
-
 
   // async generateReport(payload: ReportPayload) {
   //   try {
@@ -263,11 +285,14 @@ export class AmazonApiService {
     try {
       const response = await this.httpClient.get<ReportResponse>(
         `/reporting/reports/${reportId}`,
-        this.scopeBuilder()
+        this.scopeBuilder(),
       );
       return response.data;
     } catch (error) {
-      this.logger.error('Failed to get report', error.response?.data || error.message);
+      this.logger.error(
+        'Failed to get report',
+        error.response?.data || error.message,
+      );
       throw error;
     }
   }
@@ -280,7 +305,7 @@ export class AmazonApiService {
 
   async getProfile(profileId: string): Promise<AmazonProfile> {
     try {
-      const response = await this.httpClient.get(`/v2/profiles/${profileId}`)
+      const response = await this.httpClient.get(`/v2/profiles/${profileId}`);
       return response.data;
     } catch (error) {
       this.logger.error(`Failed to get profile ${profileId}`, error);
@@ -288,31 +313,41 @@ export class AmazonApiService {
     }
   }
 
-  
-  
-
-  async updateProductAd(adId: string, data: any, scopeId: string = this.scopeId) {
+  async updateProductAd(
+    adId: string,
+    data: any,
+    scopeId: string = this.scopeId,
+  ) {
     try {
       const response = await this.httpClient.put(`/sp/productAds`, data, {
-        ...this.scopeBuilder(scopeId)
+        ...this.scopeBuilder(scopeId),
       });
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to update product ad ${adId}`, error.response?.data || error.message);
+      this.logger.error(
+        `Failed to update product ad ${adId}`,
+        error.response?.data || error.message,
+      );
       throw error;
     }
   }
 
-  async updateKeyword(keywordId: string, data: any, scopeId: string = this.scopeId) {
+  async updateKeyword(
+    keywordId: string,
+    data: any,
+    scopeId: string = this.scopeId,
+  ) {
     try {
       const response = await this.httpClient.put(`/sp/keywords`, data, {
-        ...this.scopeBuilder(scopeId)
+        ...this.scopeBuilder(scopeId),
       });
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to update keyword ${keywordId}`, error.response?.data || error.message);
+      this.logger.error(
+        `Failed to update keyword ${keywordId}`,
+        error.response?.data || error.message,
+      );
       throw error;
     }
   }
 }
-

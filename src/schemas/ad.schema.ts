@@ -13,7 +13,6 @@ export class Ad {
   @Prop({ required: true, index: true })
   profileId: string;
 
-
   @Prop({
     ref: Campaign.name,
     index: true,
@@ -37,4 +36,3 @@ export class Ad {
 }
 
 export const AdSchema = SchemaFactory.createForClass(Ad);
-

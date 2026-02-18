@@ -6,7 +6,6 @@ export class AmazonMapper {
     };
   }
 
-
   static adGroup(g: any, scopeId: string) {
     return {
       scopeId,
@@ -19,7 +18,7 @@ export class AmazonMapper {
     };
   }
 
-  static ad(a: any, scopeId: string,) {
+  static ad(a: any, scopeId: string) {
     return {
       scopeId,
       amazonAdId: a.adId,
@@ -31,38 +30,37 @@ export class AmazonMapper {
     };
   }
 
-  static keyword(a: any,  scopeId: string,type:-1|1 = 1) {
+  static keyword(a: any, scopeId: string, type: -1 | 1 = 1) {
     return {
       type,
       scopeId,
-      ...a
+      ...a,
     };
   }
-  static target(a: any,  scopeId: string,type:-1|1 = 1) {
+  static target(a: any, scopeId: string, type: -1 | 1 = 1) {
     return {
       type,
       scopeId,
-      ...a
+      ...a,
     };
   }
 
-  static profile(p: any,organisationId:string) {
+  static profile(p: any, organisationId: string) {
     return {
       organisationId,
-      ...p
+      ...p,
     };
   }
 
   static reportFromCampaign(matrics: any) {
-    return {}
+    return {};
   }
 
   static reportFromAdgroup(matrics: any) {
-    return {}
+    return {};
   }
 
   static reportFromKeyword(matrics: any) {
-    return {}
+    return {};
   }
-
 }

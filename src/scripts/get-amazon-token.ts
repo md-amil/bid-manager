@@ -1,6 +1,6 @@
 /**
  * Helper script to obtain Amazon Advertising API refresh token
- * 
+ *
  * Usage:
  * 1. Set your AMAZON_CLIENT_ID and AMAZON_CLIENT_SECRET in .env
  * 2. Run: npm run get-token
@@ -31,13 +31,16 @@ async function getRefreshToken() {
   const clientSecret = process.env.AMAZON_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    console.error('❌ Error: AMAZON_CLIENT_ID and AMAZON_CLIENT_SECRET must be set in .env file');
+    console.error(
+      '❌ Error: AMAZON_CLIENT_ID and AMAZON_CLIENT_SECRET must be set in .env file',
+    );
     process.exit(1);
   }
 
   const redirectUri = 'http://localhost:3000/auth/callback';
   // const scope = 'advertising::campaign_management';
-  const scope = 'advertising::test:create_account%20advertising::campaign_management'
+  const scope =
+    'advertising::test:create_account%20advertising::campaign_management';
 
   // Step 1: Generate authorization URL
   const authUrl = `https://www.amazon.in/ap/oa?client_id=${clientId}&scope=${scope}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}`;
@@ -49,7 +52,9 @@ async function getRefreshToken() {
   console.log('\n');
 
   // Step 2: Get authorization code
-  const authCode = await question('Step 2: After authorizing, paste the authorization code from the redirect URL: ');
+  const authCode = await question(
+    'Step 2: After authorizing, paste the authorization code from the redirect URL: ',
+  );
 
   if (!authCode.trim()) {
     console.error('❌ Error: Authorization code is required');
@@ -76,7 +81,7 @@ async function getRefreshToken() {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-      }
+      },
     );
 
     const { access_token, refresh_token, expires_in } = response.data;
@@ -97,10 +102,10 @@ async function getRefreshToken() {
         'https://advertising-api-eu.amazon.com/v2/profiles',
         {
           headers: {
-            'Authorization': `Bearer ${access_token}`,
+            Authorization: `Bearer ${access_token}`,
             'Amazon-Advertising-API-ClientId': clientId,
           },
-        }
+        },
       );
 
       console.log('✅ Available Profiles:\n');
@@ -119,19 +124,28 @@ async function getRefreshToken() {
         console.log('\n=== Add these to your .env file ===\n');
         console.log(`AMAZON_REFRESH_TOKEN=${refresh_token}`);
         console.log(`AMAZON_PROFILE_ID=${defaultProfile.profileId}`);
-        console.log(`AMAZON_MARKETPLACE_ID=${defaultProfile.accountInfo?.marketplaceStringId || 'ATVPDKIKX0DER'}`);
+        console.log(
+          `AMAZON_MARKETPLACE_ID=${defaultProfile.accountInfo?.marketplaceStringId || 'ATVPDKIKX0DER'}`,
+        );
         console.log('\n');
       }
     } catch (profileError) {
-      console.error('⚠️  Could not fetch profiles:', profileError.response?.data || profileError.message);
-      console.log('\nYou can manually get your profile ID later using the access token.');
+      console.error(
+        '⚠️  Could not fetch profiles:',
+        profileError.response?.data || profileError.message,
+      );
+      console.log(
+        '\nYou can manually get your profile ID later using the access token.',
+      );
       console.log('\n=== Add this to your .env file ===\n');
       console.log(`AMAZON_REFRESH_TOKEN=${refresh_token}`);
       console.log('\n');
     }
-
   } catch (error) {
-    console.error('❌ Error exchanging authorization code:', error.response?.data || error.message);
+    console.error(
+      '❌ Error exchanging authorization code:',
+      error.response?.data || error.message,
+    );
     console.log('\nCommon issues:');
     console.log('- Authorization code expired (valid for 5 minutes)');
     console.log('- Invalid client credentials');

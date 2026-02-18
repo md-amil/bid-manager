@@ -43,12 +43,14 @@ export class AuthService {
     private profileModel: Model<Profile>,
   ) {
     this.clientId = this.configService.get<string>('AMAZON_CLIENT_ID') || '';
-    this.clientSecret = this.configService.get<string>('AMAZON_CLIENT_SECRET') || '';
-    this.redirectUri = this.configService.get<string>('AMAZON_REDIRECT_URI', 'http://localhost:3000/auth/callback');
+    this.clientSecret =
+      this.configService.get<string>('AMAZON_CLIENT_SECRET') || '';
+    this.redirectUri = this.configService.get<string>(
+      'AMAZON_REDIRECT_URI',
+      'http://localhost:3000/auth/callback',
+    );
     this.scope = 'advertising::campaign_management';
   }
-
-
 
   /**
    * Generate authorization URL for Amazon OAuth
@@ -82,13 +84,16 @@ export class AuthService {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-        }
+        },
       );
 
       this.logger.log('Successfully exchanged authorization code for tokens');
       return response.data;
     } catch (error) {
-      this.logger.error('Failed to exchange authorization code', error.response?.data || error.message);
+      this.logger.error(
+        'Failed to exchange authorization code',
+        error.response?.data || error.message,
+      );
       throw new Error('Failed to authenticate with Amazon');
     }
   }
@@ -96,14 +101,19 @@ export class AuthService {
   /**
    * Get Amazon Advertising profiles using access token
    */
-  
+
   async getProfiles(accessToken: string) {
     try {
-      const profiles = await this.profileModel.find({ clientId: this.clientId })
-      if (profiles.length) return profiles
-      return await this.syncService.syncProfile(this.clientId) as any
+      const profiles = await this.profileModel.find({
+        clientId: this.clientId,
+      });
+      if (profiles.length) return profiles;
+      return (await this.syncService.syncProfile(this.clientId)) as any;
     } catch (error) {
-      this.logger.error('Failed to get profiles', error.response?.data || error.message);
+      this.logger.error(
+        'Failed to get profiles',
+        error.response?.data || error.message,
+      );
       throw new Error('Failed to fetch  profiles');
     }
   }
@@ -112,7 +122,7 @@ export class AuthService {
    * Refresh access token using refresh token
    */
   async refreshAccessToken(refreshToken: string): Promise<TokenResponse> {
-    return this.amazonApi.refreshAccessToken()
+    return this.amazonApi.refreshAccessToken();
     // try {
     //   const params = new URLSearchParams({
     //     grant_type: 'refresh_token',

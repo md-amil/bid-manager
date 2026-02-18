@@ -1,4 +1,13 @@
-import { Controller, Get, Query, Redirect, Render, Session, Logger, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Redirect,
+  Render,
+  Session,
+  Logger,
+  Res,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from '../services/auth.service';
 
@@ -6,30 +15,42 @@ import { AuthService } from '../services/auth.service';
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   /**
    * Login page
    */
   @Get('login')
-  async loginPage(@Session() session: Record<string, any>, @Res() res: Response) {
+  async loginPage(
+    @Session() session: Record<string, any>,
+    @Res() res: Response,
+  ) {
     const envRefreshToken = process.env.AMAZON_REFRESH_TOKEN;
     const profileId = process.env.AMAZON_PROFILE_ID;
-    const accessToken = process.env.ACCESS_TOKEN
+    const accessToken = process.env.ACCESS_TOKEN;
     if (envRefreshToken && !session.authenticated) {
-      this.logger.log('Refresh token found in environment, attempting auto-login');
+      this.logger.log(
+        'Refresh token found in environment, attempting auto-login',
+      );
       try {
-        const tokens = await this.authService.refreshAccessToken(envRefreshToken);
-        const profiles = await this.authService.getProfiles(tokens.access_token);
+        const tokens =
+          await this.authService.refreshAccessToken(envRefreshToken);
+        const profiles = await this.authService.getProfiles(
+          tokens.access_token,
+        );
         session.accessToken = tokens.access_token;
         session.refreshToken = tokens.refresh_token || envRefreshToken;
-        session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
+        session.tokenExpiresAt = Date.now() + tokens.expires_in * 1000;
         session.profiles = profiles;
         session.authenticated = true;
 
-        this.logger.log('Auto-login successful, redirecting to profile selection');
+        this.logger.log(
+          'Auto-login successful, redirecting to profile selection',
+        );
         if (profileId) {
-          session.selectedProfile = profiles.find(p => p.profileId.toString() === profileId);
+          session.selectedProfile = profiles.find(
+            (p) => p.profileId.toString() === profileId,
+          );
           return res.redirect('/');
         }
         return res.redirect('/select-profile');
@@ -87,7 +108,7 @@ export class AuthController {
       // Store in session
       session.accessToken = tokens.access_token;
       session.refreshToken = tokens.refresh_token;
-      session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
+      session.tokenExpiresAt = Date.now() + tokens.expires_in * 1000;
       session.profiles = profiles;
       session.authenticated = true;
 

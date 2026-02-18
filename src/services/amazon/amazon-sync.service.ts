@@ -1,17 +1,17 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { AdGroup } from "src/schemas/ad-group.schema";
-import { Ad } from "src/schemas/ad.schema";
-import { Campaign } from "src/schemas/campaign.schema";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { AdGroup } from 'src/schemas/ad-group.schema';
+import { Ad } from 'src/schemas/ad.schema';
+import { Campaign } from 'src/schemas/campaign.schema';
 // import { AmazonApiService } from "./amazon-api.service";
-import { AmazonMapper } from "./amazon.mapper";
-import { CampaignApiService } from "./campaign-api.service";
-import { Keyword } from "src/schemas/keyword.schema";
-import { Target } from "src/schemas/target.schema";
-import { AdGroupApiService } from "./adgroup-api.service";
-import { AmazonApiService } from "./amazon-api.service";
-import { Profile } from "src/schemas/profile.schema";
+import { AmazonMapper } from './amazon.mapper';
+import { CampaignApiService } from './campaign-api.service';
+import { Keyword } from 'src/schemas/keyword.schema';
+import { Target } from 'src/schemas/target.schema';
+import { AdGroupApiService } from './adgroup-api.service';
+import { AmazonApiService } from './amazon-api.service';
+import { Profile } from 'src/schemas/profile.schema';
 
 @Injectable()
 export class AmazonSyncService {
@@ -31,14 +31,13 @@ export class AmazonSyncService {
     private amazonApi: AmazonApiService,
     private campaignApi: CampaignApiService,
     private adGroupApi: AdGroupApiService,
-
-  ) { }
+  ) {}
 
   async syncCampains(scopeId: string) {
-    console.log('Syncing Campaigns...')
+    console.log('Syncing Campaigns...');
     const campaigns = await this.campaignApi.getCampaigns(scopeId);
-    console.log(campaigns[0])
-    const campaignBulkOps = campaigns.map(c => ({
+    console.log(campaigns[0]);
+    const campaignBulkOps = campaigns.map((c) => ({
       updateOne: {
         filter: { campaignId: c.campaignId },
         update: { $set: AmazonMapper.campaign(c, scopeId) },
@@ -49,10 +48,10 @@ export class AmazonSyncService {
     return campaignResult;
   }
 
-  async syncAdGroups(scopeId: string,) {
-    console.log('Syncing Ad Groups...')
+  async syncAdGroups(scopeId: string) {
+    console.log('Syncing Ad Groups...');
     const adGroups = await this.adGroupApi.getAdGroups(scopeId);
-    const adGroupBulkOps = adGroups.map(g => ({
+    const adGroupBulkOps = adGroups.map((g) => ({
       updateOne: {
         filter: { adGroupId: g.adGroupId },
         update: { $set: AmazonMapper.adGroup(g, scopeId) },
@@ -64,10 +63,13 @@ export class AmazonSyncService {
   }
 
   async syncAds(scopeId: string, nextToken?: string) {
-    console.log('Syncing Ads...')
-    const { productAds, nextToken: next } = await this.adGroupApi.getAds(scopeId, { nextToken });
-    console.log(productAds.length, (!!next))
-    const adBulkOps = productAds.map(a => ({
+    console.log('Syncing Ads...');
+    const { productAds, nextToken: next } = await this.adGroupApi.getAds(
+      scopeId,
+      { nextToken },
+    );
+    console.log(productAds.length, !!next);
+    const adBulkOps = productAds.map((a) => ({
       updateOne: {
         filter: { adId: a.adId },
         update: { $set: AmazonMapper.ad(a, scopeId) },
@@ -75,16 +77,18 @@ export class AmazonSyncService {
       },
     }));
     const adResult = await this.adModel.bulkWrite(adBulkOps);
-    if (next) return this.syncAds(scopeId, next)
+    if (next) return this.syncAds(scopeId, next);
     return adResult;
   }
 
-
   async syncKeywards(scopeId: string, nextToken?: string) {
-    console.log('Syncing Keywords...', scopeId)
-    const { keywords, nextToken: next } = await this.adGroupApi.getKeywords(scopeId, { nextToken })
-    console.log(keywords.length, (!!next))
-    const adBulkOps = keywords.map(a => ({
+    console.log('Syncing Keywords...', scopeId);
+    const { keywords, nextToken: next } = await this.adGroupApi.getKeywords(
+      scopeId,
+      { nextToken },
+    );
+    console.log(keywords.length, !!next);
+    const adBulkOps = keywords.map((a) => ({
       updateOne: {
         filter: { keywordId: a.keywordId },
         update: { $set: AmazonMapper.keyword(a, scopeId) },
@@ -92,15 +96,16 @@ export class AmazonSyncService {
       },
     }));
     const keywordResult = await this.keywardModel.bulkWrite(adBulkOps);
-    console.log(keywordResult)
-    if (next) return await this.syncKeywards(scopeId, next)
+    console.log(keywordResult);
+    if (next) return await this.syncKeywards(scopeId, next);
     return keywordResult;
   }
   async syncNegativeKeywards(scopeId: string, nextToken?: string) {
-    console.log('Syncing Negative Keywords...')
-    const { negativeKeywords, nextToken: next } = await this.adGroupApi.getNegativeKeywords(scopeId, { nextToken })
-    console.log({ scopeId, negativeKeyword: negativeKeywords.length })
-    const adBulkOps = negativeKeywords.map(a => ({
+    console.log('Syncing Negative Keywords...');
+    const { negativeKeywords, nextToken: next } =
+      await this.adGroupApi.getNegativeKeywords(scopeId, { nextToken });
+    console.log({ scopeId, negativeKeyword: negativeKeywords.length });
+    const adBulkOps = negativeKeywords.map((a) => ({
       updateOne: {
         filter: { keywordId: a.keywordId },
         update: { $set: AmazonMapper.keyword(a, scopeId, -1) },
@@ -108,14 +113,15 @@ export class AmazonSyncService {
       },
     }));
     const negativeKeywordResult = await this.keywardModel.bulkWrite(adBulkOps);
-    if (next) return this.syncNegativeKeywards(scopeId, next)
+    if (next) return this.syncNegativeKeywards(scopeId, next);
     return negativeKeywordResult;
   }
   async syncTargets(scopeId: string, nextToken?: string) {
-    console.log('Syncing Targets...')
-    const { targetingClauses, nextToken: next } = await this.adGroupApi.getTargets(scopeId, { nextToken })
-    console.log({ targets: targetingClauses.length })
-    const adBulkOps = targetingClauses.map(a => ({
+    console.log('Syncing Targets...');
+    const { targetingClauses, nextToken: next } =
+      await this.adGroupApi.getTargets(scopeId, { nextToken });
+    console.log({ targets: targetingClauses.length });
+    const adBulkOps = targetingClauses.map((a) => ({
       updateOne: {
         filter: { targetId: a.targetId },
         update: { $set: AmazonMapper.target(a, scopeId, 1) },
@@ -123,14 +129,15 @@ export class AmazonSyncService {
       },
     }));
     const targetResult = await this.targetModel.bulkWrite(adBulkOps);
-    if (next) return this.syncTargets(scopeId, next)
+    if (next) return this.syncTargets(scopeId, next);
     return targetResult;
   }
 
   async syncNegativeTargets(scopeId: string, nextToken?: string) {
-    console.log('Syncing Negative Targets...')
-    const { negativeTargetingClauses, nextToken: next } = await this.adGroupApi.getNegativeTargets(scopeId, { nextToken })
-    const adBulkOps = negativeTargetingClauses.map(a => ({
+    console.log('Syncing Negative Targets...');
+    const { negativeTargetingClauses, nextToken: next } =
+      await this.adGroupApi.getNegativeTargets(scopeId, { nextToken });
+    const adBulkOps = negativeTargetingClauses.map((a) => ({
       updateOne: {
         filter: { targetId: a.targetId },
         update: { $set: AmazonMapper.target(a, scopeId, -1) },
@@ -138,22 +145,21 @@ export class AmazonSyncService {
       },
     }));
     const negativeTargetResult = await this.targetModel.bulkWrite(adBulkOps);
-    if (next) return this.syncNegativeTargets(scopeId, next)
+    if (next) return this.syncNegativeTargets(scopeId, next);
     return negativeTargetResult;
   }
 
-
-  async syncProfile(organisationId:string) {
-    const profiles = await this.amazonApi.getProfiles()
-    const adBulkOps = profiles.map(a => ({
+  async syncProfile(organisationId: string) {
+    const profiles = await this.amazonApi.getProfiles();
+    const adBulkOps = profiles.map((a) => ({
       updateOne: {
         filter: { profileId: a.profileId },
-        update: { $set: AmazonMapper.profile(a,organisationId) },
+        update: { $set: AmazonMapper.profile(a, organisationId) },
         upsert: true,
       },
     }));
     await this.profileModel.bulkWrite(adBulkOps);
-    return profiles
+    return profiles;
   }
 
   async syncAll(scopeId: string) {
@@ -170,7 +176,6 @@ export class AmazonSyncService {
     //   // [this.adGroupApi.getTargets.bind(this.amazonApi), this.syncTargets],
     // ].map(async ([fn, target]) => [await fn.call(this, scopeId), target])))
     //   .map(([res, fn]) => fn.call(this, scopeId, res)));
-
     // return await Promise.all(results)
     // const rs = targets.map(async (fn,i)=>({[fn.name.replace('sync','')]:await fn.call(this,scopeId,results[i])}))
     // console.log({rs})

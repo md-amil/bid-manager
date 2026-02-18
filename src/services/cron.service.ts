@@ -26,7 +26,6 @@ export class CronService {
   //   }
   // }
 
-
   // Optional: Daily sync at midnight
   // @Cron('0 0 * * *', {
   //   name: 'daily-sync',

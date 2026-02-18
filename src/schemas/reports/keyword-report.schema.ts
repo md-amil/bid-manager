@@ -1,4 +1,4 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type KeywordReportDocument = KeywordReport & Document;
 @Schema({
@@ -24,8 +24,7 @@ export class KeywordReport {
   @Prop() unitsSoldClicks7d: number;
   @Prop() unitsSoldClicks14d: number;
   @Prop() topOfSearchImpressionShare: number;
-  @Prop({default:"INR"}) currency: string;
+  @Prop({ default: 'INR' }) currency: string;
 }
 
-export const KeywordReportSchema =
-  SchemaFactory.createForClass(KeywordReport);
+export const KeywordReportSchema = SchemaFactory.createForClass(KeywordReport);

@@ -1,6 +1,18 @@
-import { Controller, Get, Param, Render, Logger, Session, Res, Redirect } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Render,
+  Logger,
+  Session,
+  Res,
+  Redirect,
+} from '@nestjs/common';
 import type { Response } from 'express';
-import { AmazonApiService, AmazonProfile } from '../services/amazon/amazon-api.service';
+import {
+  AmazonApiService,
+  AmazonProfile,
+} from '../services/amazon/amazon-api.service';
 import { AuthService } from '../services/auth.service';
 
 @Controller('profiles')
@@ -14,24 +26,29 @@ export class ProfileController {
 
   @Get()
   @Render('profiles')
-  async getProfilesPage(@Session() session: Record<string, any>, @Res() res: Response) {
+  async getProfilesPage(
+    @Session() session: Record<string, any>,
+    @Res() res: Response,
+  ) {
     if (!session.authenticated || !session.accessToken) {
       return res.redirect('/auth/login');
     }
     try {
       if (Date.now() >= session.tokenExpiresAt) {
-        const tokens = await this.authService.refreshAccessToken(session.refreshToken);
+        const tokens = await this.authService.refreshAccessToken(
+          session.refreshToken,
+        );
         session.accessToken = tokens.access_token;
-        session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
+        session.tokenExpiresAt = Date.now() + tokens.expires_in * 1000;
       }
       // Use profiles from session or fetch fresh
       let profiles = session.profiles || [];
-      
+
       if (!profiles || profiles.length === 0) {
         profiles = await this.authService.getProfiles(session.accessToken);
         session.profiles = profiles;
       }
-      
+
       return {
         title: 'Amazon Advertising Profiles',
         profiles,
@@ -39,7 +56,7 @@ export class ProfileController {
       };
     } catch (error) {
       this.logger.error('Failed to load profiles page', error);
-      
+
       return {
         title: 'Amazon Advertising Profiles',
         profiles: [],
@@ -60,13 +77,17 @@ export class ProfileController {
     try {
       // Check if token needs refresh
       if (Date.now() >= session.tokenExpiresAt) {
-        const tokens = await this.authService.refreshAccessToken(session.refreshToken);
+        const tokens = await this.authService.refreshAccessToken(
+          session.refreshToken,
+        );
         session.accessToken = tokens.access_token;
-        session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
+        session.tokenExpiresAt = Date.now() + tokens.expires_in * 1000;
       }
 
-      const profiles = session.profiles || await this.authService.getProfiles(session.accessToken);
-      
+      const profiles =
+        session.profiles ||
+        (await this.authService.getProfiles(session.accessToken));
+
       return {
         success: true,
         data: profiles,
@@ -111,8 +132,10 @@ export class ProfileController {
 
     try {
       // Find profile in session
-      const profile = session.profiles?.find(p => p.profileId.toString() === profileId);
-      
+      const profile = session.profiles?.find(
+        (p) => p.profileId.toString() === profileId,
+      );
+
       if (!profile) {
         return {
           title: 'Profile Details',
@@ -120,15 +143,18 @@ export class ProfileController {
           error: 'Profile not found.',
         };
       }
-      
+
       return {
         title: `Profile: ${profile.accountInfo.name}`,
         profile,
         error: null,
       };
     } catch (error) {
-      this.logger.error(`Failed to load profile ${profileId} detail page`, error);
-      
+      this.logger.error(
+        `Failed to load profile ${profileId} detail page`,
+        error,
+      );
+
       return {
         title: 'Profile Details',
         profile: null,

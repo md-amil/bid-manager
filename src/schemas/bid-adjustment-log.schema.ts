@@ -33,4 +33,5 @@ export class BidAdjustmentLog {
   errorMessage: string;
 }
 
-export const BidAdjustmentLogSchema = SchemaFactory.createForClass(BidAdjustmentLog);
+export const BidAdjustmentLogSchema =
+  SchemaFactory.createForClass(BidAdjustmentLog);
