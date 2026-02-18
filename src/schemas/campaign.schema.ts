@@ -7,7 +7,7 @@ export type CampaignDocument = Campaign & Document;
 @Schema({ timestamps: false,_id:false })
 export class Budget {
   @Prop({ required: true })
-  budget: string[];
+  budget: number;
 
   @Prop({ required: true })
   budgetType: string;
@@ -30,9 +30,14 @@ export class DynamicBidding {
   strategy: string;
 }
 
-enum State{
+export enum State{
   PAUSED="PAUSED",
   ACTIVE="ACTIVE"
+}
+
+export enum TargetingType{
+   AUTO = 'AUTO',
+   MANUAL='MANUAL'
 }
 
 @Schema({ timestamps: true, _id:false })
@@ -65,16 +70,16 @@ export class Campaign {
   // tags: string
 
   @Prop({  required: false })
-  targetingType: 'AUTO'
+  targetingType: TargetingType
 
-  spend:number
-  sales:number
-  orders:number
-  clicks:number
-  impressions:number
-  roi:number
-  keyword: number
-  currentBid:number
+  // spend:number
+  // sales:number
+  // orders:number
+  // clicks:number
+  // impressions:number
+  // roi:number
+  // keyword: number
+  // currentBid:number
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);

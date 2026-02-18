@@ -10,7 +10,7 @@ import { ProfileController } from './controllers/profile.controller';
 import { AuthController } from './controllers/auth.controller';
 import { Campaign, CampaignSchema } from './schemas/campaign.schema';
 import { BidAdjustmentLog, BidAdjustmentLogSchema } from './schemas/bid-adjustment-log.schema';
-import { CampaignReport, CampaignReportSchema } from './schemas/report.schema';
+import { CampaignReport, CampaignReportSchema, } from './schemas/reports/report.schema';
 import { AmazonApiService } from './services/amazon/amazon-api.service';
 import { BidService } from './services/amazon/bid.service';
 import { CronService } from './services/cron.service';
@@ -33,6 +33,9 @@ import { Keyword, KeywordSchema } from './schemas/keyword.schema';
 import { Target, TargetSchema } from './schemas/target.schema';
 import { Engine } from './engine/core/rule.engine';
 import { AdGroupApiService } from './services/amazon/adgroup-api.service';
+import { Profile, ProfileSchema } from './schemas/profile.schema';
+import { KeywordReport, KeywordReportSchema } from './schemas/reports/keyword-report.schema';
+import { SearchTermReport, SearchTermReportSchema } from './schemas/reports/search-term-report.schema';
 
 @Module({
   imports: [
@@ -61,6 +64,11 @@ import { AdGroupApiService } from './services/amazon/adgroup-api.service';
       { name: Ad.name, schema: AdSchema },
       { name: Keyword.name, schema: KeywordSchema },
       { name: Target.name, schema: TargetSchema },
+      { name: KeywordReport.name, schema: KeywordReportSchema },
+       { name: SearchTermReport.name, schema: SearchTermReportSchema },
+
+      { name: Profile.name, schema: ProfileSchema },
+
     ]),
     ScheduleModule.forRoot(),
   ],

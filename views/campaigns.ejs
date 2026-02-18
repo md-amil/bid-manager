@@ -132,7 +132,7 @@
                         <!-- <th>Spend</th> -->
                         <!-- <th>Clicks</th> 
                         <th>Impressions</th> -->
-                        <th>ROI</th>
+                        <!-- <th>ROI</th> -->
                         <th>Status</th>
                         <th>Last Adjusted</th>
                         <th>Action</th>
@@ -161,12 +161,12 @@
                             <!-- <td>$<%= campaign.spend%></td> -->
                             <!-- <td><%= campaign.clicks %></td>
                             <td><%= campaign.impressions %></td> -->
-                            <td>
+                            <!-- <td>
                                 <% const roi = campaign.roi || (campaign.spend > 0 ? campaign.sales / campaign.spend : 0); %>
                                 <span class="roi-badge <%= roi >= 3 ? 'high' : roi <= 1 ? 'low' : 'medium' %>">
                                     <%= roi %>
                                 </span>
-                            </td>
+                            </td> -->
                             <td>
                                 <span class="status-badge <%= campaign.state.toLowerCase() %>">
                                     <%= campaign.state %>
@@ -228,28 +228,161 @@
     }
     
     async function syncCampaigns() {
-        if (!confirm('Sync campaign data from Amazon?')) return;
-        
-        try {
-            const response = await fetch('/api/campaigns/sync', { method: 'POST', withCredentials: true });
-            const result = await response.json();
-            alert(result.message);
-            location.reload();
-        } catch (error) {
-            alert('Error syncing campaigns: ' + error.message);
-        }
+        // Show custom confirmation modal
+        showConfirmationModal(
+            'Confirm Sync from Amazon', 
+            'Sync campaign data from Amazon? This will fetch the latest campaign information.',
+            async () => {
+                // Show loading indicator
+                const syncBtn = document.querySelector('button[onclick="syncCampaigns()"]');
+                const originalText = syncBtn.innerHTML;
+                syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+                syncBtn.disabled = true;
+                
+                try {
+                    const response = await fetch('/api/campaigns/sync', { method: 'POST', withCredentials: true });
+                    const result = await response.json();
+                    
+                    // Show notification
+                    showNotification(result.message || 'Campaign sync initiated', 'success');
+                    
+                    // Reload page after a delay to show updated data
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } catch (error) {
+                    showNotification('Error syncing campaigns: ' + error.message, 'error');
+                } finally {
+                    // Restore button
+                    syncBtn.innerHTML = originalText;
+                    syncBtn.disabled = false;
+                }
+            }
+        );
     }
 
     async function adjustBids() {
-        if (!confirm('Manually trigger bid adjustment for all campaigns?')) return;
-        try {
-            const response = await fetch('/api/campaigns/adjust-bids', { method: 'POST',withCredentials: true });
-            const result = await response.json();
-            alert(result.message);
-            location.reload();
-        } catch (error) {
-            alert('Error adjusting bids: ' + error.message);
+        // Show custom confirmation modal
+        showConfirmationModal(
+            'Confirm Bid Adjustment', 
+            'Manually trigger bid adjustment for all campaigns? This will analyze performance and adjust bids automatically.',
+            async () => {
+                // Show loading indicator
+                const adjustBtn = document.querySelector('button[onclick="adjustBids()"]');
+                const originalText = adjustBtn.innerHTML;
+                adjustBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adjusting...';
+                adjustBtn.disabled = true;
+                
+                try {
+                    const response = await fetch('/api/campaigns/adjust-bids', { method: 'POST',withCredentials: true });
+                    const result = await response.json();
+                    
+                    // Show notification
+                    showNotification(result.message || 'Bid adjustment initiated', 'success');
+                    
+                    // Reload page after a delay to show updated data
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } catch (error) {
+                    showNotification('Error adjusting bids: ' + error.message, 'error');
+                } finally {
+                    // Restore button
+                    adjustBtn.innerHTML = originalText;
+                    adjustBtn.disabled = false;
+                }
+            }
+        );
+    }
+    
+    // Confirmation Modal Functions
+    function showConfirmationModal(title, message, onConfirm) {
+        // Remove any existing modals
+        const existingModal = document.querySelector('.confirmation-modal');
+        if (existingModal) existingModal.remove();
+        
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.className = 'confirmation-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>${title}</h3>
+                    <button class="modal-close" onclick="closeConfirmationModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <p>${message}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+                    <button class="btn btn-danger" onclick="confirmAction()">Confirm</button>
+                </div>
+            </div>
+        `;
+        
+        // Add to document
+        document.body.appendChild(overlay);
+        document.body.appendChild(modal);
+        
+        // Store the confirm callback
+        window.confirmationCallback = onConfirm;
+    }
+    
+    function closeConfirmationModal() {
+        const modal = document.querySelector('.confirmation-modal');
+        const overlay = document.querySelector('.modal-overlay');
+        
+        if (modal) modal.remove();
+        if (overlay) overlay.remove();
+        
+        // Clean up callback
+        delete window.confirmationCallback;
+    }
+    
+    function confirmAction() {
+        if (window.confirmationCallback) {
+            window.confirmationCallback();
         }
+        closeConfirmationModal();
+    }
+    
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+        const modal = document.querySelector('.confirmation-modal');
+        const overlay = document.querySelector('.modal-overlay');
+        
+        if (overlay && e.target === overlay) {
+            closeConfirmationModal();
+        }
+    });
+    
+    // Notification function
+    function showNotification(message, type = 'info') {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+        `;
+        
+        // Add to top of body
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
     }
 </script>
 

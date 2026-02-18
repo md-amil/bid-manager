@@ -7,8 +7,10 @@ import { AmazonApiService } from 'src/services/amazon/amazon-api.service';
 import { SyncProducer } from 'src/queue/producer/sync.producer';
 import { ReportProducer } from 'src/queue/producer/report.producer';
 import { BidService } from 'src/services/amazon/bid.service';
-import { ReportDocument } from 'src/schemas/report.schema';
+import { ReportDocument } from 'src/schemas/reports/report.schema';
 import { CampaignApiService } from 'src/services/amazon/campaign-api.service';
+import { BidProducer } from 'src/queue/producer/bid.producer';
+import { CampaignService } from 'src/services/campaign.service';
 
 
 @Controller('api/campaigns')
@@ -18,18 +20,18 @@ export class CampaignController {
     private campaignApi: CampaignApiService,
     private readonly syncProducer: SyncProducer,
     private readonly reportProducer: ReportProducer,
-    private readonly bidService: BidService,
-
+    private readonly bidProducer: BidProducer,
+    private readonly campaignService: CampaignService,
+    // private readonly bidService: BidService,
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     @InjectModel(BidAdjustmentLog.name) private bidLogModel: Model<BidAdjustmentLogDocument>,
-    // @InjectConnection() private readonly connection: Connection,
   ) { }
 
   @Get()
-  async getAllCampaigns(@Req() request: Request) {
-    console.log({ request })
-    return this.campaignModel.find({}).exec();
-    return await this.campaignApi.getCampaigns();
+  async getAllCampaigns(@Req() request: any) {
+    const scopeId = request.session.selectedProfile?.profileId
+    return this.campaignModel.find({ scopeId }).exec();
+    // return await this.campaignApi.getCampaigns();
   }
 
   @Post()
@@ -40,21 +42,26 @@ export class CampaignController {
 
   @Post('sync')
   async syncCampaigns(@Request() req: any) {
-    console.log(req.session.selectedProfile, 'session')
-    const job = await this.syncProducer.syncCampaignData(req.session.selectedProfile.profileId);
-    return { message: 'Campaign sync initiated', job: job.id };
+    const scopeId = req.session.selectedProfile?.profileId;
+    const job = await this.syncProducer.syncCampaignData(scopeId);
+    // const reportJob = await this.reportProducer.generateReport(scopeId);
+    return { message: 'Campaign sync initiated' };
   }
 
   @Post('adjust-bids')
   async adjustBids(@Request() req: any) {
-    const profile = req.session.selectedProfile
-    if (!profile) return { message: 'NO Profile found' };
-    const response = await this.reportProducer.generateReport(req.session.selectedProfile.profileId);
-    return { message: 'Bid adjustment completed', ack: response?.id };
+    const profile = req.session.selectedProfile?.profileId
+    const campaigns = await this.campaignService.getCampaigns(profile)
+    const campaignIds = campaigns.map(({ campaignId }) => campaignId)
+    const budgetUsages = await this.campaignApi.getBudgetUses(['93618166928305'], profile)
+    console.log(campaigns.length, "campaign length",budgetUsages.length)
+    await this.bidProducer.scheduleBidAdjustment(campaigns,budgetUsages[0])
+    return { message: 'Bid adjustment scheduled' };
   }
 
   @Get(':id')
   async getCampaign(@Param('id') id: string) {
+
     return await this.campaignModel.findOne({ campaignId: id }).exec();
   }
 

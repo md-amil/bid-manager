@@ -9,7 +9,7 @@ export class OptimizationLog {
     entityType: 'CAMPAIGN' | 'AD_GROUP' | 'KEYWORD'
 
     @Prop({ required: true })
-    entityId: number
+    entityId: string
 
     @Prop({ required: true })
     type: 'BID_UPDATE' | 'BUDGET_UPDATE'  
@@ -26,8 +26,6 @@ export class OptimizationLog {
 
     @Prop({ required: false })
     utilization:number
-
-
 
     @Prop({ required: false })
     adjustmentPercentage: number;

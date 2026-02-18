@@ -1,6 +1,6 @@
 import { IRule } from "../core/rule.type";
 
-export const highAcosRule: IRule= {
+export const highAcosRule: IRule = {
     id: 'HIGH_ACOS_CONTROL',
     priority: 80,
     appliesTo: 'CAMPAIGN',

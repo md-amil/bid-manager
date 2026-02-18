@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { AmazonApiService,  } from "./amazon-api.service";
+import { AmazonApiService, ReportPayload, } from "./amazon-api.service";
 
 export interface ICampaignFilter {
   state?: string[];
@@ -61,21 +61,15 @@ const CAMPAIGN_MATRICS = [
   "campaignBudgetAmount"
 ];
 
-interface ReportPayload {
-  scopeId: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-}
 
 @Injectable()
-export class CampaignApiService extends AmazonApiService{
- async getCampaigns(scopeId: string = this.scopeId, filter = {} as ICampaignFilter) {
+export class CampaignApiService extends AmazonApiService {
+  async getCampaigns(scopeId: string = this.scopeId, filter = {} as ICampaignFilter) {
     try {
       const campaigns = await this.httpClient.post(`/sp/campaigns/list`,
-        this.filterBuilder(filter), {
-        ...this.scopeBuilder(scopeId)
-      });
+        this.filterBuilder(filter),
+        this.scopeBuilder(scopeId)
+      );
       return campaigns.data?.campaigns;
     } catch (error) {
       this.logger.error('Failed to get campaign performance report', error.response?.data);
@@ -83,41 +77,52 @@ export class CampaignApiService extends AmazonApiService{
     }
   }
 
-   async generateReport(payload: ReportPayload) {
+  async updateCampaign(campaignId: string, data: any, scopeId: string = this.scopeId) {
     try {
-      const response = await this.httpClient.post(
-        '/reporting/reports',
-        {
-          "configuration": {
-            "adProduct": "SPONSORED_PRODUCTS",
-            "reportTypeId": "spCampaigns",
-            "groupBy": ["campaign"],
-            "columns": CAMPAIGN_MATRICS,
-            "timeUnit": "DAILY",
-            "format": "GZIP_JSON"
-          },
-          ...payload,
-        },
-        {
-          ...this.scopeBuilder(payload.scopeId)
-        }
-      );
+      const response = await this.httpClient.put(`/sp/campaigns`, data, {
+        ...this.scopeBuilder(scopeId)
+      });
       return response.data;
     } catch (error) {
-      this.logger.error('Failed to generate report', error.response?.data || error.message);
+      this.logger.error(`Failed to update campaign ${campaignId}`, error.response?.data || error.message);
       throw error;
     }
   }
 
-  async getReports(reportId: string){
+  async generateCampaignReport(payload: ReportPayload) {
+    return this.generateReport(payload, {
+      reportTypeId: 'spCampaigns',
+      groupBy: ["campaign"],
+      columns: CAMPAIGN_MATRICS
+    });
+  }
+
+  async getReports(reportId: string) {
     try {
       const response = await this.httpClient.get(`/reporting/reports/${reportId}`, {
-          ...this.scopeBuilder()
-        });
+        ...this.scopeBuilder()
+      });
       return response.data;
     } catch (error) {
       this.logger.error('Failed to get report', error.response?.data || error.message);
       throw error;
     }
   }
+
+  async getBudgetUses(campaignIds: string[],scopeId: string = this.scopeId, ) {
+    try {
+      const response = await this.httpClient.post(`/sp/campaigns/budget/usage`, {
+        campaignIds: campaignIds
+      }, this.scopeBuilder(scopeId)
+      )
+      console.log(response.data)
+      return response.data.success;
+    } catch (error) {
+      console.log(error,"data")
+      this.logger.error(`Failed to get budget uses for campaign ${campaignIds.join(',')}`, error);
+      throw error;
+    }
+  }
+
+
 }

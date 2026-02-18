@@ -36,12 +36,6 @@ export class AmazonMapper {
       type,
       scopeId,
       ...a
-      // amazonAdId: a.adId,
-      // campaignId,
-      // adGroupId,
-      // asin: a.asin,
-      // status: a.state,
-      // rawAmazonData: a,
     };
   }
   static target(a: any,  scopeId: string,type:-1|1 = 1) {
@@ -52,11 +46,10 @@ export class AmazonMapper {
     };
   }
 
-  static profile(p: any) {
+  static profile(p: any,organisationId:string) {
     return {
-      profileId: p.profileId,
-      sellerName: p.sellerName,
-      marketplaceId: p.marketplaceId,
+      organisationId,
+      ...p
     };
   }
 

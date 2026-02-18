@@ -9,6 +9,9 @@ export class Target {
   @Prop({ required: true, unique: true, index: true })
   targetId: string;
 
+  @Prop({ required: true,  index: true })
+  scopeId: string;
+
   @Prop({ required: true, index: true })
   campaignId: string;
 

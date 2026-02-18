@@ -1,0 +1,29 @@
+{
+  "name": "amazon-ad-manager",
+  "version": "1.0.0",
+  "description": "Automated Amazon Ads campaign optimization system with 20+ business rules",
+  "main": "amazon-ad-manager.js",
+  "scripts": {
+    "test": "node test-scenarios.js",
+    "example": "node example-usage.js",
+    "start": "node workflow.js"
+  },
+  "keywords": [
+    "amazon",
+    "advertising",
+    "ads",
+    "optimization",
+    "bid",
+    "budget",
+    "acos"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -11,8 +11,15 @@ export class AmazonSyncProcessor extends WorkerHost {
     }
 
     async process(job: Job, token?: string): Promise<any> {
-        const res = await this.syncService.syncAll(job.data.scopeId);
-        return res
+        const scopeId = job.data.scopeId;
+        await this.syncService.syncCampains(scopeId)
+        await this.syncService.syncAdGroups(scopeId)
+        await this.syncService.syncAds(scopeId)
+        await this.syncService.syncKeywards(scopeId)
+        await this.syncService.syncNegativeKeywards(scopeId)
+        await this.syncService.syncTargets(scopeId)
+        await this.syncService.syncNegativeTargets(scopeId)
+        await this.syncService.syncProfile('')
     }
 
     @OnWorkerEvent('active')
@@ -26,7 +33,7 @@ export class AmazonSyncProcessor extends WorkerHost {
     onError(error: any) {
         console.error('Worker error:', error);
     }
-    
+
     @OnWorkerEvent('completed')
     onComplete(job: Job) {
         console.log(

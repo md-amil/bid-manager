@@ -1,7 +1,19 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
-import axios, { AxiosInstance, head } from 'axios';
+import axios, { AxiosInstance } from 'axios';
+
+export interface ReportResponse {
+  reportId: string;
+  status: string;
+  url?: string;
+  name?: string;
+  configuration: {
+    reportTypeId: 'spCampaigns'|'spKeywords'|'spSearchTerm'
+  };
+  startDate?: string;
+  endDate?: string;
+}
+
 
 export interface TokenResponse {
   access_token: string;
@@ -12,6 +24,7 @@ export interface TokenResponse {
 
 
 export interface IFilter {
+  nextToken?: string;
   state?: string[];
   campaignId?: string[];
   adGroupId?: string[];
@@ -20,8 +33,22 @@ export interface IFilter {
 }
 
 
+export interface ReportPayload {
+  scopeId: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface ReportConfig {
+  scopeId?: string;
+  reportTypeId: 'spCampaigns' | 'spKeywords'| 'spSearchTerm';
+  groupBy: string[];
+  columns: string[];
+}
+
 export interface AmazonProfile {
-  profileId: number;
+  profileId: string;
   countryCode: string;
   currencyCode: string;
   dailyBudget?: number;
@@ -53,6 +80,9 @@ export class AmazonApiService {
     this.clientSecret = this.configService.get<string>('AMAZON_CLIENT_SECRET') || '';
     this.refreshToken = this.configService.get<string>('AMAZON_REFRESH_TOKEN') || '';
     this.scopeId = this.configService.get<string>('AMAZON_PROFILE_ID') || '';
+    this.accessToken = this.configService.get('ACCESS_TOKEN') || ''
+    this.tokenExpiresAt = +this.configService.get('TOKEN_EXPIRY')
+
     this.tokenUrl = this.configService.get<string>('AMAZON_TOKEN_URL', 'https://api.amazon.com/auth/o2/token');
     if (!this.clientId || !this.clientSecret || !this.refreshToken || !this.scopeId) {
       this.logger.warn('Amazon API credentials not configured. Please set AMAZON_CLIENT_ID, AMAZON_CLIENT_SECRET, AMAZON_REFRESH_TOKEN, and AMAZON_PROFILE_ID in your .env file');
@@ -60,16 +90,16 @@ export class AmazonApiService {
     this.httpClient = this.createClient();
   }
 
-  get headers(){
+  get headers() {
     return {
-        'campaigns': 'application/vnd.spcampaign.v3+json',
-        'adGroups': 'application/vnd.spadGroup.v3+json',
-        'productAds': 'application/vnd.spproductAd.v3+json',
-        'keywords': 'application/vnd.spkeyword.v3+json',
-        'negativeKeywords':'application/vnd.spnegativeKeyword.v3+json',
-        'targets':'application/vnd.sptargetingClause.v3+json',
-        'negativeTargets':'application/vnd.spnegativeTargetingClause.v3+json'
-      }
+      'campaigns': 'application/vnd.spcampaign.v3+json',
+      'adGroups': 'application/vnd.spadGroup.v3+json',
+      'productAds': 'application/vnd.spproductAd.v3+json',
+      'keywords': 'application/vnd.spkeyword.v3+json',
+      'negativeKeywords': 'application/vnd.spnegativeKeyword.v3+json',
+      'targets': 'application/vnd.sptargetingClause.v3+json',
+      'negativeTargets': 'application/vnd.spnegativeTargetingClause.v3+json'
+    }
   }
   private createClient(session?: any) {
     const baseURL = this.configService.get<string>('AMAZON_ADVERTISING_API_URL', 'https://advertising-api-eu.amazon.com');
@@ -86,7 +116,11 @@ export class AmazonApiService {
       const accept = this.headers[request.url!.split('/')[2]] ?? 'application/json'
 
       if (!this.accessToken || Date.now() >= this.tokenExpiresAt) {
-        await this.refreshAccessToken();
+        const data = await this.refreshAccessToken();
+        this.accessToken = data.access_token;
+        console.log("token will expire in ", data.expires_in)
+        this.tokenExpiresAt = Date.now() + (data.expires_in - 300) * 1000;
+        console.log(this.tokenExpiresAt)
       }
       request.headers['Authorization'] = `Bearer ${this.accessToken}`
       request.headers['Content-Type'] = accept
@@ -96,7 +130,7 @@ export class AmazonApiService {
     return client
   }
 
-  private async refreshAccessToken(): Promise<void> {
+   async refreshAccessToken() {
     try {
       const params = new URLSearchParams({
         grant_type: 'refresh_token',
@@ -114,12 +148,12 @@ export class AmazonApiService {
           },
         }
       );
-      this.accessToken = response.data.access_token;
-      this.tokenExpiresAt = Date.now() + (response.data.expires_in - 300) * 1000;
+      console.log("newly created access token", response.data)
       this.logger.log('Access token refreshed successfully');
+      return response.data
     } catch (error) {
       this.logger.error('Failed to refresh access token', error.response?.data || error.message);
-      // throw new Error('Failed to authenticate with Amazon Advertising API');
+      throw new Error('Failed to authenticate with Amazon Advertising API');
     }
   }
 
@@ -134,13 +168,14 @@ export class AmazonApiService {
   }
 
   protected filterBuilder(filter: IFilter) {
-    return Object.keys(filter).reduce((pay, key) => {
+    const { nextToken, ...f } = filter
+    return Object.keys(f).reduce((pay, key) => {
       if (filter[key].length === 0) return pay
       pay[key + 'Filter'] = {
         include: filter[key]
       }
       return pay
-    }, {} as any)
+    }, { ...(nextToken && { nextToken }) } as any)
   }
 
   protected scopeBuilder(scopeId: string = this.scopeId) {
@@ -150,22 +185,6 @@ export class AmazonApiService {
       }
     }
   }
-
-  // async getCampaigns(scopeId: string = this.scopeId, filter = {} as IFilter) {
-  //   console.log(scopeId, 'Scope ID in getCampaigns');
-  //   try {
-  //     const campaigns = await this.httpClient.post(`/sp/campaigns/list`,
-  //       this.filterBuilder(filter), {
-  //       ...this.scopeBuilder(scopeId)
-  //     });
-  //     return campaigns.data?.campaigns;
-  //   } catch (error) {
-  //     this.logger.error('Failed to get campaign performance report', error.response?.data);
-  //     throw error;
-  //   }
-  // }
-
- 
 
   async getProductMeta(asins: string[] | string) {
     try {
@@ -179,6 +198,29 @@ export class AmazonApiService {
       return response.data
     } catch (e) {
       this.logger.error('Failed to get keywords', e.response?.data || e.message);
+    }
+  }
+
+
+  async generateReport(payload: ReportPayload, config: ReportConfig) {
+    try {
+      const response = await this.httpClient.post<ReportResponse>(
+        '/reporting/reports',
+        {
+          "configuration": {
+            "adProduct": "SPONSORED_PRODUCTS",
+            "timeUnit": "DAILY",
+            "format": "GZIP_JSON",
+            ...config
+          },
+          ...payload,
+        },
+        this.scopeBuilder(payload.scopeId)
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error('Failed to generate report', error.response?.data || error.message);
+      throw error;
     }
   }
 
@@ -217,11 +259,12 @@ export class AmazonApiService {
   //   }
   // }
 
-  async getReports(reportId: string){
+  async getReports(reportId: string) {
     try {
-      const response = await this.httpClient.get(`/reporting/reports/${reportId}`, {
-          ...this.scopeBuilder()
-        });
+      const response = await this.httpClient.get<ReportResponse>(
+        `/reporting/reports/${reportId}`,
+        this.scopeBuilder()
+      );
       return response.data;
     } catch (error) {
       this.logger.error('Failed to get report', error.response?.data || error.message);
@@ -245,34 +288,8 @@ export class AmazonApiService {
     }
   }
 
-  async getBudgetUses(campaignId: string, scopeId: string = this.scopeId) {
-    try {
-      const response = await this.httpClient.post(`/sp/campaigns/budget/usage`, {
-        campaignIds: [campaignId]
-      }, {
-        ...this.scopeBuilder(scopeId)
-      })
-      return response.data;
-    } catch (error) {
-      this.logger.error(`Failed to get budget uses for campaign ${campaignId}`, error);
-      throw error;
-    }
-  }
-
-
-  async updateCampaign(campaignId: string, data: any, scopeId: string = this.scopeId) {
-    try {
-      const response = await this.httpClient.put(`/sp/campaigns`, data, {
-        ...this.scopeBuilder(scopeId)
-      });
-      return response.data;
-    } catch (error) {
-      this.logger.error(`Failed to update campaign ${campaignId}`, error.response?.data || error.message);
-      throw error;
-    }
-  }
-
- 
+  
+  
 
   async updateProductAd(adId: string, data: any, scopeId: string = this.scopeId) {
     try {
@@ -297,168 +314,5 @@ export class AmazonApiService {
       throw error;
     }
   }
-
-
-  // private getHeaders(): Record<string, string> {
-  //   return {
-  //     'Authorization': `Bearer ${this.accessToken}`,
-  //     'Amazon-Advertising-API-Scope': this.profileId,
-  //   };
-  // }
-
-  // async getCampaignMetrics(campaignId: string, startDate: string, endDate: string) {
-  //   try {
-  //     await this.ensureValidToken();
-  //     // Amazon Advertising API endpoint for campaign metrics
-  //     const response = await this.httpClient.get(
-  //       `/v2/sp/campaigns/${campaignId}`,
-  //       {
-  //         headers: this.getHeaders(),
-  //       }
-  //     );
-
-  //     this.logger.log(`Retrieved metrics for campaign ${campaignId}`);
-  //     return response.data;
-  //   } catch (error) {
-  //     this.logger.error(`Failed to get campaign metrics for ${campaignId}`, error.response?.data || error.message);
-  //     throw error;
-  //   }
-  // }
-
-  // async getKeywordBids(campaignId: string) {
-  //   try {
-  //     // This would use Amazon Advertising API to get keyword bids
-  //     // Note: You'll need to integrate with Amazon Advertising API separately
-  //     // as it's different from SP-API
-  //     const response = await this.makeAdvertisingApiCall(
-  //       `/v2/sp/campaigns/${campaignId}/keywords`,
-  //       'GET'
-  //     );
-  //     return response;
-  //   } catch (error) {
-  //     this.logger.error(`Failed to get keyword bids for campaign ${campaignId}`, error);
-  //     throw error;
-  //   }
-  // }
-  // async updateKeywordBid(keywordId: string, newBid: number) {
-  //   try {
-  //     // Update keyword bid using Amazon Advertising API
-  //     const response = await this.makeAdvertisingApiCall(
-  //       `/v2/sp/keywords`,
-  //       'PUT',
-  //       [{
-  //         keywordId: keywordId,
-  //         bid: newBid,
-  //       }]
-  //     );
-
-  //     this.logger.log(`Updated keyword ${keywordId} bid to ${newBid}`);
-  //     return response;
-  //   } catch (error) {
-  //     this.logger.error(`Failed to update keyword bid for ${keywordId}`, error);
-  //     throw error;
-  //   }
-  // }
-
-  /**
-   * Generic method to make Amazon Advertising API calls
-   */
-  // private async makeAdvertisingApiCall(
-  //   endpoint: string,
-  //   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
-  //   data?: any,
-  //   headers?: Record<string, string>
-  // ) {
-  //   try {
-  //     await this.ensureValidToken();
-  //     const config = {
-  //       method,
-  //       url: endpoint,
-  //       headers: this.getHeaders(),
-  //       ...(data && { data }),
-  //     };
-
-  //     const response = await this.httpClient.request(config);
-  //     return response.data;
-  //   } catch (error) {
-  //     this.logger.error(`API call failed: ${method} ${endpoint}`, error.response?.data || error.message);
-  //     throw error;
-  //   }
-  // }
-
-  // async getKeywordPerformance(adGroupId: string, startDate: string, endDate: string) {
-  //   try {
-  //     const response = await this.makeAdvertisingApiCall(
-  //       '/v2/sp/keywords/report',
-  //       'POST',
-  //       {
-  //         reportDate: startDate,
-  //         segment: 'query',
-  //         metrics: 'keywordId,keyword,impressions,clicks,cost,sales,adGroupId',
-  //         filters: {
-  //           adGroupId: adGroupId,
-  //         },
-  //       }
-  //     );
-
-  //     return response;
-  //   } catch (error) {
-  //     this.logger.error(`Failed to get keyword performance for ad group ${adGroupId}`, error);
-  //     throw error;
-  //   }
-  // }
-
-  /**
-   * Get ad groups for a specific campaign
-   */
-  /**
-   * Get campaign details by campaign ID
-  //  */
-  // async getCampaignById(campaignId: string) {
-  //   try {
-  //     await this.ensureValidToken();
-
-  //     const response = await this.httpClient.post(
-  //       '/sp/campaigns/list',
-  //       {
-  //         campaignIdFilter: {
-  //           include: [campaignId]
-  //         }
-  //       },
-  //       {
-  //         headers: {
-  //           'Authorization': `Bearer ${this.accessToken}`,
-  //           'Amazon-Advertising-API-ClientId': this.clientId,
-  //           'Amazon-Advertising-API-Scope': this.profileId,
-  //           'Accept': 'application/vnd.spCampaign.v3+json',
-  //           'Content-Type': 'application/vnd.spCampaign.v3+json',
-  //         },
-  //       }
-  //     );
-
-  //     const campaigns = response.data.campaigns || [];
-  //     if (campaigns.length > 0) {
-  //       this.logger.log(`Retrieved campaign details for ${campaignId}`);
-  //       console.log(campaigns[0])
-  //       return campaigns[0];
-  //     }
-
-  //     this.logger.warn(`Campaign ${campaignId} not found`);
-  //     return null;
-  //   } catch (error) {
-  //     this.logger.error(`Failed to get campaign ${campaignId}`, error.response?.data || error.message);
-  //     throw error;
-  //   }
-  // }
-
-  /**
-   * Get product ads for a specific ad group
-   */
-
-
-  /**
-   * Get a specific profile by ID
-   */
-
 }
 

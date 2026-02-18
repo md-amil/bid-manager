@@ -1,13 +1,12 @@
-import { ReportDocument } from "src/schemas/report.schema";
+import { ReportDocument } from "src/schemas/reports/report.schema";
 import { IRule, RuleContext } from "./rule.type";
 import { buildContext } from "../utils/context.builder";
 import { rules } from "../rules";
 import { Injectable } from "@nestjs/common";
 @Injectable()
 export class Engine {
-  constructor(){
-  }
-  private  runRuleEngine(
+  constructor() { }
+  private runRuleEngine(
     rules: IRule[],
     context: RuleContext
   ) {
@@ -15,14 +14,14 @@ export class Engine {
     for (const rule of sorted) {
       if (rule.appliesTo !== context.entityType) continue;
       const result = rule.evaluate(context);
-      if (result.applied)  return {
-          entityId: context.entityId,
-          action: result.action,
-          value: result.value,
-          reason: result.reason,
-          ruleId: rule.id,
-          snapshot: context.metrics
-        };
+      if (result.applied) return {
+        entityId: context.entityId,
+        action: result.action,
+        value: result.value,
+        reason: result.reason,
+        ruleId: rule.id,
+        snapshot: context.metrics
+      };
     }
     return {
       entityId: context.entityId,
@@ -30,10 +29,9 @@ export class Engine {
       reason: 'NO_RULE_MATCHED'
     };
   }
-
-   async run(report:ReportDocument){
-   const context =  buildContext(report)
-   return this.runRuleEngine(rules,context)
+  async run(report:any,extra:any) {
+    const context = buildContext(report)
+    return this.runRuleEngine(rules, context)
   }
 }
 

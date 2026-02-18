@@ -5,25 +5,20 @@ import { Model } from 'mongoose';
 import { Campaign, CampaignDocument } from '../schemas/campaign.schema';
 import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../schemas/bid-adjustment-log.schema';
 import { OptimizationLog, OptimizationLogDocument } from '../schemas/optimization.schema';
-import { CampaignReport, ReportDocument } from '../schemas/report.schema';
-import { Keyword, KeywordDocument } from '../schemas/keyword.schema';
-import { Target, TargetDocument } from '../schemas/target.schema';
-import { AmazonApiService } from '../services/amazon/amazon-api.service';
+import { CampaignReport, ReportDocument } from '../schemas/reports/report.schema';
 import { CampaignService } from 'src/services/campaign.service';
-import { Ad, AdDocument } from 'src/schemas/ad.schema';
+import { ReportService } from 'src/services/report.service';
 
 @Controller()
 export class ViewController {
   constructor(
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
-    @InjectModel(Ad.name) private adModal: Model<AdDocument>,
     @InjectModel(BidAdjustmentLog.name) private bidLogModel: Model<BidAdjustmentLogDocument>,
     @InjectModel(OptimizationLog.name) private optimizationLogModel: Model<OptimizationLogDocument>,
     @InjectModel(CampaignReport.name) private reportModel: Model<ReportDocument>,
-    @InjectModel(Keyword.name) private keywordModel: Model<KeywordDocument>,
-    @InjectModel(Target.name) private targetModel: Model<TargetDocument>,
-    private amazonApiService: AmazonApiService,
     private campaignService: CampaignService,
+    private reportService: ReportService,
+
   ) { }
 
   @Get()
@@ -37,19 +32,22 @@ export class ViewController {
     }
 
     const selectedProfile = session.selectedProfile;
-    const campaigns = await this.campaignService.getCampaigns(session.selectedProfile.profileId);
+    const allCampaigns = await this.campaignService.getCampaigns(session.selectedProfile.profileId);
+    const campaigns = allCampaigns.filter(campaign =>
+      campaign.state?.toLowerCase() === 'enabled'
+    );
     const recentLogs = await this.bidLogModel.find().sort({ createdAt: -1 }).limit(10).exec();
+    const report = await this.campaignService.getLatestReportSum()??{}
 
     const stats = {
-      totalCampaigns: campaigns.length,
-      activeCampaigns: campaigns.filter(c => c.state === 'ENABLED').length,
-      totalSpend: campaigns.reduce((sum, c) => sum + c.spend, 0),
-      totalSales: campaigns.reduce((sum, c) => sum + c.sales, 0),
-      averageROI: 0
-      // averageROI: campaigns.length > 0 
-      //   ? campaigns.reduce((sum, c) => sum + (c.roi || 0), 0) / campaigns.length 
-      //   : 0,
+      totalCampaigns: allCampaigns.length,
+      activeCampaigns: campaigns.length,
+      totalSpend: report.totalSpend??0,
+      totalSales: report.totalSales14d??0,
+      averageROI: report.totalSales14d / report.totalSpend,
+      acos14: report.totalSpend / report.totalSales14d
     };
+
     return res.render('index', {
       campaigns,
       recentLogs,
@@ -128,9 +126,9 @@ export class ViewController {
       if (selectedPeriod === 'weekly') days = 7;
       if (selectedPeriod === 'monthly') days = 30;
     }
-
     try {
       campaign = await this.campaignService.getCampaignById(id);
+      console.log(campaign)
       adGroups = campaign.adGroups;
       let query = this.reportModel.find({
         campaignId: parseInt(id),
@@ -147,13 +145,13 @@ export class ViewController {
           impressions: reports.reduce((sum, r) => sum + (r.impressions || 0), 0),
           clicks: reports.reduce((sum, r) => sum + (r.clicks || 0), 0),
           spend: reports.reduce((sum, r) => sum + (r.spend || 0), 0),
-          cost: reports.reduce((sum, r) => sum + (r.cost || 0), 0),
-          sales14d: reports.reduce((sum, r) => sum + (r.attributedSalesSameSku14d || 0), 0),
-          costPerClick: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.costPerClick || 0), 0) / reports.length : 0,
-          clickThroughRate: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.clickThroughRate || 0), 0) / reports.length : 0,
-          roas14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.roasClicks14d || 0), 0) / reports.length : 0,
-          acos14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.acosClicks14d || 0), 0) / reports.length : 0,
-          conversions14d: reports.reduce((sum, r) => sum + (r.purchasesSameSku14d || 0), 0),
+          // cost: reports.reduce((sum, r) => sum + (r.cost || 0), 0),
+          sales14d: reports.reduce((sum, r) => sum + (r.sales14d || 0), 0),
+          costPerClick: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.spend/r.clicks || 0), 0) / reports.length : 0,
+          clickThroughRate: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.clicks / r.impressions || 0), 0) / reports.length : 0,
+          roas14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.sales14d / r.spend || 0), 0) / reports.length : 0,
+          acos14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.spend / r.sales14d * 100 || 0), 0) / reports.length : 0,
+          conversions14d: reports.reduce((sum, r) => sum + (r.purchases14d / r.clicks || 0), 0),
         };
       }
     } catch (error) {
@@ -200,16 +198,23 @@ export class ViewController {
     let campaign = null as any;
 
     const selectedTab = tab || 'ads';
-    console.log("profile", session.selectedProfile)
-
     try {
       const reps = await this.campaignService.getAdGroupBy({ adGroupId, campaignId }, ['keywords', 'ads', 'targets'])
-      console.log({ group: reps[0] })
+      // console.log({ group: reps[0] })
       if (reps.length) {
         const { ads, keywords, targets, ...adGroup } = reps[0]
+
+        // Fetch keyword reports if keywords exist
+        let keywordReports: any[] = [];
+        if (keywords && keywords.length > 0) {
+          const keywordIds = keywords.map(k => k.keywordId);
+          keywordReports = await this.reportService.getLatestKeywordReports(keywordIds);
+        }
+
         return {
           productAds: ads,
           keywords,
+          keywordReports,
           targets,
           adGroup,
           campaignId,
@@ -217,19 +222,8 @@ export class ViewController {
           profiles: session.profiles,
           selectedTab
         }
-        // 
-        // adGroup = group;
-        // productAds = ads;
-        // targets=targets
-        // // Combine all keywords (both positive and negative) for the keywords tab
-        // const allKeywords = keywords || [];
-        // keywords = allKeywords; // Show all keywords in the keywords tab
-        // negativeKeywords = []; // Keep empty for backward compatibility
       }
       console.log({ keywords: keywords.length, targets: targets.length, adGroup })
-      // Note: Negative keywords would need a separate API endpoint
-      // For now, we'll use an empty array as placeholder
-      // negativeKeywords = [];
     } catch (error) {
       console.error('Failed to fetch ad group details:', error.message);
     }
@@ -240,6 +234,7 @@ export class ViewController {
       adGroup: adGroup,
       productAds,
       keywords,
+      keywordReports: [],
       negativeKeywords,
       targets,
       selectedTab,
@@ -305,11 +300,7 @@ export class ViewController {
 
   @Get('select-profile')
   async selectProfilePage(@Session() session: Record<string, any>, @Res() res: Response) {
-    // Check if user is authenticated
-    if (!session.authenticated) {
-      return res.redirect('/auth/login');
-    }
-
+    if (!session.authenticated) return res.redirect('/auth/login');
     return res.render('select-profile', {
       title: 'Select Profile',
       profiles: session.profiles || [],
@@ -323,16 +314,10 @@ export class ViewController {
     @Session() session: Record<string, any>,
     @Res() res: Response,
   ) {
-    if (!session.authenticated || !session.profiles) {
-      return res.redirect('/auth/login');
-    }
-
+    if (!session.authenticated || !session.profiles) return res.redirect('/auth/login');
     const profile = session.profiles.find(p => p.profileId.toString() === profileId);
-
-    if (!profile) {
-      return res.redirect('/select-profile?error=profile_not_found');
-    }
-
+    if (!profile) return res.redirect('/select-profile?error=profile_not_found');
+    console.log({profile})
     session.selectedProfile = profile;
     return res.redirect('/');
   }

@@ -68,9 +68,28 @@
 
         <!-- Keywords Tab Content -->
         <% if (selectedTab === 'keywords') { %>
-        <div class="section">
+        <% 
+            const reportMap = {};
+            let latestReportDate = null;
+            if (typeof keywordReports !== 'undefined' && keywordReports) {
+                keywordReports.forEach(r => {
+                    reportMap[r._id.toString()] = r.latestReport;
+                    if (r.latestReport && (!latestReportDate || r.latestReport.date > latestReportDate)) {
+                        latestReportDate = r.latestReport.date;
+                    }
+                });
+            }
+        %>
+        <div class="section white-bg">
             <div class="section-header">
-                <h3>Keywords</h3>
+                <div>
+                    <h3 class="glow-text-green"><i class="fas fa-key"></i> Keywords Analysis</h3>
+                    <% if (latestReportDate) { %>
+                        <p class="subtitle"><i class="fas fa-clock"></i> Latest report data from: <strong><%= latestReportDate %></strong></p>
+                    <% } else { %>
+                        <p class="subtitle"><i class="fas fa-exclamation-triangle"></i> No report data available yet</p>
+                    <% } %>
+                </div>
                 <div class="keyword-filters">
                     <div class="filter-group">
                         <label for="typeFilter">
@@ -96,38 +115,36 @@
                     <table id="keywordsTable" class="keyword-table">
                         <thead>
                             <tr>
-                                <th>Keyword ID</th>
                                 <th>Keyword Text</th>
                                 <th>Match Type</th>
-                                <th>Type</th>
-                                <th>State</th>
                                 <th>Bid</th>
+                                <th>Impressions</th>
+                                <th>Clicks</th>
+                                <th>Spend</th>
+                                <th>Sales (7d)</th>
+                                <th>ACOS</th>
+                                <th>State</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% keywords.forEach(keyword => { %>
+                                <% const report = reportMap[keyword.keywordId]; %>
                                 <tr class="keyword-row" data-type="<%= keyword.type === 1 ? 'positive' : 'negative' %>">
-                                    <td><%= keyword.keywordId %></td>
-                                    <td><strong><%= keyword.keywordText || 'N/A' %></strong></td>
+                                    <td>
+                                        <div class="keyword-text-container">
+                                            <strong><%= keyword.keywordText || 'N/A' %></strong>
+                                            <span class="keyword-id-sub"><%= keyword.keywordId %></span>
+                                        </div>
+                                    </td>
                                     <td>
                                         <span class="match-type-badge <%= keyword.matchType.toLowerCase() %>">
                                             <%= keyword.matchType %>
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="type-badge <%= keyword.type === 1 ? 'positive' : 'negative' %>">
-                                            <%= keyword.type === 1 ? 'Positive' : 'Negative' %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge <%= keyword.state.toLowerCase() %>">
-                                            <%= keyword.state %>
-                                        </span>
-                                    </td>
-                                    <td>
                                         <% if (keyword.type === 1 && keyword.bid) { %>
-                                            <span class="bid-amount">$<%= parseFloat(keyword.bid).toFixed(2) %></span>
+                                            <span class="bid-amount glow-text-green">$<%= parseFloat(keyword.bid).toFixed(2) %></span>
                                         <% } else if (keyword.type === 1) { %>
                                             <span class="text-muted">N/A</span>
                                         <% } else { %>
@@ -135,15 +152,49 @@
                                         <% } %>
                                     </td>
                                     <td>
-                                        <% if (keyword.type === 1) { %>
-                                            <button class="btn-small" onclick="editKeyword('<%= keyword.keywordId %>', '<%= keyword.bid %>')">
-                                                Edit Bid
-                                            </button>
+                                        <span class="metric-val"><%= report ? (report.impressions || 0).toLocaleString() : '0' %></span>
+                                    </td>
+                                    <td>
+                                        <span class="metric-val"><%= report ? (report.clicks || 0).toLocaleString() : '0' %></span>
+                                    </td>
+                                    <td>
+                                        <span class="metric-val">$<%= report ? (report.cost || report.spend || 0).toFixed(2) : '0.00' %></span>
+                                    </td>
+                                    <td>
+                                        <span class="metric-val sales-glow">$<%= report ? (report.sales7d || 0).toFixed(2) : '0.00' %></span>
+                                    </td>
+                                    <td>
+                                        <% if (report && report.sales7d > 0) { %>
+                                            <% const acos = ((report.cost || report.spend || 0) / report.sales7d * 100).toFixed(1); %>
+                                            <span class="acos-badge <%= acos < 25 ? 'low' : (acos < 50 ? 'medium' : 'high') %>">
+                                                <%= acos %>%
+                                            </span>
+                                        <% } else if (report && (report.cost || report.spend) > 0) { %>
+                                            <span class="acos-badge high">100%+</span>
                                         <% } else { %>
-                                            <button class="btn-small btn-secondary" onclick="removeNegativeKeyword('<%= keyword.keywordId %>')">
-                                                Remove
-                                            </button>
+                                            <span class="text-muted">N/A</span>
                                         <% } %>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge <%= keyword.state.toLowerCase() %>">
+                                            <%= keyword.state %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <% if (keyword.type === 1) { %>
+                                                <button class="btn-icon" title="Edit Bid" onclick="editKeyword('<%= keyword.keywordId %>', '<%= keyword.bid %>')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn-icon" title="View History" onclick="viewKeywordHistory('<%= keyword.keywordId %>')">
+                                                    <i class="fas fa-history"></i>
+                                                </button>
+                                            <% } else { %>
+                                                <button class="btn-icon btn-danger" title="Remove" onclick="removeNegativeKeyword('<%= keyword.keywordId %>')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            <% } %>
+                                        </div>
                                     </td>
                                 </tr>
                             <% }); %>
@@ -154,10 +205,10 @@
                 <div class="empty-state">
                     <p>No keywords found for this ad group.</p>
                     <p>Keywords will appear here after they are synced from Amazon.</p>
-                    <div class="type-info">
+                    <!-- <div class="type-info">
                         <p><strong>Positive Keywords (Type = 1)</strong>: Keywords you bid on</p>
                         <p><strong>Negative Keywords (Type = -1)</strong>: Keywords to exclude</p>
-                    </div>
+                    </div> -->
                 </div>
             <% } %>
         </div>
@@ -288,8 +339,8 @@
                     <p>No targeting found for this ad group.</p>
                     <p>Targeting will appear here after they are synced from Amazon.</p>
                     <div class="type-info">
-                        <p><strong>Positive Targets (Type = 1)</strong>: Targets you bid on</p>
-                        <p><strong>Negative Targets (Type = -1)</strong>: Targets to exclude</p>
+                        <!-- <p><strong>Positive Targets (Type = 1)</strong>: Targets you bid on</p>
+                        <p><strong>Negative Targets (Type = -1)</strong>: Targets to exclude</p> -->
                         <p><strong>Auto Targeting</strong>: Amazon automatically targets relevant searches</p>
                         <p><strong>Manual Targeting</strong>: You specify exact targeting criteria</p>
                     </div>
@@ -302,7 +353,100 @@
         <!-- All keywords are now shown in the Keywords & Targeting tab with filtering -->
     </main>
     
+    <style>
+        .glow-text-green {
+            color: #2e7d32;
+            text-shadow: 0 0 8px rgba(46, 125, 50, 0.3);
+            font-weight: 700;
+        }
+        .white-bg {
+            background-color: #ffffff !important;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+        }
+        .keyword-text-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .keyword-id-sub {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+        .metric-val {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-weight: 600;
+            color: #334155;
+        }
+        .sales-glow {
+            color: #059669;
+            font-weight: 700;
+        }
+        .acos-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .acos-badge.low { background: #dcfce7; color: #166534; }
+        .acos-badge.medium { background: #fef9c3; color: #854d0e; }
+        .acos-badge.high { background: #fee2e2; color: #991b1b; }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn-icon {
+            background: #f1f5f9;
+            border: none;
+            color: #475569;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            transform: scale(1.1);
+        }
+        .btn-icon.btn-danger:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        /* Decorative pulse for latest report data */
+        @keyframes pulse-subtle {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        .report-active {
+            position: relative;
+        }
+        .report-active::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse-subtle 2s infinite;
+        }
+    </style>
+    
     <script>
+    function viewKeywordHistory(keywordId) {
+        // Mock function for now
+        alert(`Viewing history for keyword ${keywordId}`);
+    }
+    
     function editKeyword(keywordId, currentBid) {
         const newBid = prompt(`Enter new bid for keyword ${keywordId}:`, currentBid);
         

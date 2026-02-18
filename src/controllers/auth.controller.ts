@@ -15,7 +15,7 @@ export class AuthController {
   async loginPage(@Session() session: Record<string, any>, @Res() res: Response) {
     const envRefreshToken = process.env.AMAZON_REFRESH_TOKEN;
     const profileId = process.env.AMAZON_PROFILE_ID;
-
+    const accessToken = process.env.ACCESS_TOKEN
     if (envRefreshToken && !session.authenticated) {
       this.logger.log('Refresh token found in environment, attempting auto-login');
       try {
@@ -37,7 +37,6 @@ export class AuthController {
         this.logger.error('Auto-login failed, showing login page', error);
       }
     }
-
     // If already authenticated, redirect to select profile
     if (session.authenticated) {
       return res.redirect('/select-profile');
@@ -83,13 +82,8 @@ export class AuthController {
     try {
       // Exchange code for tokens
       const tokens = await this.authService.exchangeCodeForTokens(code);
-
-
       // Get user profiles
       const profiles = await this.authService.getProfiles(tokens.access_token);
-      console.log(tokens, "token")
-      console.log(profiles, "profiles")
-
       // Store in session
       session.accessToken = tokens.access_token;
       session.refreshToken = tokens.refresh_token;

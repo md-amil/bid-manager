@@ -2,11 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Campaign, CampaignDocument } from '../../schemas/campaign.schema';
-import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../../schemas/bid-adjustment-log.schema';
+// import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../../schemas/bid-adjustment-log.schema';
 import { ConfigService } from '@nestjs/config';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
-import { ReportDocument } from 'src/schemas/report.schema';
+// import { InjectQueue } from '@nestjs/bullmq';
+// import { Queue } from 'bullmq';
+import { ReportDocument } from 'src/schemas/reports/report.schema';
 import { OptimizationLog } from 'src/schemas/optimization.schema';
 import { REASON } from 'src/utils/constant';
 
@@ -20,6 +20,7 @@ type BudgetDecision = {
   action: 'INCREASE' | 'DECREASE' | 'NO_CHANGE';
   utilization: number;
   reason: string;
+  signals:string[];
 };
 
 @Injectable()
@@ -29,7 +30,6 @@ export class BidService {
   constructor(
     @InjectModel(OptimizationLog.name) private optimization: Model<OptimizationLog>,
     private configService: ConfigService,
-
     // @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     // @InjectModel(BidAdjustmentLog.name) private bidLogModel: Model<BidAdjustmentLogDocument>,
     // @InjectQueue('campaignSync') private syncQueue: Queue,
@@ -188,82 +188,82 @@ export class BidService {
   //   await log.save();
   // }
 
-  calculateCampaignBudget(
-    data: ReportDocument,
-  ): BudgetDecision {
-    const {
-      targetAcos,
-      minUtil,
-      increasePct,
-      decreasePct,
-    } = this.config;
+  // calculateCampaignBudget(
+  //   data: ReportDocument,
+  // ): BudgetDecision {
+  //   const {
+  //     targetAcos,
+  //     minUtil,
+  //     increasePct,
+  //     decreasePct,
+  //   } = this.config;
 
-    const currentBudget = data.campaignBudgetAmount;
-    const spend14d = data.spend ?? data.cost ?? 0;
-    const acos14d = data.acosClicks14d ?? null;
+  //   const currentBudget = data.campaignBudgetAmount;
+  //   const spend14d = data.spend ?? 0;
+  //   const acos14d = (data.spend / data.sales14d * 100 || 0) ?? null;
 
-    if (!currentBudget || currentBudget <= 0) {
-      return {
-        campaignId: data.campaignId,
-        currentBudget: 0,
-        newBudget: 0,
-        action: 'NO_CHANGE',
-        utilization: 0,
-        reason: 'NO_BUDGET_SET',
-      };
-    }
+  //   if (!currentBudget || currentBudget <= 0) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget: 0,
+  //       newBudget: 0,
+  //       action: 'NO_CHANGE',
+  //       utilization: 0,
+  //       reason: 'NO_BUDGET_SET',
+  //     };
+  //   }
 
-    const utilization = spend14d / (currentBudget * 14);
-    if (utilization < minUtil) {
-      return {
-        campaignId: data.campaignId,
-        currentBudget,
-        newBudget: currentBudget,
-        action: 'NO_CHANGE',
-        utilization,
-        reason: 'NOT_BUDGET_LIMITED',
-      };
-    }
-    if (acos14d !== null && acos14d <= targetAcos * 0.7) {
-      return {
-        campaignId: data.campaignId,
-        currentBudget,
-        newBudget: +(currentBudget * (1 + increasePct)).toFixed(2),
-        action: 'INCREASE',
-        utilization,
-        reason: 'LOW_ACOS_HIGH_UTILIZATION',
-      };
-    }
+  //   const utilization = spend14d / (currentBudget * 14);
+  //   if (utilization < minUtil) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: currentBudget,
+  //       action: 'NO_CHANGE',
+  //       utilization,
+  //       reason: 'NOT_BUDGET_LIMITED',
+  //     };
+  //   }
+  //   if (acos14d !== null && acos14d <= targetAcos * 0.7) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: +(currentBudget * (1 + increasePct)).toFixed(2),
+  //       action: 'INCREASE',
+  //       utilization,
+  //       reason: 'LOW_ACOS_HIGH_UTILIZATION',
+  //     };
+  //   }
 
-    if (acos14d !== null && acos14d >= targetAcos * 1.5) {
-      return {
-        campaignId: data.campaignId,
-        currentBudget,
-        newBudget: +(currentBudget * (1 - decreasePct)).toFixed(2),
-        action: 'DECREASE',
-        utilization,
-        reason: 'HIGH_ACOS_HIGH_UTILIZATION',
-      };
-    }
+  //   if (acos14d !== null && acos14d >= targetAcos * 1.5) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: +(currentBudget * (1 - decreasePct)).toFixed(2),
+  //       action: 'DECREASE',
+  //       utilization,
+  //       reason: 'HIGH_ACOS_HIGH_UTILIZATION',
+  //     };
+  //   }
 
-    return {
-      campaignId: data.campaignId,
-      currentBudget,
-      newBudget: currentBudget,
-      action: 'NO_CHANGE',
-      utilization,
-      reason: 'WITHIN_TARGET_RANGE',
-    };
-  }
+  //   return {
+  //     campaignId: data.campaignId,
+  //     currentBudget,
+  //     newBudget: currentBudget,
+  //     action: 'NO_CHANGE',
+  //     utilization,
+  //     reason: 'WITHIN_TARGET_RANGE',
+  //   };
+  // }
 
   computeBid(report: ReportDocument) {
     const roi = this.getRoi(report, '7d');
     const acos = this.getAcos(report, '7d');
-    
-    const updated = this.calculateCampaignBudget(report)
-    const { campaignId, currentBudget, newBudget, action, utilization, reason } = updated
-    this.optimization.create({ entityType: 'CAMPAIGN', entityId: campaignId, oldValue: currentBudget, newValue: newBudget, type: 'BUDGET_UPDATE', action, utilization, reason })
-    console.log("campaign bid finally adjusted")
+
+    // const updated = this.calculateCampaignBudget(report)
+    // const { campaignId, currentBudget, newBudget, action, utilization, reason } = updated
+    // this.optimization.create({ entityType: 'CAMPAIGN', entityId: campaignId, oldValue: currentBudget, newValue: newBudget, type: 'BUDGET_UPDATE', action, utilization, reason })
+    // console.log("campaign bid finally adjusted")
     // let newBid = campaign.currentBid;
     // let reason = 'No adjustment needed';
     // let percentage = 0;
@@ -285,16 +285,16 @@ export class BidService {
     // newBid = Math.round(newBid * 100) / 100; // Round to 2 decimal places
 
     // return { newBid, reason, percentage };
-    return updated
+    // return updated
   }
 
 
 
   budgetDisicion(report: ReportDocument) {
-    const acos14d = report.acosClicks14d
     const spend = report.spend ?? 0;
     const clicks = report.clicks ?? 0;
     const sales = report.sales14d ?? 0;
+    const acos14d = (spend / sales * 100 || 0)
     const budget = report.campaignBudgetAmount ?? 0
     const { targetAcos, minUtil, increasePct, decreasePct, } = this.config;
 
@@ -305,7 +305,7 @@ export class BidService {
         newBudget: 0,
         action: 'NO_CHANGE',
         utilization: 0,
-        reason:REASON['no-change'],
+        reason: REASON['no-change'],
       };
     }
 
@@ -319,5 +319,177 @@ export class BidService {
       }
     }
   }
+
+  // budgetCalculator(
+  //   data: ReportDocument,
+  // ): BudgetDecision {
+  //   const {
+  //     targetAcos,
+  //     minUtil,
+  //     increasePct,
+  //     decreasePct,
+  //   } = this.config;
+
+  //   const currentBudget = data.campaignBudgetAmount ?? 0;
+  //   const spend14d = data.spend ?? 0;
+  //   const sales14d = data.sales14d ?? 0;
+
+  //   const acos14d =
+  //     sales14d > 0 ? (spend14d / sales14d) * 100 : null;
+
+  //   if (!currentBudget || currentBudget <= 0) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget: 0,
+  //       newBudget: 0,
+  //       action: 'NO_CHANGE',
+  //       utilization: 0,
+  //       signals: [],
+  //       reason: 'NO_BUDGET_SET',
+  //     };
+  //   }
+
+  //   const utilization = spend14d / (currentBudget * 14);
+
+  //   /* ---------------------------------------------
+  //      1. LAUNCH PHASE (AUTO only)
+  //   ----------------------------------------------*/
+  //   if (data.isAutoCampaign && data.isNewProduct) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: currentBudget,
+  //       action: 'NO_CHANGE',
+  //       utilization,
+  //       signals: ['RUN_FULL_AUTO_TARGETING'],
+  //       reason: 'NEW_PRODUCT_LAUNCH_PHASE',
+  //     };
+  //   }
+
+  //   /* ---------------------------------------------
+  //      2. NOT BUDGET LIMITED
+  //   ----------------------------------------------*/
+  //   if (utilization < minUtil) {
+  //     // Good CVR but limited impressions → bid unlock signal
+  //     if (data.lowImpressions && sales14d > 0) {
+  //       return {
+  //         campaignId: data.campaignId,
+  //         currentBudget,
+  //         newBudget: currentBudget,
+  //         action: 'NO_CHANGE',
+  //         utilization,
+  //         signals: ['INCREASE_BIDS_25'],
+  //         reason: 'GOOD_CONVERSION_LOW_IMPRESSIONS',
+  //       };
+  //     }
+
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: currentBudget,
+  //       action: 'NO_CHANGE',
+  //       utilization,
+  //       signals: [],
+  //       reason: 'NOT_BUDGET_LIMITED',
+  //     };
+  //   }
+
+  //   /* ---------------------------------------------
+  //      3. PROFITABLE AUTO CAMPAIGN WITH SEARCH TERMS
+  //   ----------------------------------------------*/
+  //   if (
+  //     data.isAutoCampaign &&
+  //     acos14d !== null &&
+  //     acos14d <= targetAcos &&
+  //     data.hasWinningSearchTerms
+  //   ) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: +(currentBudget * 1.25).toFixed(2),
+  //       action: 'INCREASE',
+  //       utilization,
+  //       signals: ['MOVE_TERMS_TO_MANUAL'],
+  //       reason: 'AUTO_CAMPAIGN_PROFITABLE_SEARCH_TERMS',
+  //     };
+  //   }
+
+  //   /* ---------------------------------------------
+  //      4. STRONGLY PROFITABLE (SCALE)
+  //   ----------------------------------------------*/
+  //   if (acos14d !== null && acos14d <= targetAcos * 0.7) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: +(currentBudget * (1 + increasePct)).toFixed(2),
+  //       action: 'INCREASE',
+  //       utilization,
+  //       signals: [],
+  //       reason: 'LOW_ACOS_HIGH_UTILIZATION',
+  //     };
+  //   }
+
+  //   /*---------------------------------------------
+  //      5. HIGH SPEND, POOR CONVERSION
+  //     ----------------------------------------------*/
+  //   if (
+  //     spend14d > currentBudget * 7 &&
+  //     sales14d === 0
+  //   ) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: +(currentBudget * 0.75).toFixed(2),
+  //       action: 'DECREASE',
+  //       utilization,
+  //       signals: ['REVIEW_SEARCH_TERMS', 'ADD_NEGATIVES'],
+  //       reason: 'HIGH_SPEND_NO_SALES',
+  //     };
+  //   }
+
+  //   /* ---------------------------------------------
+  //      6. LISTING CONVERSION ISSUE
+  //   ----------------------------------------------*/
+  //   if (data.listingQualityIssue) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: currentBudget,
+  //       action: 'NO_CHANGE',
+  //       utilization,
+  //       signals: ['REDUCE_BIDS_50'],
+  //       reason: 'LISTING_CONVERSION_ISSUE',
+  //     };
+  //   }
+
+  //   /* ---------------------------------------------
+  //      7. HIGH ACOS (CONTROL)
+  //   ----------------------------------------------*/
+  //   if (acos14d !== null && acos14d >= targetAcos * 1.5) {
+  //     return {
+  //       campaignId: data.campaignId,
+  //       currentBudget,
+  //       newBudget: +(currentBudget * (1 - decreasePct)).toFixed(2),
+  //       action: 'DECREASE',
+  //       utilization,
+  //       signals: [],
+  //       reason: 'HIGH_ACOS_HIGH_UTILIZATION',
+  //     };
+  //   }
+
+  //   /* ---------------------------------------------
+  //      DEFAULT
+  //   ----------------------------------------------*/
+  //   return {
+  //     campaignId: data.campaignId,
+  //     currentBudget,
+  //     newBudget: currentBudget,
+  //     action: 'NO_CHANGE',
+  //     utilization,
+  //     signals: [],
+  //     reason: 'WITHIN_TARGET_RANGE',
+  //   };
+  // }
+
 
 }
