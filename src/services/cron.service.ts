@@ -1,43 +1,69 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { BidService } from './amazon/bid.service';
+import { Cron } from '@nestjs/schedule';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
+import { Campaign, CampaignDocument } from 'src/schemas/campaign.schema';
+import { SyncProducer } from 'src/queue/producer/sync.producer';
+import { ReportProducer } from 'src/queue/producer/report.producer';
 
 @Injectable()
 export class CronService {
   private readonly logger = new Logger(CronService.name);
 
-  constructor(private bidService: BidService) {}
+  constructor(
+    private readonly syncProducer: SyncProducer,
+    private readonly reportProducer: ReportProducer,
+    @InjectModel(Campaign.name)
+    private readonly campaignModel: Model<CampaignDocument>,
+  ) {}
 
-  // Run every 4 hours
-  // @Cron('0 */4 * * *', {
-  //   name: 'bid-adjustment',
-  //   timeZone: 'America/New_York',
-  // })
-  // async handleBidAdjustmentCron() {
-  //   this.logger.log('Starting scheduled bid adjustment job');
-  //   try {
-  //     // First, sync latest campaign data from Amazon
-  //     // await this.bidAdjustmentService.syncCampaignData();
-  //     // Then adjust bids based on ROI
-  //     // await this.bidService.adjustBidsForAllCampaigns();
-  //     this.logger.log('Scheduled bid adjustment job completed successfully');
-  //   } catch (error) {
-  //     this.logger.error('Error in scheduled bid adjustment job', error);
-  //   }
-  // }
+  /**
+   * Daily data sync at 02:00 UTC.
+   * Fetches all active profile scope IDs from the DB and queues a sync job for each.
+   */
+  @Cron('0 2 * * *', { name: 'daily-sync', timeZone: 'UTC' })
+  async handleDailySync(): Promise<void> {
+    this.logger.log('Starting daily campaign data sync');
+    try {
+      const scopeIds = await this.campaignModel.distinct('scopeId').exec();
+      this.logger.log(`Syncing ${scopeIds.length} profile(s)`);
 
-  // Optional: Daily sync at midnight
-  // @Cron('0 0 * * *', {
-  //   name: 'daily-sync',
-  //   timeZone: 'America/New_York',
-  // })
-  // async handleDailySyncCron() {
-  //   this.logger.log('Starting daily campaign data sync');
-  //   try {
-  //     // await this.bidAdjustmentService.syncCampaignData();
-  //     this.logger.log('Daily campaign data sync completed');
-  //   } catch (error) {
-  //     this.logger.error('Error in daily sync job', error);
-  //   }
-  // }
+      for (const scopeId of scopeIds as string[]) {
+        await this.syncProducer.syncCampaignData(scopeId);
+      }
+
+      this.logger.log('Daily sync jobs enqueued');
+    } catch (error: unknown) {
+      this.logger.error(
+        'Daily sync failed',
+        error instanceof Error ? error.stack : String(error),
+      );
+    }
+  }
+
+  /**
+   * Daily report generation at 06:00 UTC.
+   * Generates SP campaign, keyword, and search-term reports for each profile.
+   * On completion the ReportProcessor automatically triggers the bid-adjustment queue.
+   */
+  @Cron('0 6 * * *', { name: 'daily-reports', timeZone: 'UTC' })
+  async handleDailyReports(): Promise<void> {
+    this.logger.log('Starting daily report generation');
+    try {
+      const scopeIds = await this.campaignModel.distinct('scopeId').exec();
+      this.logger.log(`Generating reports for ${scopeIds.length} profile(s)`);
+
+      for (const scopeId of scopeIds as string[]) {
+        await this.reportProducer.generateReport(scopeId);
+      }
+
+      this.logger.log('Daily report jobs enqueued');
+    } catch (error: unknown) {
+      this.logger.error(
+        'Daily report generation failed',
+        error instanceof Error ? error.stack : String(error),
+      );
+    }
+  }
 }

@@ -1,0 +1,197 @@
+# Bid Manager — LLM Context File
+
+> This file follows the [llms.txt convention](https://llmstxt.org) and is
+> intended to give AI assistants a fast, accurate mental model of this project.
+
+---
+
+## Project Purpose
+
+**Bid Manager** is a NestJS application that automates Amazon Sponsored Products
+(SP) campaign optimization. It syncs campaign data from the Amazon Advertising
+API, analyses performance metrics, and auto-applies bid and budget adjustments
+— all driven by a deterministic rule engine derived from SRS documents.
+
+---
+
+## Technology Stack
+
+| Layer | Choice |
+|---|---|
+| Runtime | Node.js + TypeScript 5 |
+| Framework | NestJS 11 |
+| Database | MongoDB via Mongoose 8 |
+| Job queue | BullMQ 5 (Redis-backed) |
+| Scheduler | @nestjs/schedule (node-cron) |
+| HTTP client | Axios |
+| Template engine | EJS (server-rendered dashboard) |
+| Docs | VitePress + vitepress-plugin-mermaid |
+
+---
+
+## Repository Layout
+
+```
+src/
+├── config/
+│   └── configuration.ts          # Typed config factory (loaded by ConfigModule)
+│
+├── common/
+│   ├── guards/
+│   │   └── auth.guard.ts         # Global session-based AuthGuard
+│   ├── filters/
+│   │   └── http-exception.filter.ts  # Global exception → JSON error response
+│   └── interceptors/
+│       └── response.interceptor.ts   # Wraps /api/* responses in { success, data, timestamp }
+│
+├── modules/
+│   └── optimization/
+│       └── optimization.service.ts   # Core orchestrator: engines → decisions → Amazon API
+│
+├── engine/                        # Six deterministic @Injectable engines
+│   ├── engine.module.ts           # EngineModule — provides & exports all six engines
+│   ├── interfaces.ts              # ICampaignBundle, keywordWithReport
+│   ├── acos-roas.engine.ts        # ACOS/ROAS zone detection & action table
+│   ├── budget.engine.ts           # Budget increase / decrease decisions
+│   ├── auto-campaign.engine.ts    # Auto campaign signal detection & actions
+│   ├── bid-adjustment.engine.ts   # Keyword/target bid decisions
+│   ├── keyword-targeting.engine.ts# Match-type graduation & negative rules
+│   └── monitoring.engine.ts       # Applicable monitoring windows (1d/3d/7d/14d/30d)
+│
+├── services/
+│   ├── auth.service.ts            # Amazon OAuth flow
+│   ├── campaign.service.ts        # Campaign + bundle queries (MongoDB aggregation)
+│   ├── report.service.ts          # Report bulk-upsert logic
+│   ├── cron.service.ts            # Scheduled sync (02:00 UTC) & reports (06:00 UTC)
+│   └── amazon/
+│       ├── amazon-api.service.ts  # Base Axios client — auto token refresh, scope headers
+│       ├── amazon-sync.service.ts # Full entity sync (campaigns, adGroups, keywords, targets)
+│       ├── campaign-api.service.ts# Campaign list/update + budget-usage API
+│       └── adgroup-api.service.ts # AdGroup, keyword & target CRUD + report generation
+│
+├── queue/
+│   ├── producer/
+│   │   ├── sync.producer.ts       # Enqueue campaignSync jobs
+│   │   ├── report.producer.ts     # Enqueue reportProcessor jobs (20 retries, 2-min backoff)
+│   │   └── bid.producer.ts        # Enqueue bidProcessor jobs per campaign
+│   └── consumer/
+│       ├── amazon-sync.processor.ts  # Pulls entity data from Amazon → MongoDB
+│       ├── report.processor.ts       # Downloads gzipped report → parses → triggers bid queue
+│       └── bid.processor.ts          # Calls OptimizationService per campaign
+│
+├── controllers/
+│   ├── auth.controller.ts         # /auth — OAuth login, callback, logout
+│   ├── campaign.controller.ts     # /api/campaigns — REST API
+│   ├── profile.controller.ts      # /profiles — profile list & detail
+│   └── view.controller.ts         # / /campaigns /logs — EJS-rendered dashboard pages
+│
+├── schemas/                       # Mongoose schema definitions
+│   ├── campaign.schema.ts
+│   ├── ad-group.schema.ts
+│   ├── ad.schema.ts
+│   ├── keyword.schema.ts
+│   ├── target.schema.ts
+│   ├── profile.schema.ts
+│   ├── bid-adjustment-log.schema.ts
+│   ├── optimization.schema.ts     # Audit log for every bid/budget change
+│   └── reports/
+│       ├── report.schema.ts       # Daily campaign report
+│       ├── keyword-report.schema.ts
+│       └── search-term-report.schema.ts
+│
+├── utils/
+│   └── constant.ts                # REASON strings, threshold percentages
+│
+└── app.module.ts                  # Root module — wires everything together
+
+docs/                              # VitePress documentation site
+├── SRS/                           # Source SRS .docx files (read-only reference)
+├── *-diagram.md                   # Mermaid flowcharts generated from SRS docs
+├── quickstart.md
+├── amazon-api-setup.md
+└── index.md
+
+.vitepress/config.mts              # VitePress + mermaid config (srcDir: ./docs)
+```
+
+---
+
+## Key Data Flow
+
+```
+Cron (02:00 UTC)
+  └─► SyncProducer → campaignSync queue
+        └─► AmazonSyncProcessor → fetches entities from Amazon API → MongoDB
+
+Cron (06:00 UTC)
+  └─► ReportProducer → reportProcessor queue
+        └─► ReportProcessor
+              ├─ polls Amazon report until COMPLETED
+              ├─ downloads gzipped JSON → saves to MongoDB
+              └─► BidProducer → bidProcessor queue (one job per campaign)
+                    └─► BidProcessor
+                          ├─ loads CampaignBundle from MongoDB
+                          └─► OptimizationService.optimizeCampaign()
+                                ├─ AcosRoasEngine   (zone detection)
+                                ├─ BudgetEngine     (budget increase/decrease)
+                                ├─ AutoCampaignEngine or BidAdjustmentEngine
+                                ├─ KeywordTargetingEngine (match-type graduation)
+                                ├─ → CampaignApiService.updateCampaign() / updateKeyword()
+                                └─ → OptimizationLog (MongoDB audit trail)
+```
+
+---
+
+## Engine Summary
+
+| Engine | Input | Output |
+|---|---|---|
+| `AcosRoasEngine` | spend, sales, clicks, impressions, netMargin, dataWindowDays | ACOS zone (PROFITABLE/OPTIMIZATION/RISK/NO_SALES) + action list |
+| `BudgetEngine` | currentBudget, dailySpend, sales, ACOS, targetAcos | INCREASE/DECREASE/HOLD + newBudget |
+| `AutoCampaignEngine` | spend, sales, clicks, ACOS, conversionRate, budgetUtilization | bidDecision + budgetDecision + moveTermsToManual flag |
+| `BidAdjustmentEngine` | ACOS, clicks, sales, spend, impressions, targetAcos | INCREASE/DECREASE/PAUSE + adjustmentPct |
+| `KeywordTargetingEngine` | clicks, spend, sales, ACOS, matchType, flags | actions[] (PAUSE, ADD_EXACT, MOVE_TO_MANUAL…) |
+| `MonitoringEngine` | dataAgeDays | Applicable windows: 1d, 3d, 7d, 14d, 30d |
+
+---
+
+## Environment Variables
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/bid-manager` |
+| `REDIS_HOST` / `REDIS_PORT` | BullMQ Redis connection | `localhost:6379` |
+| `AMAZON_CLIENT_ID` | SP API OAuth client ID | — |
+| `AMAZON_CLIENT_SECRET` | SP API OAuth client secret | — |
+| `AMAZON_REFRESH_TOKEN` | Long-lived refresh token | — |
+| `AMAZON_PROFILE_ID` | Default advertising profile scope | — |
+| `AMAZON_ADVERTISING_API_URL` | SP API base URL | `https://advertising-api-eu.amazon.com` |
+| `TARGET_ACOS` | Break-even ACOS (fraction) | `0.30` |
+| `MIN_BID_AMOUNT` | Minimum keyword bid ($) | `0.25` |
+| `MAX_BID_AMOUNT` | Maximum keyword bid ($) | `10.00` |
+| `SESSION_SECRET` | express-session secret | (required in production) |
+
+---
+
+## Development
+
+```bash
+npm install
+npm run start:dev      # NestJS watch mode
+npm run docs:dev       # VitePress docs (http://localhost:5173)
+npm run lint           # ESLint + Prettier fix
+npm run test           # Jest unit tests
+```
+
+Prerequisites: MongoDB running on 27017, Redis running on 6379.
+
+---
+
+## Conventions
+
+- **Engines are pure logic** — no I/O, no side effects, fully unit-testable.
+- **OptimizationService** is the only place that calls Amazon API for mutations.
+- **OptimizationLog** is written for every successful or failed bid/budget change.
+- All API routes live under `/api/`; EJS-rendered pages live at root paths.
+- NestJS global `AuthGuard` protects all routes; mark public routes with `@Public()` decorator.
+- BullMQ jobs are the concurrency boundary — do not call OptimizationService directly from HTTP handlers.

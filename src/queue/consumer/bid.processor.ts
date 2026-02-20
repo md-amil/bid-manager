@@ -1,59 +1,66 @@
+import { Logger } from '@nestjs/common';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-// import { ReportService } from "src/services/report.service";
-import { BidService } from 'src/services/amazon/bid.service';
-import { Engine } from 'src/engine/core/rule.engine';
+
 import { CampaignService } from 'src/services/campaign.service';
-import AdManager from 'src/engine/manager';
+import { OptimizationService } from 'src/modules/optimization/optimization.service';
 
 @Processor('bidProcessor')
 export class BidProcessor extends WorkerHost {
+  private readonly logger = new Logger(BidProcessor.name);
+
   constructor(
-    private readonly engine: Engine,
-    private readonly bidService: BidService,
     private readonly campaignService: CampaignService,
+    private readonly optimizationService: OptimizationService,
   ) {
     super();
   }
 
-  async process(job: Job, token?: string): Promise<any> {
-    console.log(job.data, 'job data');
-    const bundle = await this.campaignService.findCampaignBundle(
-      job.data.campaignId,
-    );
-    const searchTerm = await this.campaignService.getSearchTermReport(
-      job.data.campaignId,
-    );
-    // console.log(bundle,'bundle')
-    // console.log(searchTerm,"search term")
-    const manager = new AdManager({
+  async process(job: Job): Promise<void> {
+    const { campaignId, budgetUsages = [] } = job.data as {
+      campaignId: string;
+      budgetUsages: { campaignId: string; budgetUtilizationPercent?: number }[];
+    };
+
+    const bundle = await this.campaignService.findCampaignBundle(campaignId);
+    if (!bundle) {
+      this.logger.warn(`Bundle not found for campaign ${campaignId}`);
+      return;
+    }
+
+    const searchTerms =
+      await this.campaignService.getSearchTermReport(campaignId);
+
+    await this.optimizationService.optimizeCampaign({
       bundle,
-      searchTerm,
-      budgetUsages: job.data.budgetUsages,
+      searchTerms,
+      scopeId: String(bundle.scopeId),
+      budgetUsages,
     });
-    const recommendations = manager.analyzeCampaign();
-    console.log({ recommendations });
   }
 
   @OnWorkerEvent('active')
-  onActive(job: Job) {
-    console.log(
-      `Processing job ${job.id} of type ${job.name} with data ${job.data}...`,
+  onActive(job: Job): void {
+    this.logger.log(
+      `[bidProcessor] Processing job ${job.id} → campaign ${(job.data as { campaignId: string }).campaignId}`,
+    );
+  }
+
+  @OnWorkerEvent('completed')
+  onCompleted(job: Job): void {
+    this.logger.log(`[bidProcessor] Completed job ${job.id}`);
+  }
+
+  @OnWorkerEvent('failed')
+  onFailed(job: Job, error: Error): void {
+    this.logger.error(
+      `[bidProcessor] Failed job ${job.id}: ${error.message}`,
+      error.stack,
     );
   }
 
   @OnWorkerEvent('error')
-  onError(error: any) {
-    console.error('Worker error:', error);
-  }
-  @OnWorkerEvent('completed')
-  onComplete(job: Job) {
-    console.log(
-      `completed job ${job.id} of type ${job.name} with data ${job.data}...`,
-    );
-  }
-  @OnWorkerEvent('failed')
-  onFailed(job: Job, error) {
-    console.log(error, 'Job failed with error');
+  onError(error: Error): void {
+    this.logger.error('[bidProcessor] Worker error', error.stack);
   }
 }
