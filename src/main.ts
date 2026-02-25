@@ -46,12 +46,18 @@ app.use(
   }),
 );
   
-  // Configure EJS
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  // Configure EJS with path that works in both dev and production
+  const viewsPath = process.env.NODE_ENV === 'production'
+    ? join(__dirname, '..', 'views')
+    : join(__dirname, 'views');
+  app.setBaseViewsDir(viewsPath);
   app.setViewEngine('ejs');
-  
-  // Serve static files
-  app.useStaticAssets(join(__dirname, '..', 'public'));
+
+  // Serve static files (css, etc.)
+  const staticPath = process.env.NODE_ENV === 'production'
+    ? join(__dirname, '..', 'public')
+    : join(__dirname, 'public');
+  app.useStaticAssets(staticPath);
   
   await app.listen(process.env.PORT ?? 3000);
   console.log(`Application is running on: http://localhost:${process.env.PORT ?? 3000}`);

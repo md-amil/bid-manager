@@ -141,7 +141,6 @@ export class CampaignService {
 
 
   async getCampaigns(scopeId: string) {
-    console.log({scopeId})
     return this.campaignModel.find({ scopeId }).sort({ createdAt: -1 }).exec();
   }
 
