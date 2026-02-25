@@ -89,7 +89,7 @@ export class CampaignService {
             { $sort: { date: -1 } },
             { $limit: 1 },
           ],
-          as: 'campaignReport',
+          as: 'matrics',
         },
       },
       {

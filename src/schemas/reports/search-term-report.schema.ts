@@ -18,7 +18,7 @@ export class SearchTermReport {
 
     @Prop() impressions: number;
     @Prop() clicks: number;
-    @Prop() cost: number;
+    @Prop() spend: number;
 
     @Prop() sales7d: number;
     @Prop() sales14d: number;

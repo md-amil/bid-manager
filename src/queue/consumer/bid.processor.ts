@@ -2,9 +2,9 @@ import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
 // import { ReportService } from "src/services/report.service";
 import { BidService } from "src/services/amazon/bid.service";
-import { Engine } from "src/engine/core/rule.engine";
+import   Engine  from "src/engine/core/rule.engine";
 import { CampaignService } from "src/services/campaign.service";
-import AdManager from "src/engine/manager";
+// import AdManager from "src/engine/manager";
 
 @Processor('bidProcessor')
 export class BidProcessor extends WorkerHost {
@@ -21,11 +21,12 @@ export class BidProcessor extends WorkerHost {
         console.log(job.data, "job data")
         const bundle = await this.campaignService.findCampaignBundle(job.data.campaignId)
         const searchTerm = await this.campaignService.getSearchTermReport(job.data.campaignId)
-        // console.log(bundle,'bundle')
-        // console.log(searchTerm,"search term")
-        const manager = new AdManager({bundle,searchTerm,budgetUsages:job.data.budgetUsages})
-        const recommendations = manager.analyzeCampaign()
-        console.log({recommendations})
+        const engine = new Engine({...bundle, searchTerm})
+        await engine.run({...bundle, searchTerm})
+        // const recommendations = engine.getAdjustments()
+        // const manager = new AdManager({bundle,searchTerm,budgetUsages:job.data.budgetUsages})
+        // const recommendations = manager.analyzeCampaign()
+        // console.log({recommendations})
     }
 
     @OnWorkerEvent('active')

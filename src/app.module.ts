@@ -31,11 +31,12 @@ import { OptimizationLog, OptimizationLogSchema } from './schemas/optimization.s
 import { CampaignApiService } from './services/amazon/campaign-api.service';
 import { Keyword, KeywordSchema } from './schemas/keyword.schema';
 import { Target, TargetSchema } from './schemas/target.schema';
-import { Engine } from './engine/core/rule.engine';
+// import { Engine } from './engine/core/rule.engine';
 import { AdGroupApiService } from './services/amazon/adgroup-api.service';
 import { Profile, ProfileSchema } from './schemas/profile.schema';
 import { KeywordReport, KeywordReportSchema } from './schemas/reports/keyword-report.schema';
 import { SearchTermReport, SearchTermReportSchema } from './schemas/reports/search-term-report.schema';
+import Engine from './engine/core/rule.engine';
 
 @Module({
   imports: [

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectType } from 'amazon-sp-api';
+import { ObjectType,SellingPartner,  } from 'amazon-sp-api';
 import mongoose, { Document } from 'mongoose';
 
 export type CampaignDocument = Campaign & Document;

@@ -1,7 +1,16 @@
-import { Campaign } from "src/schemas/campaign.schema"
+import { Campaign, CampaignDocument } from "src/schemas/campaign.schema"
 import { Keyword } from "src/schemas/keyword.schema"
 import { KeywordReport } from "src/schemas/reports/keyword-report.schema"
 import { CampaignReport,  } from "src/schemas/reports/report.schema"
+import { SearchTermDocument, SearchTermReport } from "src/schemas/reports/search-term-report.schema"
+
+
+export enum AutoTargetingType {
+  CLOSE_MATCH = 'CLOSE_MATCH',
+  LOOSE_MATCH = 'LOOSE_MATCH',
+  SUBSTITUTES = 'SUBSTITUTES',
+  COMPLEMENTS = 'COMPLEMENTS',
+}
 
 export interface RecommendationParams {
     keywordOrCampaign?: string
@@ -62,8 +71,36 @@ export interface keywordWithReport extends Keyword{
     keywordReports:KeywordReport
 }
 
-export interface ICampaignBundle extends Campaign {
-    campaignReport:CampaignReport
+export interface ICampaignBundle extends CampaignDocument {
+    matrics:CampaignReport
     keywords:keywordWithReport[]
+    budgetUsage:any
+    searchTerm: SearchTermDocument[]
 }
+
+
+export interface AutoCampaignAdjustment {
+    ruleId: string;
+    ruleName: string;
+    campaignId: string;
+    adjustments: {
+        budgetChange?: number;
+        bidChanges?: Array<{ targetingType: AutoTargetingType; change: number }>;
+        searchTermsToMove?: SearchTermReport[];
+        negativeKeywordsToAdd?: string[];
+        action: 'INCREASE' | 'DECREASE' | 'CONTROL' | 'MOVE' | 'ADD_NEGATIVE';
+    };
+    reasoning: string;
+    estimatedImpact?: {
+        estimatedSpend?: number;
+        estimatedSales?: number;
+    };
+}
+
+
+export interface ICampaignRuleDecision {
+    shouldApply(campaign: ICampaignBundle): boolean;
+    execute(campaign: ICampaignBundle): AutoCampaignAdjustment;
+}
+
 

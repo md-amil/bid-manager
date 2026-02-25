@@ -1,37 +1,86 @@
-import { ReportDocument } from "src/schemas/reports/report.schema";
-import { IRule, RuleContext } from "./rule.type";
-import { buildContext } from "../utils/context.builder";
-import { rules } from "../rules";
 import { Injectable } from "@nestjs/common";
-@Injectable()
-export class Engine {
-  constructor() { }
+import { AutoCampaignAdjustment, ICampaignRuleDecision, type ICampaignBundle } from "../interfaces";
+import { TargetingType } from "src/schemas/campaign.schema";
+import { ProfitableSearchTermsRule } from "../rules/profitable-searchterm.rule";
+import { NewProductLaunchRule } from "../rules/launch-product.rule";
+import { LimitedImpressionsHighConversionRule } from "../rules/limited-impression-high-conversion.rule";
+import { HighSpendPoorConversionRule } from "../rules/high-spend-poor-conversion.rule";
+import { ListingConversionIssuesRule } from "../rules/listing-issue.rule";
+import { NegativeKeywordRule } from "../rules/negative-keyword.rule";
+// import { CloseMatchOptimizationRule, ComplementaryTargetingOptimizationRule, LooseMatchOptimizationRule, SubstituteTargetingOptimizationRule } from "../rules/search-term.rules";
+
+
+export const config = {
+  targetAcos: parseFloat(process.env.TARGET_ACOS || '0.30'),
+  minClicks: parseInt(process.env.MIN_SAMPLE_CLICKS || '20'),
+  minSpend: parseFloat(process.env.MIN_SAMPLE_SPEND || '200'),
+  fallbackClicks: 20,
+  minImpressions: 1000,
+  minCvr: 0.08,
+  // minSpendThreshold:parseFloat(process.env.MIN_THRESOLD_SPEND||)
+}
+
+
+// @Injectable()
+export default class Engine {
+  private adjustments: AutoCampaignAdjustment[] = []
+  constructor(private bundle: ICampaignBundle) { }
+
   private runRuleEngine(
-    rules: IRule[],
-    context: RuleContext
+    rules: ICampaignRuleDecision[],
   ) {
-    const sorted = rules.sort((a, b) => b.priority - a.priority);
-    for (const rule of sorted) {
-      if (rule.appliesTo !== context.entityType) continue;
-      const result = rule.evaluate(context);
-      if (result.applied) return {
-        entityId: context.entityId,
-        action: result.action,
-        value: result.value,
-        reason: result.reason,
-        ruleId: rule.id,
-        snapshot: context.metrics
-      };
+
+    for (const rule of rules) {
+      if (rule.shouldApply(this.bundle)) {
+        const adjustment = rule.execute(this.bundle);
+        this.adjustments.push(adjustment);
+      }
     }
-    return {
-      entityId: context.entityId,
-      action: 'NO_CHANGE',
-      reason: 'NO_RULE_MATCHED'
-    };
+    
   }
-  async run(report:any,extra:any) {
-    const context = buildContext(report)
-    return this.runRuleEngine(rules, context)
+
+
+  async run(bundle: ICampaignBundle) {
+    if (bundle.state == 'PAUSED') return console.log("campaign is paused skipping...")
+    if (bundle.targetingType === TargetingType.AUTO) return this.runAuto();
+    return this.runManual();
+  }
+
+  runBySearchTerm() {
+    const rules = [
+      // new CloseMatchOptimizationRule(),
+      // new LooseMatchOptimizationRule(),
+      // new SubstituteTargetingOptimizationRule(),
+      // new ComplementaryTargetingOptimizationRule(),
+    ]
+  }
+
+  runAuto() {
+    const autoCampaignRules = [
+      new ProfitableSearchTermsRule(),
+      new NewProductLaunchRule(),
+      new LimitedImpressionsHighConversionRule(),
+      new HighSpendPoorConversionRule(),
+      new ListingConversionIssuesRule(),
+      new NegativeKeywordRule(),
+    ]
+    this.runRuleEngine(autoCampaignRules)
+  }
+
+  runManual() {
+    const manuanCampaignRules = [
+      // new ProfitableSearchTermsRule(),
+      // new NewProductLaunchRule(),
+      // new LimitedImpressionsHighConversionRule(),
+      // new HighSpendPoorConversionRule(),
+      // new ListingConversionIssuesRule(),
+      // new CloseMatchOptimizationRule(),
+      // new LooseMatchOptimizationRule(),
+      // new SubstituteTargetingOptimizationRule(),
+      // new ComplementaryTargetingOptimizationRule(),
+      // new NegativeKeywordRule(),
+    ]
+    this.runRuleEngine(manuanCampaignRules)
   }
 }
 
