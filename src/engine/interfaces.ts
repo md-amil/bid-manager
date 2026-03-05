@@ -1,15 +1,24 @@
 import { Campaign, CampaignDocument } from "src/schemas/campaign.schema"
 import { Keyword } from "src/schemas/keyword.schema"
 import { KeywordReport } from "src/schemas/reports/keyword-report.schema"
-import { CampaignReport,  } from "src/schemas/reports/report.schema"
+import { CampaignReport, } from "src/schemas/reports/report.schema"
 import { SearchTermDocument, SearchTermReport } from "src/schemas/reports/search-term-report.schema"
 
 
-export enum AutoTargetingType {
-  CLOSE_MATCH = 'CLOSE_MATCH',
-  LOOSE_MATCH = 'LOOSE_MATCH',
-  SUBSTITUTES = 'SUBSTITUTES',
-  COMPLEMENTS = 'COMPLEMENTS',
+export enum TargetingType {
+    // AUTO = 'AUTO',
+    CLOSE_MATCH = 'CLOSE_MATCH',
+    LOOSE_MATCH = 'LOOSE_MATCH',
+    SUBSTITUTES = 'SUBSTITUTES',
+    COMPLEMENTS = 'COMPLEMENTS',
+    //manual
+    PRODUCT_PAGE = 'PRODUCT_PAGE',
+    PRODUCT_PAGE_PLACEMENT = 'PRODUCT_PAGE_PLACEMENT',
+    TOP_OF_SEARCH = 'TOP_OF_SEARCH',
+    REST_OF_SEARCH = 'REST_OF_SEARCH',
+    EXACT_MATCH = 'EXACT_MATCH',
+    PHRASE_MATCH = 'PHRASE_MATCH',
+    BROAD_MATCH = 'BROAD_MATCH',
 }
 
 export interface RecommendationParams {
@@ -25,15 +34,15 @@ export interface RecommendationParams {
 
 
 export class AdjustmentAction {
-  static INCREASE_BID = 'INCREASE_BID';
-  static DECREASE_BID = 'DECREASE_BID';
-  static INCREASE_BUDGET = 'INCREASE_BUDGET';
-  static DECREASE_BUDGET = 'DECREASE_BUDGET';
-  static PAUSE_CAMPAIGN = 'PAUSE_CAMPAIGN';
-  static PAUSE_KEYWORD = 'PAUSE_KEYWORD';
-  static ADD_NEGATIVE = 'ADD_NEGATIVE';
-  static MOVE_TO_MANUAL = 'MOVE_TO_MANUAL';
-  static REMOVE_KEYWORD = 'REMOVE_KEYWORD';
+    static INCREASE_BID = 'INCREASE_BID';
+    static DECREASE_BID = 'DECREASE_BID';
+    static INCREASE_BUDGET = 'INCREASE_BUDGET';
+    static DECREASE_BUDGET = 'DECREASE_BUDGET';
+    static PAUSE_CAMPAIGN = 'PAUSE_CAMPAIGN';
+    static PAUSE_KEYWORD = 'PAUSE_KEYWORD';
+    static ADD_NEGATIVE = 'ADD_NEGATIVE';
+    static MOVE_TO_MANUAL = 'MOVE_TO_MANUAL';
+    static REMOVE_KEYWORD = 'REMOVE_KEYWORD';
 }
 
 
@@ -67,15 +76,15 @@ export class Recommendation {
     }
 }
 
-export interface keywordWithReport extends Keyword{
-    keywordReports:KeywordReport
+export interface keywordWithReport extends Keyword {
+    keywordReports: KeywordReport
 }
 
 export interface ICampaignBundle extends CampaignDocument {
-    matrics:CampaignReport
-    keywords:keywordWithReport[]
-    budgetUsage:any
-    searchTerm: SearchTermDocument[]
+    matrics: CampaignReport
+    keywords: keywordWithReport[]
+    budgetUsage: any
+    searchTerms: SearchTermDocument[]
 }
 
 
@@ -85,10 +94,10 @@ export interface AutoCampaignAdjustment {
     campaignId: string;
     adjustments: {
         budgetChange?: number;
-        bidChanges?: Array<{ targetingType: AutoTargetingType; change: number }>;
+        bidChanges?: Array<{ targetingType: TargetingType; change: number }>;
         searchTermsToMove?: SearchTermReport[];
         negativeKeywordsToAdd?: string[];
-        action: 'INCREASE' | 'DECREASE' | 'CONTROL' | 'MOVE' | 'ADD_NEGATIVE';
+        action: 'INCREASE' | 'DECREASE' | 'CONTROL' | 'MOVE' | 'ADD_NEGATIVE' | 'REMOVE';
     };
     reasoning: string;
     estimatedImpact?: {
@@ -99,8 +108,8 @@ export interface AutoCampaignAdjustment {
 
 
 export interface ICampaignRuleDecision {
-    shouldApply(campaign: ICampaignBundle): boolean;
-    execute(campaign: ICampaignBundle): AutoCampaignAdjustment;
+    shouldApply(): boolean;
+    execute(): AutoCampaignAdjustment;
 }
 
 

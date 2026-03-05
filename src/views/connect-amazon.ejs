@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Amazon Account - Amazon Bid Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .connect-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #ffffff;
+            padding: 2rem;
+        }
+
+        /* Animated background elements */
+        .bg-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(17, 29, 51, 0.08) 0%, rgba(13, 23, 42, 0.12) 100%);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 450px;
+            height: 450px;
+            top: -120px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 350px;
+            height: 350px;
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -5s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            top: 60%;
+            left: 15%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        /* Grid pattern overlay */
+        .grid-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(17, 29, 51, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(17, 29, 51, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+
+        .connect-box {
+            background: #ffffff;
+            padding: 3.5rem;
+            border-radius: 24px;
+            box-shadow: 
+                0 0 0 1px rgba(17, 29, 51, 0.1),
+                0 20px 60px rgba(17, 29, 51, 0.15),
+                0 0 100px rgba(17, 29, 51, 0.08);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(17, 29, 51, 0.15);
+        }
+
+        .connect-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .connect-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 
+                0 0 0 1px rgba(17, 29, 51, 0.3),
+                0 10px 40px rgba(17, 29, 51, 0.2),
+                0 0 60px rgba(17, 29, 51, 0.15);
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 1px rgba(17, 29, 51, 0.3), 0 10px 40px rgba(17, 29, 51, 0.2), 0 0 60px rgba(17, 29, 51, 0.15); }
+            50% { box-shadow: 0 0 0 1px rgba(17, 29, 51, 0.4), 0 15px 50px rgba(17, 29, 51, 0.3), 0 0 80px rgba(17, 29, 51, 0.2); }
+        }
+
+        .connect-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #111d33;
+            text-shadow: 0 0 30px rgba(17, 29, 51, 0.2);
+        }
+
+        .connect-subtitle {
+            color: #1a2a4d;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-shadow: 0 0 20px rgba(17, 29, 51, 0.15);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .step.completed {
+            color: #111d33;
+        }
+
+        .step.active {
+            color: #111d33;
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.2);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .step.completed .step-number,
+        .step.active .step-number {
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            border-color: #111d33;
+            color: white;
+            box-shadow: 0 0 15px rgba(17, 29, 51, 0.4);
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+            border: 1px solid rgba(17, 29, 51, 0.1);
+        }
+
+        .info-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111d33;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.1);
+        }
+
+        .info-text {
+            color: #1a2a4d;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .benefits-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .benefits-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: #1a2a4d;
+            font-size: 0.95rem;
+        }
+
+        .benefits-list li::before {
+            content: '✓';
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(17, 29, 51, 0.3);
+        }
+
+        .amazon-connect-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #ff9900 0%, #ff8800 100%);
+            color: white;
+            padding: 1.25rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            box-shadow: 
+                0 4px 15px rgba(255, 153, 0, 0.3),
+                0 0 30px rgba(255, 153, 0, 0.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .amazon-connect-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(255, 153, 0, 0.4),
+                0 0 40px rgba(255, 153, 0, 0.3);
+        }
+
+        .amazon-logo {
+            font-size: 1.5rem;
+        }
+
+        .skip-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(17, 29, 51, 0.15);
+        }
+
+        .skip-text {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .skip-btn {
+            display: inline-block;
+            color: #111d33;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid rgba(17, 29, 51, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.15);
+        }
+
+        .skip-btn:hover {
+            background: rgba(17, 29, 51, 0.1);
+            border-color: #111d33;
+            box-shadow: 0 0 20px rgba(17, 29, 51, 0.2);
+        }
+
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: #0c4a6e;
+            border: 1px solid #7dd3fc;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.15);
+        }
+
+        .security-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .security-note span {
+            filter: drop-shadow(0 0 5px rgba(17, 29, 51, 0.2));
+        }
+
+        /* Decorative particles */
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #111d33;
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: particle-float 15s infinite ease-in-out;
+        }
+
+        @keyframes particle-float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            50% { transform: translateY(-100px) translateX(50px); opacity: 0.6; }
+        }
+
+        @media (max-width: 640px) {
+            .connect-box {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connect-container">
+        <div class="bg-decoration">
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="grid-pattern"></div>
+            <div class="particle" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+            <div class="particle" style="top: 60%; left: 85%; animation-delay: -3s;"></div>
+            <div class="particle" style="top: 80%; left: 20%; animation-delay: -6s;"></div>
+            <div class="particle" style="top: 30%; left: 75%; animation-delay: -9s;"></div>
+        </div>
+
+        <div class="connect-box">
+            <div class="connect-header">
+                <div class="connect-logo">🔗</div>
+                <h1 class="connect-title">Connect Amazon Account</h1>
+                <p class="connect-subtitle">Link your Amazon Advertising account to get started</p>
+            </div>
+
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-number">✓</div>
+                    <span>Account</span>
+                </div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <span>Connect</span>
+                </div>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <% if (typeof message !== 'undefined' && message) { %>
+                <div class="alert alert-info">
+                    <%= message %>
+                </div>
+            <% } %>
+
+            <div class="info-card">
+                <div class="info-title">
+                    <span>ℹ️</span>
+                    Why connect your Amazon account?
+                </div>
+                <p class="info-text">
+                    Connecting your Amazon Advertising account allows us to:
+                </p>
+                <ul class="benefits-list">
+                    <li>Optimize your campaign bids automatically</li>
+                    <li>Sync your campaign data in real-time</li>
+                    <li>Provide AI-powered performance insights</li>
+                    <li>Manage budgets based on ROI targets</li>
+                </ul>
+            </div>
+
+            <a href="/auth/amazon" class="amazon-connect-btn" id="connectBtn">
+                <span class="amazon-logo">🛒</span>
+                Connect with Amazon
+            </a>
+
+            <div class="skip-section">
+                <p class="skip-text">Want to connect later?</p>
+                <a href="/" class="skip-btn">Skip for now</a>
+            </div>
+
+            <div class="security-note">
+                <span>🔒</span>
+                <span>Your data is secured with industry-standard encryption</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('connectBtn').addEventListener('click', function(e) {
+            this.innerHTML = '<span class="amazon-logo">⏳</span> Connecting to Amazon...';
+            this.style.pointerEvents = 'none';
+        });
+    </script>
+</body>
+</html>

@@ -75,7 +75,7 @@ export class ReportService {
   }
 
   async saveSearchTermReport(payload:any[]){
-    this.logger.log('Saving keyword report with', payload.length, 'entries');
+    this.logger.log('Saving search term with', payload.length, 'entries');
     const bulkOps = payload.map((data) => ({
       updateOne: {
         filter: { date: data.date, keywordId: data.keywordId },
@@ -85,10 +85,10 @@ export class ReportService {
     }));
     if (bulkOps.length > 0) {
       const result = await this.searchReport.bulkWrite(bulkOps);
-      this.logger.log(`Keyword report saved/updated. Matched: ${result.matchedCount}, Upserted: ${result.upsertedCount}, Modified: ${result.modifiedCount}`);
+      this.logger.log(`search term report saved/updated. Matched: ${result.matchedCount}, Upserted: ${result.upsertedCount}, Modified: ${result.modifiedCount}`);
       return result;
     } else {
-      this.logger.warn('No keyword report data to save');
+      this.logger.warn('No search term report data to save');
       return null;
     }
   }

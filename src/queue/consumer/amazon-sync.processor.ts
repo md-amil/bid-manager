@@ -3,23 +3,24 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
 import { AmazonSyncService } from "../../services/amazon/amazon-sync.service";
+import { ClsService } from "nestjs-cls";
 
 @Processor('campaignSync')
 export class AmazonSyncProcessor extends WorkerHost {
-    constructor(private readonly syncService: AmazonSyncService) {
+    constructor(private readonly syncService: AmazonSyncService, private readonly cls: ClsService) {
         super();
     }
 
-    async process(job: Job, token?: string): Promise<any> {
-        const scopeId = job.data.scopeId;
-        await this.syncService.syncCampains(scopeId)
-        await this.syncService.syncAdGroups(scopeId)
-        await this.syncService.syncAds(scopeId)
-        await this.syncService.syncKeywards(scopeId)
-        await this.syncService.syncNegativeKeywards(scopeId)
-        await this.syncService.syncTargets(scopeId)
-        await this.syncService.syncNegativeTargets(scopeId)
-        await this.syncService.syncProfile('')
+    async process(job: Job): Promise<any> {
+        const auth = job.data.auth
+        await this.syncService.syncCampains(auth)
+        await this.syncService.syncAdGroups(auth)
+        await this.syncService.syncAds(auth)
+        await this.syncService.syncKeywards(auth)
+        await this.syncService.syncNegativeKeywards(auth)
+        await this.syncService.syncTargets(auth)
+        await this.syncService.syncNegativeTargets(auth)
+        // await this.syncService.syncProfile(job.data.organisationId)
     }
 
     @OnWorkerEvent('active')

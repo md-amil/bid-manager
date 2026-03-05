@@ -16,7 +16,7 @@ export class ReportProcessor extends WorkerHost {
 
     constructor(
         private amazonApi: AmazonApiService,
-        private bidProducer: BidProducer,
+        // private bidProducer: BidProducer,
         private readonly reportService: ReportService
     ) { super(); }
 
@@ -41,8 +41,8 @@ export class ReportProcessor extends WorkerHost {
         }
     }
 
-    async downloadReport(res: ReportResponse,attempt:number=1)    {
-        if(attempt>3) throw new Error('Max download attempts reached'); 
+    async downloadReport(res: ReportResponse, attempt: number = 1) {
+        if (attempt > 3) throw new Error('Max download attempts reached');
         try {
             this.logger.log(`Downloading report from: ${res.url}`);
             const response = await fetch(res.url!);
@@ -63,15 +63,15 @@ export class ReportProcessor extends WorkerHost {
             return fileName;
         } catch (error) {
             this.logger.error('Error downloading report', error);
-            return this.downloadReport(res,++attempt);
+            return this.downloadReport(res, ++attempt);
         }
     }
 
 
-    async process(job: Job, token?: string): Promise<any> {
-        const reportResponse = await this.amazonApi.getReports(job.data.reportId)
+    async process(job: Job): Promise<any> {
+        const reportResponse = await this.amazonApi.getReports(job.data.auth, job.data.reportId)
         if (reportResponse.status !== 'COMPLETED')
-             return Promise.reject({status:reportResponse.status,type:reportResponse.configuration.reportTypeId});
+            return Promise.reject({ status: reportResponse.status, type: reportResponse.configuration.reportTypeId });
         const fileName = await this.downloadReport(reportResponse);
         const report = await this.getReportMatrics(fileName);
         console.log('Report metrics extracted:', report.length);

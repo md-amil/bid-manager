@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { AdGroup } from "src/schemas/ad-group.schema";
 import { Ad } from "src/schemas/ad.schema";
 import { Campaign } from "src/schemas/campaign.schema";
@@ -12,6 +12,10 @@ import { Target } from "src/schemas/target.schema";
 import { AdGroupApiService } from "./adgroup-api.service";
 import { AmazonApiService } from "./amazon-api.service";
 import { Profile } from "src/schemas/profile.schema";
+import { IAmazonAuth } from "src/interfaces/index.type";
+
+
+
 
 @Injectable()
 export class AmazonSyncService {
@@ -34,14 +38,14 @@ export class AmazonSyncService {
 
   ) { }
 
-  async syncCampains(scopeId: string) {
+  async syncCampains(auth: IAmazonAuth) {
     console.log('Syncing Campaigns...')
-    const campaigns = await this.campaignApi.getCampaigns(scopeId);
+    const campaigns = await this.campaignApi.getCampaigns(auth);
     console.log(campaigns[0])
     const campaignBulkOps = campaigns.map(c => ({
       updateOne: {
         filter: { campaignId: c.campaignId },
-        update: { $set: AmazonMapper.campaign(c, scopeId) },
+        update: { $set: AmazonMapper.campaign(c, auth.scopeId) },
         upsert: true,
       },
     }));
@@ -49,13 +53,13 @@ export class AmazonSyncService {
     return campaignResult;
   }
 
-  async syncAdGroups(scopeId: string,) {
+  async syncAdGroups(auth: IAmazonAuth,) {
     console.log('Syncing Ad Groups...')
-    const adGroups = await this.adGroupApi.getAdGroups(scopeId);
+    const adGroups = await this.adGroupApi.getAdGroups(auth);
     const adGroupBulkOps = adGroups.map(g => ({
       updateOne: {
         filter: { adGroupId: g.adGroupId },
-        update: { $set: AmazonMapper.adGroup(g, scopeId) },
+        update: { $set: AmazonMapper.adGroup(g, auth.scopeId) },
         upsert: true,
       },
     }));
@@ -63,87 +67,87 @@ export class AmazonSyncService {
     return adGroupResult;
   }
 
-  async syncAds(scopeId: string, nextToken?: string) {
+  async syncAds(auth: IAmazonAuth, nextToken?: string) {
     console.log('Syncing Ads...')
-    const { productAds, nextToken: next } = await this.adGroupApi.getAds(scopeId, { nextToken });
+    const { productAds, nextToken: next } = await this.adGroupApi.getAds(auth, { nextToken });
     console.log(productAds.length, (!!next))
     const adBulkOps = productAds.map(a => ({
       updateOne: {
         filter: { adId: a.adId },
-        update: { $set: AmazonMapper.ad(a, scopeId) },
+        update: { $set: AmazonMapper.ad(a, auth.scopeId) },
         upsert: true,
       },
     }));
     const adResult = await this.adModel.bulkWrite(adBulkOps);
-    if (next) return this.syncAds(scopeId, next)
+    if (next) return this.syncAds(auth, next)
     return adResult;
   }
 
 
-  async syncKeywards(scopeId: string, nextToken?: string) {
-    console.log('Syncing Keywords...', scopeId)
-    const { keywords, nextToken: next } = await this.adGroupApi.getKeywords(scopeId, { nextToken })
+  async syncKeywards(auth: IAmazonAuth, nextToken?: string) {
+    console.log('Syncing Keywords...', auth.scopeId)
+    const { keywords, nextToken: next } = await this.adGroupApi.getKeywords(auth, { nextToken })
     console.log(keywords.length, (!!next))
     const adBulkOps = keywords.map(a => ({
       updateOne: {
         filter: { keywordId: a.keywordId },
-        update: { $set: AmazonMapper.keyword(a, scopeId) },
+        update: { $set: AmazonMapper.keyword(a, auth.scopeId) },
         upsert: true,
       },
     }));
     const keywordResult = await this.keywardModel.bulkWrite(adBulkOps);
     console.log(keywordResult)
-    if (next) return await this.syncKeywards(scopeId, next)
+    if (next) return await this.syncKeywards(auth, next)
     return keywordResult;
   }
-  async syncNegativeKeywards(scopeId: string, nextToken?: string) {
+  async syncNegativeKeywards(auth: IAmazonAuth, nextToken?: string) {
     console.log('Syncing Negative Keywords...')
-    const { negativeKeywords, nextToken: next } = await this.adGroupApi.getNegativeKeywords(scopeId, { nextToken })
-    console.log({ scopeId, negativeKeyword: negativeKeywords.length })
+    const { negativeKeywords, nextToken: next } = await this.adGroupApi.getNegativeKeywords(auth, { nextToken })
+    console.log({ scopeId: auth.scopeId, negativeKeyword: negativeKeywords.length })
     const adBulkOps = negativeKeywords.map(a => ({
       updateOne: {
         filter: { keywordId: a.keywordId },
-        update: { $set: AmazonMapper.keyword(a, scopeId, -1) },
+        update: { $set: AmazonMapper.keyword(a, auth.scopeId, -1) },
         upsert: true,
       },
     }));
     const negativeKeywordResult = await this.keywardModel.bulkWrite(adBulkOps);
-    if (next) return this.syncNegativeKeywards(scopeId, next)
+    if (next) return this.syncNegativeKeywards(auth, next)
     return negativeKeywordResult;
   }
-  async syncTargets(scopeId: string, nextToken?: string) {
+  async syncTargets(auth: IAmazonAuth, nextToken?: string) {
     console.log('Syncing Targets...')
-    const { targetingClauses, nextToken: next } = await this.adGroupApi.getTargets(scopeId, { nextToken })
+    const { targetingClauses, nextToken: next } = await this.adGroupApi.getTargets(auth, { nextToken })
     console.log({ targets: targetingClauses.length })
     const adBulkOps = targetingClauses.map(a => ({
       updateOne: {
         filter: { targetId: a.targetId },
-        update: { $set: AmazonMapper.target(a, scopeId, 1) },
+        update: { $set: AmazonMapper.target(a, auth.scopeId, 1) },
         upsert: true,
       },
     }));
     const targetResult = await this.targetModel.bulkWrite(adBulkOps);
-    if (next) return this.syncTargets(scopeId, next)
+    if (next) return this.syncTargets(auth, next)
     return targetResult;
   }
 
-  async syncNegativeTargets(scopeId: string, nextToken?: string) {
+  async syncNegativeTargets(auth: IAmazonAuth, nextToken?: string) {
     console.log('Syncing Negative Targets...')
-    const { negativeTargetingClauses, nextToken: next } = await this.adGroupApi.getNegativeTargets(scopeId, { nextToken })
+    const { negativeTargetingClauses, nextToken: next } = await this.adGroupApi.getNegativeTargets(auth, { nextToken })
     const adBulkOps = negativeTargetingClauses.map(a => ({
       updateOne: {
         filter: { targetId: a.targetId },
-        update: { $set: AmazonMapper.target(a, scopeId, -1) },
+        update: { $set: AmazonMapper.target(a, auth.scopeId, -1) },
         upsert: true,
       },
     }));
     const negativeTargetResult = await this.targetModel.bulkWrite(adBulkOps);
-    if (next) return this.syncNegativeTargets(scopeId, next)
+    if (next) return this.syncNegativeTargets(auth, next)
     return negativeTargetResult;
   }
 
 
-  async syncProfile(organisationId:string) {
+  async syncProfile(organisationId:Types.ObjectId) {
     const profiles = await this.amazonApi.getProfiles()
     const adBulkOps = profiles.map(a => ({
       updateOne: {
@@ -156,10 +160,10 @@ export class AmazonSyncService {
     return profiles
   }
 
-  async syncAll(scopeId: string) {
-    // await this.syncCampains(scopeId)
-    // await this.syncAdGroups(scopeId)
-    // await this.syncAds(scopeId)
+  async syncAll(auth: IAmazonAuth) {
+    // await this.syncCampains(auth)
+    // await this.syncAdGroups(auth)
+    // await this.syncAds(auth)
     // await this.syncKeywards(scopeId)
     // await this.syncNegativeKeywards(scopeId)
     // await this.syncTargets(scopeId)

@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export class AmazonMapper {
   static campaign(c: any, scopeId: string) {
     return {
@@ -46,7 +48,7 @@ export class AmazonMapper {
     };
   }
 
-  static profile(p: any,organisationId:string) {
+  static profile(p: any,organisationId:Types.ObjectId) {
     return {
       organisationId,
       ...p

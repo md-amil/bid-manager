@@ -35,7 +35,7 @@ export enum State{
   ACTIVE="ACTIVE"
 }
 
-export enum TargetingType{
+export enum Type{
    AUTO = 'AUTO',
    MANUAL='MANUAL'
 }
@@ -70,7 +70,7 @@ export class Campaign {
   // tags: string
 
   @Prop({  required: false })
-  targetingType: TargetingType
+  targetingType: Type
 
   // spend:number
   // sales:number

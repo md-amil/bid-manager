@@ -18,7 +18,7 @@ export class CampaignController {
   constructor(
     // private campaignService: CampaignService,
     private campaignApi: CampaignApiService,
-    private readonly syncProducer: SyncProducer,
+    // private readonly syncProducer: SyncProducer,
     private readonly reportProducer: ReportProducer,
     private readonly bidProducer: BidProducer,
     private readonly campaignService: CampaignService,
@@ -42,20 +42,21 @@ export class CampaignController {
 
   @Post('sync')
   async syncCampaigns(@Request() req: any) {
-    const scopeId = req.session.selectedProfile?.profileId;
-    const job = await this.syncProducer.syncCampaignData(scopeId);
-    // const reportJob = await this.reportProducer.generateReport(scopeId);
+    // const scopeId = req.session.selectedProfile?.profileId;
+    // const job = await this.syncProducer.syncCampaignData();
+    const reportJob = await this.reportProducer.generateReport();
     return { message: 'Campaign sync initiated' };
   }
 
   @Post('adjust-bids')
   async adjustBids(@Request() req: any) {
-    const profile = req.session.selectedProfile?.profileId
-    const campaigns = await this.campaignService.getCampaigns(profile)
-    const campaignIds = campaigns.map(({ campaignId }) => campaignId)
-    const budgetUsages = await this.campaignApi.getBudgetUses(['93618166928305'], profile)
+    const scopeId = req.session.selectedProfile?.profileId
+    const accessToken = req.session?.accessToken;
+    const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c=>c.state === "ENABLED"&& c.campaignId=='340981085273491')
+    // const campaignIds = campaigns.map(({ campaignId }) => campaignId)
+    const budgetUsages = await this.campaignApi.getBudgetUses(['340981085273491'], {scopeId,accessToken})
     console.log(campaigns.length, "campaign length",budgetUsages.length)
-    await this.bidProducer.scheduleBidAdjustment(campaigns,budgetUsages[0])
+    await this.bidProducer.scheduleBidAdjustment(campaigns,budgetUsages[0]);
     return { message: 'Bid adjustment scheduled' };
   }
 

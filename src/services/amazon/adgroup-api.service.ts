@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { AmazonApiService, ReportPayload } from "./amazon-api.service";
+import { IAmazonAuth } from "src/interfaces/index.type";
 
 export interface IFilter {
     nextToken?: string;
@@ -101,12 +102,12 @@ const SEARCH_TERM_COLUMN = [
 
 @Injectable()
 export class AdGroupApiService extends AmazonApiService {
-    async getAdGroups(scopeId: string = this.scopeId, filter = {} as IFilter) {
+    async getAdGroups(auth: IAmazonAuth, filter = {} as IFilter) {
         try {
             const response = await this.httpClient.post(
                 '/sp/adGroups/list',
                 this.filterBuilder(filter),
-                this.scopeBuilder(scopeId)
+                this.authBuilder(auth)
             )
             return response.data.adGroups || [];
         } catch (error) {
@@ -115,12 +116,12 @@ export class AdGroupApiService extends AmazonApiService {
         }
     }
 
-    async getAds(scopeId: string = this.scopeId, filter = {} as IFilter) {
+    async getAds(auth:IAmazonAuth, filter = {} as IFilter) {
         try {
             const response = await this.httpClient.post(
                 '/sp/productAds/list',
                 this.filterBuilder(filter),
-                this.scopeBuilder(scopeId)
+                this.authBuilder(auth)
             )
             return response.data || {};
         } catch (error) {
@@ -129,10 +130,10 @@ export class AdGroupApiService extends AmazonApiService {
         }
     }
 
-    async updateAdGroup(campaignId: string, data: any, scopeId: string = this.scopeId) {
+    async updateAdGroup(auth: IAmazonAuth, campaignId: string, data: any) {
         try {
             const response = await this.httpClient.put(`/sp/adGroups`,
-                data, this.scopeBuilder(scopeId)
+                data, this.authBuilder(auth)
             );
             return response.data;
         } catch (error) {
@@ -141,10 +142,10 @@ export class AdGroupApiService extends AmazonApiService {
         }
     }
 
-    async getKeywords(scopeId: string = this.scopeId, filter = {} as IFilter) {
+    async getKeywords(auth: IAmazonAuth, filter = {} as IFilter) {
         try {
             const response = await this.httpClient.post(
-                '/sp/keywords/list', this.filterBuilder(filter), this.scopeBuilder(scopeId))
+                '/sp/keywords/list', this.filterBuilder(filter), this.authBuilder(auth))
             return response.data || {};
         } catch (error) {
             this.logger.error('Failed to get keywords', error.response?.data || error.message);
@@ -152,10 +153,10 @@ export class AdGroupApiService extends AmazonApiService {
         }
     }
 
-    async getNegativeKeywords(scopeId: string = this.scopeId, filter = {} as IFilter) {
+    async getNegativeKeywords(auth: IAmazonAuth, filter = {} as IFilter) {
         try {
             const response = await this.httpClient.post(
-                '/sp/negativeKeywords/list', this.filterBuilder(filter), this.scopeBuilder(scopeId)
+                '/sp/negativeKeywords/list', this.filterBuilder(filter), this.authBuilder(auth)
             )
             return response.data || {};
         } catch (error) {
@@ -164,10 +165,10 @@ export class AdGroupApiService extends AmazonApiService {
         }
     }
 
-    async getTargets(scopeId: string = this.scopeId, filter = {} as IFilter) {
+    async getTargets(auth: IAmazonAuth, filter = {} as IFilter) {
         try {
             const response = await this.httpClient.post(
-                '/sp/targets/list', this.filterBuilder(filter), this.scopeBuilder(scopeId)
+                '/sp/targets/list', this.filterBuilder(filter), this.authBuilder(auth)
             )
             return response.data || {};
         } catch (error) {
@@ -176,10 +177,10 @@ export class AdGroupApiService extends AmazonApiService {
         }
     }
 
-    async getNegativeTargets(scopeId: string = this.scopeId, filter = {} as IFilter) {
+    async getNegativeTargets(auth: IAmazonAuth, filter = {} as IFilter) {
         try {
             const response = await this.httpClient.post(
-                '/sp/negativeTargets/list', this.filterBuilder(filter), this.scopeBuilder(scopeId)
+                '/sp/negativeTargets/list', this.filterBuilder(filter), this.authBuilder(auth)
             )
             return response.data || {};
         } catch (error) {
@@ -188,8 +189,8 @@ export class AdGroupApiService extends AmazonApiService {
         }
     }
 
-    async generateKeywordReport(payload: ReportPayload) {
-        return this.generateReport(payload, {
+    async generateKeywordReport(auth:IAmazonAuth,payload: ReportPayload) {
+        return this.generateReport(auth,payload, {
             scopeId: payload.scopeId,
             reportTypeId: 'spKeywords',
             groupBy: ["adGroup"],
@@ -197,8 +198,8 @@ export class AdGroupApiService extends AmazonApiService {
         });
     }
 
-    async generateSearchTerm(payload) {
-        return this.generateReport(payload, {
+    async generateSearchTerm(auth: IAmazonAuth,payload) {
+        return this.generateReport(auth,payload, {
             scopeId: payload.scopeId,
             reportTypeId: 'spSearchTerm',
             groupBy: ["searchTerm"],

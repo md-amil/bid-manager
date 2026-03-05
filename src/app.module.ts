@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ClsModule } from 'nestjs-cls';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CampaignController } from './controllers/campaign.controller';
@@ -36,7 +37,11 @@ import { AdGroupApiService } from './services/amazon/adgroup-api.service';
 import { Profile, ProfileSchema } from './schemas/profile.schema';
 import { KeywordReport, KeywordReportSchema } from './schemas/reports/keyword-report.schema';
 import { SearchTermReport, SearchTermReportSchema } from './schemas/reports/search-term-report.schema';
+import { User, UserSchema } from './schemas/user.schema';
+import { Organization, OrganizationSchema } from './schemas/organization.schema';
 import Engine from './engine/core/rule.engine';
+import { AuthApiService } from './services/amazon/auth-api.service';
+import { ClsMiddleware } from './middleware/cls.middleware';
 
 @Module({
   imports: [
@@ -69,11 +74,24 @@ import Engine from './engine/core/rule.engine';
        { name: SearchTermReport.name, schema: SearchTermReportSchema },
 
       { name: Profile.name, schema: ProfileSchema },
-
+      { name: User.name, schema: UserSchema },
+      { name: Organization.name, schema: OrganizationSchema },
     ]),
     ScheduleModule.forRoot(),
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        mount: false, // We'll manually apply middleware to ensure session is available
+      },
+    }),
   ],
   controllers: [AppController, CampaignController, ViewController, ProfileController, AuthController],
-  providers: [AppService,AdGroupApiService, AmazonApiService,Engine, CampaignApiService,BidService, CronService, AuthService, AmazonSyncService, AmazonSyncProcessor, BidProcessor, ReportProcessor, CampaignService, SyncProducer, ReportProducer, BidProducer, ReportService],
+  providers: [AppService,AuthApiService,AdGroupApiService, AmazonApiService,Engine, CampaignApiService,BidService, CronService, AuthService, AmazonSyncService, AmazonSyncProcessor, BidProcessor, ReportProcessor, CampaignService, SyncProducer, ReportProducer, BidProducer, ReportService],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ClsMiddleware)
+      .forRoutes('*');
+  }
+}

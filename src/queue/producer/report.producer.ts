@@ -3,6 +3,8 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Job, Queue } from 'bullmq';
 import { CampaignApiService } from 'src/services/amazon/campaign-api.service';
 import { AdGroupApiService } from 'src/services/amazon/adgroup-api.service';
+import { IAmazonAuth } from 'src/interfaces/index.type';
+import { ClsService } from 'nestjs-cls';
 
 const defaultOptions = {
   delay: 1000 * 60,
@@ -22,32 +24,39 @@ export class ReportProducer {
   constructor(
     @InjectQueue('reportProcessor') private reportQueue: Queue,
     private campaignApi: CampaignApiService,
-    private adGroupApi: AdGroupApiService
+    private adGroupApi: AdGroupApiService,
+    private readonly cls: ClsService
+
   ) { }
 
-  async generateReport(scopeId: string) {
-    const yesterday = new Date(Date.now() -7 * 86400000).toISOString().split('T')[0];
+  async generateReport() {
+    const scopeId = this.cls.get('scopeId');
+    const accessToken = this.cls.get('accessToken');
+    const yesterday = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
     const today = new Date().toISOString().split('T')[0];
-
-    this.logger.log('Generating report', yesterday ,'to ', today);
+    this.logger.log('Generating report', yesterday, 'to ', today);
 
     const payload = {
-      scopeId: scopeId,
+      scopeId,
       name: "Sponser Report",
       startDate: yesterday,
       endDate: yesterday,
     }
+    const auth = {
+      scopeId,
+      accessToken,
+    }
 
-    const campaign = this.campaignApi.generateCampaignReport(payload)
-    const keyword = this.adGroupApi.generateKeywordReport(payload)
-    const searchTerm = this.adGroupApi.generateSearchTerm(payload)
+    const campaign = this.campaignApi.generateCampaignReport(auth, payload)
+    const keyword = this.adGroupApi.generateKeywordReport(auth, payload)
+    const searchTerm = this.adGroupApi.generateSearchTerm(auth, payload)
 
 
-    const jobs:Job[] = [];
+    const jobs: Job[] = [];
     for (const report of await Promise.allSettled([campaign, keyword, searchTerm])) {
       if (report.status == 'fulfilled') {
         this.logger.log(`Requested for report generation: ${report.value.reportId}`);
-        const job = await this.reportQueue.add('report', report.value, defaultOptions);
+        const job = await this.reportQueue.add('report',{ ...report.value,auth}, defaultOptions);
         jobs.push(job);
         continue;
       }
@@ -57,9 +66,9 @@ export class ReportProducer {
         const reportId = data.detail?.split(': ')[1]
         this.logger.log('previous report is already pending passing forward',);
         const job = await this.reportQueue.add('report',
-          { reportId },
+          { reportId,auth },
           defaultOptions);
-          jobs.push(job);
+        jobs.push(job);
         continue;
       }
       this.logger.error('Error generating report', report.reason.response.data);

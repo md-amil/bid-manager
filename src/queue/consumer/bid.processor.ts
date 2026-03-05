@@ -17,12 +17,11 @@ export class BidProcessor extends WorkerHost {
         super();
     }
 
-    async process(job: Job, token?: string): Promise<any> {
-        console.log(job.data, "job data")
+    async process(job: Job): Promise<any> {
         const bundle = await this.campaignService.findCampaignBundle(job.data.campaignId)
-        const searchTerm = await this.campaignService.getSearchTermReport(job.data.campaignId)
-        const engine = new Engine({...bundle, searchTerm})
-        await engine.run({...bundle, searchTerm})
+        const searchTerms = await this.campaignService.getSearchTermReport(job.data.campaignId)
+        const engine = new Engine({...bundle, searchTerms})
+        await engine.run({...bundle, searchTerms})
         // const recommendations = engine.getAdjustments()
         // const manager = new AdManager({bundle,searchTerm,budgetUsages:job.data.budgetUsages})
         // const recommendations = manager.analyzeCampaign()
@@ -31,9 +30,9 @@ export class BidProcessor extends WorkerHost {
 
     @OnWorkerEvent('active')
     onActive(job: Job) {
-        console.log(
-            `Processing job ${job.id} of type ${job.name} with data ${job.data}...`,
-        );
+        // console.log(
+        //     `Processing job ${job.id} of type ${job.name} with data ${job.data}...`,
+        // );
     }
 
     @OnWorkerEvent('error')
@@ -42,9 +41,9 @@ export class BidProcessor extends WorkerHost {
     }
     @OnWorkerEvent('completed')
     onComplete(job: Job) {
-        console.log(
-            `completed job ${job.id} of type ${job.name} with data ${job.data}...`,
-        );
+        // console.log(
+        //     `completed job ${job.id} of type ${job.name} with data ${job.data}...`,
+        // );
     }
     @OnWorkerEvent('failed')
     onFailed(job: Job, error) {

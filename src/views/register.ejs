@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Organization - Amazon Bid Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #ffffff;
+            padding: 2rem;
+        }
+
+        /* Animated background elements */
+        .bg-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(17, 29, 51, 0.08) 0%, rgba(13, 23, 42, 0.12) 100%);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            top: -150px;
+            right: -150px;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 350px;
+            height: 350px;
+            bottom: -100px;
+            left: -100px;
+            animation-delay: -5s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            top: 40%;
+            right: 5%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        /* Grid pattern overlay */
+        .grid-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(17, 29, 51, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(17, 29, 51, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+
+        .register-box {
+            background: #ffffff;
+            padding: 3.5rem;
+            border-radius: 24px;
+            box-shadow: 
+                0 0 0 1px rgba(17, 29, 51, 0.1),
+                0 20px 60px rgba(17, 29, 51, 0.15),
+                0 0 100px rgba(17, 29, 51, 0.08);
+            max-width: 560px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(17, 29, 51, 0.15);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .register-logo {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 
+                0 0 0 1px rgba(17, 29, 51, 0.3),
+                0 10px 40px rgba(17, 29, 51, 0.2),
+                0 0 60px rgba(17, 29, 51, 0.15);
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 1px rgba(17, 29, 51, 0.3), 0 10px 40px rgba(17, 29, 51, 0.2), 0 0 60px rgba(17, 29, 51, 0.15); }
+            50% { box-shadow: 0 0 0 1px rgba(17, 29, 51, 0.4), 0 15px 50px rgba(17, 29, 51, 0.3), 0 0 80px rgba(17, 29, 51, 0.2); }
+        }
+
+        .register-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #111d33;
+            text-shadow: 0 0 30px rgba(17, 29, 51, 0.2);
+        }
+
+        .register-subtitle {
+            color: #1a2a4d;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-shadow: 0 0 20px rgba(17, 29, 51, 0.15);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .step.active {
+            color: #111d33;
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.2);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            border-color: #111d33;
+            color: white;
+            box-shadow: 0 0 15px rgba(17, 29, 51, 0.4);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #111d33;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(17, 29, 51, 0.15);
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #111d33;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.1);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border: 2px solid rgba(17, 29, 51, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #ffffff;
+            color: #111d33;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #111d33;
+            box-shadow: 
+                0 0 0 4px rgba(17, 29, 51, 0.1),
+                0 0 20px rgba(17, 29, 51, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .register-btn {
+            width: 100%;
+            display: block;
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            color: white;
+            padding: 1.1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+            box-shadow: 
+                0 4px 15px rgba(17, 29, 51, 0.3),
+                0 0 30px rgba(17, 29, 51, 0.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .register-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(17, 29, 51, 0.4),
+                0 0 40px rgba(17, 29, 51, 0.3);
+        }
+
+        .divider {
+            margin: 2rem 0;
+            border-top: 1px solid rgba(17, 29, 51, 0.15);
+            position: relative;
+        }
+
+        .divider::before {
+            content: 'or';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            padding: 0 1rem;
+            color: #111d33;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .amazon-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            color: #111d33;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(17, 29, 51, 0.2);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(17, 29, 51, 0.1);
+        }
+
+        .amazon-btn:hover {
+            transform: translateY(-2px);
+            border-color: #111d33;
+            box-shadow: 
+                0 8px 25px rgba(17, 29, 51, 0.2),
+                0 0 30px rgba(17, 29, 51, 0.15);
+        }
+
+        .amazon-icon {
+            font-size: 1.3rem;
+        }
+
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
+        }
+
+        .features-preview {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            border: 1px solid rgba(17, 29, 51, 0.1);
+        }
+
+        .features-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #111d33;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.1);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1a2a4d;
+            font-size: 0.9rem;
+        }
+
+        .feature-icon {
+            font-size: 1.1rem;
+            filter: drop-shadow(0 0 5px rgba(17, 29, 51, 0.2));
+        }
+
+        .login-link {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .login-link a {
+            color: #111d33;
+            text-decoration: none;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.15);
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Decorative particles */
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #111d33;
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: particle-float 15s infinite ease-in-out;
+        }
+
+        @keyframes particle-float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            50% { transform: translateY(-100px) translateX(50px); opacity: 0.6; }
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .register-box {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="bg-decoration">
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="grid-pattern"></div>
+            <div class="particle" style="top: 15%; left: 20%; animation-delay: 0s;"></div>
+            <div class="particle" style="top: 70%; left: 75%; animation-delay: -4s;"></div>
+            <div class="particle" style="top: 85%; left: 25%; animation-delay: -8s;"></div>
+            <div class="particle" style="top: 35%; left: 80%; animation-delay: -12s;"></div>
+        </div>
+
+        <div class="register-box">
+            <div class="register-header">
+                <div class="register-logo">🏢</div>
+                <h1 class="register-title">Create Organization</h1>
+                <p class="register-subtitle">Set up your account to get started</p>
+            </div>
+
+            <div class="progress-steps">
+                <div class="step active">
+                    <div class="step-number">1</div>
+                    <span>Account</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <span>Connect</span>
+                </div>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <form action="/auth/register" method="POST">
+                <div class="form-section">
+                    <div class="section-label">Organization Details</div>
+                    <div class="form-group">
+                        <label class="form-label" for="orgName">Organization Name</label>
+                        <input type="text" id="orgName" name="orgName" class="form-input" placeholder="Enter your organization name" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-label">Personal Information</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="+1 (555) 000-0000" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="you@company.com" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="password">Password</label>
+                            <input type="password" id="password" name="password" class="form-input" placeholder="Create a password" required minlength="8">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Confirm password" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="register-btn">
+                    Create Organization
+                </button>
+            </form>
+
+            <div class="divider"></div>
+
+            <!-- <a href="/auth/amazon" class="amazon-btn">
+                <span class="amazon-icon">🔐</span>
+                Sign up with Amazon
+            </a> -->
+
+            <div class="features-preview">
+                <div class="features-title">Included Features</div>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <span class="feature-icon">✨</span>
+                        <span>Auto bid optimization</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span>Advanced analytics</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🤖</span>
+                        <span>AI recommendations</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💰</span>
+                        <span>Budget control</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="login-link">
+                Already have an account? <a href="/auth/login">Sign in</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.amazon-btn').addEventListener('click', function(e) {
+            this.innerHTML = '<span class="amazon-icon">⏳</span> Connecting to Amazon...';
+            this.style.pointerEvents = 'none';
+        });
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            const btn = this.querySelector('.register-btn');
+            btn.innerHTML = 'Creating organization...';
+            btn.style.pointerEvents = 'none';
+        });
+    </script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance } from 'axios';
+import { ClsService } from 'nestjs-cls';
+import { IAmazonAuth } from 'src/interfaces/index.type';
 
 export interface ReportResponse {
   reportId: string;
@@ -74,14 +76,17 @@ export class AmazonApiService {
   protected readonly refreshToken: string;
   protected readonly scopeId: string;
   protected readonly tokenUrl: string;
+  protected readonly redirectUri:string
 
-  constructor(protected configService: ConfigService) {
+  constructor(protected configService: ConfigService, protected readonly cls: ClsService) {
     this.clientId = this.configService.get<string>('AMAZON_CLIENT_ID') || '';
     this.clientSecret = this.configService.get<string>('AMAZON_CLIENT_SECRET') || '';
     this.refreshToken = this.configService.get<string>('AMAZON_REFRESH_TOKEN') || '';
     this.scopeId = this.configService.get<string>('AMAZON_PROFILE_ID') || '';
     this.accessToken = this.configService.get('ACCESS_TOKEN') || ''
     this.tokenExpiresAt = +this.configService.get('TOKEN_EXPIRY')
+    this.redirectUri = this.configService.get<string>('AMAZON_REDIRECT_URI', 'http://localhost:3000/auth/callback');
+
 
     this.tokenUrl = this.configService.get<string>('AMAZON_TOKEN_URL', 'https://api.amazon.com/auth/o2/token');
     if (!this.clientId || !this.clientSecret || !this.refreshToken || !this.scopeId) {
@@ -101,7 +106,7 @@ export class AmazonApiService {
       'negativeTargets': 'application/vnd.spnegativeTargetingClause.v3+json'
     }
   }
-  private createClient(session?: any) {
+  private createClient() {
     const baseURL = this.configService.get<string>('AMAZON_ADVERTISING_API_URL', 'https://advertising-api-eu.amazon.com');
     const client = axios.create({
       baseURL,
@@ -114,27 +119,32 @@ export class AmazonApiService {
 
     client.interceptors.request.use(async (request) => {
       const accept = this.headers[request.url!.split('/')[2]] ?? 'application/json'
+      request.headers['Content-Type'] = accept;
+      request.headers['Accept'] = accept;
+      // console.log(
+      //   'Request Headers:', request.headers
+      // )
+      if (request.headers['Authorization']) return request
 
-      if (!this.accessToken || Date.now() >= this.tokenExpiresAt) {
-        const data = await this.refreshAccessToken();
-        this.accessToken = data.access_token;
-        console.log("token will expire in ", data.expires_in)
-        this.tokenExpiresAt = Date.now() + (data.expires_in - 300) * 1000;
-        console.log(this.tokenExpiresAt)
-      }
-      request.headers['Authorization'] = `Bearer ${this.accessToken}`
-      request.headers['Content-Type'] = accept
-      request.headers['Accept'] = accept
+      // if (!this.accessToken || Date.now() >= this.tokenExpiresAt) {
+      //   const data = await this.refreshAccessToken(this.refreshToken);
+      //   this.accessToken = data.access_token;
+      //   console.log("token will expire in ", data.expires_in)
+      //   this.tokenExpiresAt = Date.now() + (data.expires_in - 300) * 1000;
+      //   console.log(this.tokenExpiresAt)
+      // }
+
+      // request.headers['Authorization'] = `Bearer ${accessToken}`
       return request
     }, (error) => Promise.reject(error))
     return client
   }
 
-   async refreshAccessToken() {
+   async refreshAccessToken(refreshToken:string) {
     try {
       const params = new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token: this.refreshToken,
+        refresh_token:refreshToken,
         client_id: this.clientId,
         client_secret: this.clientSecret,
       });
@@ -157,15 +167,31 @@ export class AmazonApiService {
     }
   }
 
-  async getProfiles(): Promise<AmazonProfile[]> {
+
+  async getProfiles(accessToken?: string) {
     try {
-      const response = await this.httpClient.get('/v2/profiles')
+      const response = await this.httpClient.get('/v2/profiles', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+      this.logger.log(`Fetched ${response.data.length} profiles from Amazon API`);
       return response.data;
     } catch (error) {
-      this.logger.error('Failed to get profiles', error);
-      throw error;
+      this.logger.error('Failed to fetch profiles from Amazon API', error.response?.data || error.message);
+      throw new Error('Failed to fetch profiles from Amazon');
     }
   }
+
+  // async getProfiles(): Promise<AmazonProfile[]> {
+  //   try {
+  //     const response = await this.httpClient.get('/v2/profiles')
+  //     return response.data;
+  //   } catch (error) {
+  //     this.logger.error('Failed to get profiles', error);
+  //     throw error;
+  //   }
+  // }
 
   protected filterBuilder(filter: IFilter) {
     const { nextToken, ...f } = filter
@@ -178,10 +204,11 @@ export class AmazonApiService {
     }, { ...(nextToken && { nextToken }) } as any)
   }
 
-  protected scopeBuilder(scopeId: string = this.scopeId) {
+  protected authBuilder({scopeId,accessToken}:IAmazonAuth) {
     return {
       headers: {
         'Amazon-Advertising-API-Scope': scopeId,
+        'Authorization': `Bearer ${accessToken}`,
       }
     }
   }
@@ -202,7 +229,7 @@ export class AmazonApiService {
   }
 
 
-  async generateReport(payload: ReportPayload, config: ReportConfig) {
+  async generateReport(auth:IAmazonAuth,payload: ReportPayload, config: ReportConfig) {
     try {
       const response = await this.httpClient.post<ReportResponse>(
         '/reporting/reports',
@@ -215,7 +242,7 @@ export class AmazonApiService {
           },
           ...payload,
         },
-        this.scopeBuilder(payload.scopeId)
+        this.authBuilder(auth)
       );
       return response.data;
     } catch (error) {
@@ -259,11 +286,11 @@ export class AmazonApiService {
   //   }
   // }
 
-  async getReports(reportId: string) {
+  async getReports(auth: IAmazonAuth, reportId: string) {
     try {
       const response = await this.httpClient.get<ReportResponse>(
         `/reporting/reports/${reportId}`,
-        this.scopeBuilder()
+        this.authBuilder(auth)
       );
       return response.data;
     } catch (error) {
@@ -291,10 +318,10 @@ export class AmazonApiService {
   
   
 
-  async updateProductAd(adId: string, data: any, scopeId: string = this.scopeId) {
+  async updateProductAd(auth: IAmazonAuth,adId: string, data: any) {
     try {
       const response = await this.httpClient.put(`/sp/productAds`, data, {
-        ...this.scopeBuilder(scopeId)
+        ...this.authBuilder(auth)
       });
       return response.data;
     } catch (error) {
@@ -303,10 +330,10 @@ export class AmazonApiService {
     }
   }
 
-  async updateKeyword(keywordId: string, data: any, scopeId: string = this.scopeId) {
+  async updateKeyword(auth: IAmazonAuth,keywordId: string, data: any) {
     try {
       const response = await this.httpClient.put(`/sp/keywords`, data, {
-        ...this.scopeBuilder(scopeId)
+        ...this.authBuilder(auth) 
       });
       return response.data;
     } catch (error) {

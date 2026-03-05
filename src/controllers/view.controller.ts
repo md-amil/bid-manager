@@ -8,6 +8,8 @@ import { OptimizationLog, OptimizationLogDocument } from '../schemas/optimizatio
 import { CampaignReport, ReportDocument } from '../schemas/reports/report.schema';
 import { CampaignService } from 'src/services/campaign.service';
 import { ReportService } from 'src/services/report.service';
+import { AuthService } from 'src/services/auth.service';
+import { SyncProducer } from 'src/queue/producer/sync.producer';
 
 @Controller()
 export class ViewController {
@@ -18,18 +20,27 @@ export class ViewController {
     @InjectModel(CampaignReport.name) private reportModel: Model<ReportDocument>,
     private campaignService: CampaignService,
     private reportService: ReportService,
-
+    private authService: AuthService,
+    private readonly syncProducer: SyncProducer
   ) { }
 
   @Get()
   async getIndex(@Session() session: Record<string, any>, @Res() res: Response) {
-    if (!session.authenticated) {
+    // Check if user is logged in
+    if (!session.userId && !session.authenticated) {
       return res.redirect('/auth/login');
+    }
+
+
+    // If logged in but no Amazon account connected, show connect page
+    if (session.userId && !session.authenticated) {
+      return res.redirect('/auth/connect-amazon');
     }
 
     if (!session.selectedProfile) {
       return res.redirect('/select-profile');
     }
+    const profiles = await this.authService.getProfiles(session.organizationId)
 
     const selectedProfile = session.selectedProfile;
     const allCampaigns = await this.campaignService.getCampaigns(session.selectedProfile.profileId);
@@ -37,13 +48,13 @@ export class ViewController {
       campaign.state?.toLowerCase() === 'enabled'
     );
     const recentLogs = await this.bidLogModel.find().sort({ createdAt: -1 }).limit(10).exec();
-    const report = await this.campaignService.getLatestReportSum()??{}
+    const report = await this.campaignService.getLatestReportSum() ?? {}
 
     const stats = {
       totalCampaigns: allCampaigns.length,
       activeCampaigns: campaigns.length,
-      totalSpend: report.totalSpend??0,
-      totalSales: report.totalSales14d??0,
+      totalSpend: report.totalSpend ?? 0,
+      totalSales: report.totalSales14d ?? 0,
       averageROI: report.totalSales14d / report.totalSpend,
       acos14: report.totalSpend / report.totalSales14d
     };
@@ -53,7 +64,7 @@ export class ViewController {
       recentLogs,
       stats,
       selectedProfile,
-      profiles: session.profiles || [],
+      profiles,
     });
   }
 
@@ -65,10 +76,14 @@ export class ViewController {
     @Query('name') name: string,
     @Query('targeting') targeting: string
   ) {
-
-    if (!session.authenticated) {
+    if (!session.userId && !session.authenticated) {
       return res.redirect('/auth/login');
     }
+
+    if (session.userId && !session.authenticated) {
+      return res.redirect('/auth/connect-amazon');
+    }
+
     if (!session.selectedProfile) {
       return res.redirect('/select-profile');
     }
@@ -147,7 +162,7 @@ export class ViewController {
           spend: reports.reduce((sum, r) => sum + (r.spend || 0), 0),
           // cost: reports.reduce((sum, r) => sum + (r.cost || 0), 0),
           sales14d: reports.reduce((sum, r) => sum + (r.sales14d || 0), 0),
-          costPerClick: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.spend/r.clicks || 0), 0) / reports.length : 0,
+          costPerClick: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.spend / r.clicks || 0), 0) / reports.length : 0,
           clickThroughRate: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.clicks / r.impressions || 0), 0) / reports.length : 0,
           roas14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.sales14d / r.spend || 0), 0) / reports.length : 0,
           acos14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.spend / r.sales14d * 100 || 0), 0) / reports.length : 0,
@@ -251,8 +266,12 @@ export class ViewController {
     @Query('entityType') entityType: string,
     @Query('status') status: string
   ) {
-    if (!session.authenticated) {
+    if (!session.userId && !session.authenticated) {
       return res.redirect('/auth/login');
+    }
+
+    if (session.userId && !session.authenticated) {
+      return res.redirect('/auth/connect-amazon');
     }
 
     if (!session.selectedProfile) {
@@ -300,10 +319,17 @@ export class ViewController {
 
   @Get('select-profile')
   async selectProfilePage(@Session() session: Record<string, any>, @Res() res: Response) {
-    if (!session.authenticated) return res.redirect('/auth/login');
+    if (!session.userId && !session.authenticated) {
+      return res.redirect('/auth/login');
+    }
+
+    if (session.userId && !session.authenticated) {
+      return res.redirect('/auth/connect-amazon');
+    }
+    const profiles = await this.authService.getProfiles(session.organizationId);
     return res.render('select-profile', {
       title: 'Select Profile',
-      profiles: session.profiles || [],
+      profiles: profiles || [],
       selectedProfile: session.selectedProfile || null,
     });
   }
@@ -314,11 +340,27 @@ export class ViewController {
     @Session() session: Record<string, any>,
     @Res() res: Response,
   ) {
-    if (!session.authenticated || !session.profiles) return res.redirect('/auth/login');
-    const profile = session.profiles.find(p => p.profileId.toString() === profileId);
+    if (!session.userId && !session.authenticated) {
+      return res.redirect('/auth/login');
+    }
+
+    if (session.userId && !session.authenticated) {
+      return res.redirect('/auth/connect-amazon');
+    }
+    const profiles = await this.authService.getProfiles(session.organizationId)
+    // if (!session.profiles) return res.redirect('/auth/login');
+    const profile = profiles.find(p => p.profileId === profileId);
+    // console.log({ profile })
+
     if (!profile) return res.redirect('/select-profile?error=profile_not_found');
-    console.log({profile})
     session.selectedProfile = profile;
-    return res.redirect('/');
+    await this.syncProducer.syncCampaignData({
+      accessToken: session.accessToken,
+      scopeId: profile.profileId,
+    })
+    session.save(err => {
+      if (err) return console.log(err)
+      return res.redirect('/');
+    })
   }
 }

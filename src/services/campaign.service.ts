@@ -67,7 +67,7 @@ export class CampaignService {
         },
       },
     ]);
-    return response[0]
+    return response[0]?.searchTerms || [];
   }
 
 
@@ -136,7 +136,7 @@ export class CampaignService {
       },
     ]);
 
-    return response[0]
+    return {...response[0],matrics:response[0]?.matrics?.[0]??{}}
   }
 
 

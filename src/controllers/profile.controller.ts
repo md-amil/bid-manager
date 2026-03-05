@@ -20,17 +20,13 @@ export class ProfileController {
     }
     try {
       if (Date.now() >= session.tokenExpiresAt) {
-        const tokens = await this.authService.refreshAccessToken(session.refreshToken);
+        const tokens = await this.amazonApiService.refreshAccessToken(session.refreshToken);
         session.accessToken = tokens.access_token;
         session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
       }
       // Use profiles from session or fetch fresh
-      let profiles = session.profiles || [];
       
-      if (!profiles || profiles.length === 0) {
-        profiles = await this.authService.getProfiles(session.accessToken);
-        session.profiles = profiles;
-      }
+        const profiles = await this.authService.getProfiles(session.organizationId);
       
       return {
         title: 'Amazon Advertising Profiles',
@@ -60,12 +56,12 @@ export class ProfileController {
     try {
       // Check if token needs refresh
       if (Date.now() >= session.tokenExpiresAt) {
-        const tokens = await this.authService.refreshAccessToken(session.refreshToken);
+        const tokens = await this.amazonApiService.refreshAccessToken(session.refreshToken);
         session.accessToken = tokens.access_token;
         session.tokenExpiresAt = Date.now() + (tokens.expires_in * 1000);
       }
 
-      const profiles = session.profiles || await this.authService.getProfiles(session.accessToken);
+      const profiles =  await this.authService.getProfiles(session.organizationId);
       
       return {
         success: true,

@@ -28,7 +28,7 @@ export class Profile extends Document {
     profileId: string;
 
     @Prop({ required: true })
-    clientId: string
+    organizationId: string
 
     @Prop({ required: true })
     countryCode: string
@@ -36,7 +36,7 @@ export class Profile extends Document {
     @Prop({ required: true })
     currencyCode: string
 
-    @Prop({ required: true })
+    @Prop({ required: true, default: 0 })
     dailyBudget: number
 
     @Prop({ required: false })

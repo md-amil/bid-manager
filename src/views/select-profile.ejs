@@ -6,19 +6,100 @@
     <title>Select Profile - Amazon Bid Manager</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
         .select-profile-container {
             min-height: 100vh;
-            background: linear-gradient(135deg, #ff0854 0%, #d6006d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #ffffff;
             padding: 40px 20px;
         }
 
+        /* Animated background elements */
+        .bg-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(17, 29, 51, 0.08) 0%, rgba(13, 23, 42, 0.12) 100%);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -5s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        /* Grid pattern overlay */
+        .grid-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(17, 29, 51, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(17, 29, 51, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+
         .select-profile-box {
-            background: white;
+            background: #ffffff;
             padding: 3rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-width: 900px;
+            border-radius: 24px;
+            box-shadow: 
+                0 0 0 1px rgba(17, 29, 51, 0.1),
+                0 20px 60px rgba(17, 29, 51, 0.15),
+                0 0 100px rgba(17, 29, 51, 0.08);
+            max-width: 1100px;
+            width: 100%;
             margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(17, 29, 51, 0.15);
         }
 
         .header {
@@ -27,122 +108,190 @@
         }
 
         .header-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 
+                0 0 0 1px rgba(17, 29, 51, 0.3),
+                0 10px 40px rgba(17, 29, 51, 0.2),
+                0 0 60px rgba(17, 29, 51, 0.15);
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 1px rgba(17, 29, 51, 0.3), 0 10px 40px rgba(17, 29, 51, 0.2), 0 0 60px rgba(17, 29, 51, 0.15); }
+            50% { box-shadow: 0 0 0 1px rgba(17, 29, 51, 0.4), 0 15px 50px rgba(17, 29, 51, 0.3), 0 0 80px rgba(17, 29, 51, 0.2); }
         }
 
         .header h1 {
-            font-size: 2rem;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #111d33;
+            text-shadow: 0 0 30px rgba(17, 29, 51, 0.2);
         }
 
         .header p {
-            color: #718096;
+            color: #1a2a4d;
             font-size: 1.1rem;
+            font-weight: 500;
+            text-shadow: 0 0 20px rgba(17, 29, 51, 0.15);
         }
 
-        .profiles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+        .profiles-list {
             margin-bottom: 2rem;
         }
 
-        .profile-card {
-            background: #f7fafc;
-            border: 3px solid transparent;
-            border-radius: 12px;
-            padding: 2rem;
+        .list-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr auto;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .profile-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr auto;
+            padding: 16px 20px;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
+            transition: all 0.2s ease;
+            background: #ffffff;
         }
 
-        .profile-card:hover {
-            border-color: #ff0854;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(255, 8, 84, 0.3);
+        .profile-row:last-child {
+            border-bottom: none;
+            border-radius: 0 0 12px 12px;
         }
 
-        .profile-card.selected {
-            border-color: #48bb78;
-            background: #f0fff4;
+        .profile-row:hover {
+            background: #f8fafc;
+        }
+
+        .profile-row.selected {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-left: 4px solid #111d33;
+        }
+        .col-account {
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
 
         .profile-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #ff0854 0%, #d6006d 100%);
-            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1rem;
-            font-size: 2rem;
-        }
-
-        .profile-card.selected .profile-icon {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        }
-
-        .profile-name {
             font-size: 1.3rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
+            flex-shrink: 0;
         }
 
-        .profile-type {
+        .profile-row.selected .profile-icon {
+            background: linear-gradient(135deg, #0d172a 0%, #1e293b 100%);
+            box-shadow: 0 4px 12px rgba(17, 29, 51, 0.3);
+        }
+
+        .account-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .account-name {
+            font-weight: 600;
+            color: #111d33;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .account-id {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-family: monospace;
+        }
+
+        .col-type, .col-country, .col-currency, .col-timezone {
+            color: #475569;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .type-badge {
             display: inline-block;
-            background: #ff0854;
-            color: white;
-            padding: 0.25rem 0.75rem;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            margin-bottom: 1rem;
         }
 
-        .profile-details {
-            color: #4a5568;
-            font-size: 0.9rem;
-            line-height: 1.8;
+        .type-badge.seller {
+            background: #dbeafe;
+            color: #1e40af;
         }
 
-        .profile-detail-item {
+        .type-badge.vendor {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .type-badge.agency {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .col-select {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
+            justify-content: flex-end;
         }
 
-        .profile-detail-label {
-            color: #718096;
-        }
-
-        .profile-detail-value {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .check-icon {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 30px;
-            height: 30px;
-            background: #48bb78;
+        .select-radio {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
             border-radius: 50%;
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.2rem;
+            transition: all 0.2s ease;
         }
 
-        .profile-card.selected .check-icon {
-            display: flex;
+        .profile-row.selected .select-radio {
+            border-color: #111d33;
+            background: #111d33;
+        }
+
+        .select-radio::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0;
+        }
+
+        .profile-row.selected .select-radio::after {
+            opacity: 1;
         }
 
         .actions {
@@ -153,20 +302,22 @@
         }
 
         .btn-select {
-            background: linear-gradient(135deg, #ff0854 0%, #d6006d 100%);
+            background: linear-gradient(135deg, #111d33 0%, #1a2a4d 100%);
             color: white;
             padding: 1rem 3rem;
-            border-radius: 8px;
+            border-radius: 12px;
             border: none;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(17, 29, 51, 0.3), 0 0 30px rgba(17, 29, 51, 0.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
         .btn-select:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 8, 84, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(17, 29, 51, 0.4), 0 0 40px rgba(17, 29, 51, 0.3);
         }
 
         .btn-select:disabled {
@@ -175,52 +326,141 @@
         }
 
         .btn-logout {
-            background: white;
-            color: #ff0854;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            color: #111d33;
             padding: 1rem 2rem;
-            border-radius: 8px;
-            border: 2px solid #ff0854;
+            border-radius: 12px;
+            border: 2px solid rgba(17, 29, 51, 0.3);
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            box-shadow: 0 4px 15px rgba(17, 29, 51, 0.1);
         }
 
         .btn-logout:hover {
-            background: #ff0854;
+            background: linear-gradient(135deg, #111d33 0%, #0d172a 100%);
             color: white;
+            border-color: #111d33;
+            box-shadow: 0 8px 25px rgba(17, 29, 51, 0.3);
         }
 
         .alert {
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
             margin-bottom: 1.5rem;
             text-align: center;
+            font-weight: 500;
         }
 
         .alert-error {
-            background: #fed7d7;
-            color: #742a2a;
-            border: 1px solid #fc8181;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
         }
 
         .empty-state {
             text-align: center;
             padding: 3rem;
-            color: #718096;
+            color: #111d33;
         }
 
         .empty-state-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
-            opacity: 0.5;
+            filter: drop-shadow(0 0 10px rgba(17, 29, 51, 0.3));
+        }
+
+        .empty-state h3 {
+            color: #0d172a;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(17, 29, 51, 0.2);
+        }
+
+        .empty-state p {
+            color: #64748b;
+        }
+
+        /* Decorative particles */
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #111d33;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: particle-float 15s infinite ease-in-out;
+        }
+
+        @keyframes particle-float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            50% { transform: translateY(-100px) translateX(50px); opacity: 0.6; }
+        }
+
+        @media (max-width: 900px) {
+            .select-profile-box {
+                padding: 2rem;
+            }
+
+            .list-header {
+                display: none;
+            }
+
+            .profile-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 20px;
+            }
+
+            .col-account {
+                grid-column: 1;
+            }
+
+            .col-type, .col-country, .col-currency, .col-timezone {
+                grid-column: 1;
+                justify-content: flex-start;
+            }
+
+            .col-select {
+                grid-column: 1;
+                justify-content: flex-start;
+                padding-top: 12px;
+                border-top: 1px solid #f1f5f9;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .select-profile-box {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="select-profile-container">
+        <div class="bg-decoration">
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="grid-pattern"></div>
+            <div class="particle" style="top: 20%; left: 15%; animation-delay: 0s;"></div>
+            <div class="particle" style="top: 60%; left: 80%; animation-delay: -3s;"></div>
+            <div class="particle" style="top: 80%; left: 30%; animation-delay: -6s;"></div>
+            <div class="particle" style="top: 30%; left: 70%; animation-delay: -9s;"></div>
+        </div>
+
         <div class="select-profile-box">
             <div class="header">
                 <div class="header-icon">🎯</div>
@@ -240,35 +480,36 @@
 
             <% if (profiles && profiles.length > 0) { %>
                 <form action="/select-profile" method="POST" id="profileForm">
-                    <div class="profiles-grid">
+                    <div class="profiles-list">
+                        <div class="list-header">
+                            <div class="col-account">Account</div>
+                            <div class="col-type">Type</div>
+                            <div class="col-country">Country</div>
+                            <div class="col-currency">Currency</div>
+                            <div class="col-timezone">Timezone</div>
+                            <div class="col-select"></div>
+                        </div>
                         <% profiles.forEach(profile => { %>
-                            <div class="profile-card <%= selectedProfile && selectedProfile.profileId === profile.profileId ? 'selected' : '' %>" 
+                            <div class="profile-row <%= selectedProfile && selectedProfile.profileId === profile.profileId ? 'selected' : '' %>" 
                                  data-profile-id="<%= profile.profileId %>"
-                                 onclick="selectCard(this)">
-                                <div class="check-icon">✓</div>
-                                <div class="profile-icon">
-                                    <%= profile.accountInfo.type === 'seller' ? '🏪' : profile.accountInfo.type === 'vendor' ? '🏢' : '👥' %>
+                                 onclick="selectRow(this)">
+                                <div class="col-account">
+                                    <div class="profile-icon">
+                                        <%= profile.accountInfo.type === 'seller' ? '🏪' : profile.accountInfo.type === 'vendor' ? '🏢' : '👥' %>
+                                    </div>
+                                    <div class="account-info">
+                                        <span class="account-name"><%= profile.accountInfo.name %></span>
+                                        <span class="account-id">ID: <%= profile.profileId %></span>
+                                    </div>
                                 </div>
-                                <div class="profile-name"><%= profile.accountInfo.name %></div>
-                                <span class="profile-type"><%= profile.accountInfo.type %></span>
-                                
-                                <div class="profile-details">
-                                    <div class="profile-detail-item">
-                                        <span class="profile-detail-label">Profile ID:</span>
-                                        <span class="profile-detail-value"><%= profile.profileId %></span>
-                                    </div>
-                                    <div class="profile-detail-item">
-                                        <span class="profile-detail-label">Country:</span>
-                                        <span class="profile-detail-value"><%= profile.countryCode %></span>
-                                    </div>
-                                    <div class="profile-detail-item">
-                                        <span class="profile-detail-label">Currency:</span>
-                                        <span class="profile-detail-value"><%= profile.currencyCode %></span>
-                                    </div>
-                                    <div class="profile-detail-item">
-                                        <span class="profile-detail-label">Timezone:</span>
-                                        <span class="profile-detail-value"><%= profile.timezone %></span>
-                                    </div>
+                                <div class="col-type">
+                                    <span class="type-badge <%= profile.accountInfo.type %>"><%= profile.accountInfo.type.toUpperCase() %></span>
+                                </div>
+                                <div class="col-country"><%= profile.countryCode %></div>
+                                <div class="col-currency"><%= profile.currencyCode %></div>
+                                <div class="col-timezone"><%= profile.timezone %></div>
+                                <div class="col-select">
+                                    <div class="select-radio"></div>
                                 </div>
                             </div>
                         <% }); %>
@@ -297,31 +538,27 @@
     </div>
 
     <script>
-        function selectCard(card) {
-            // Remove selected class from all cards
-            document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
+        function selectRow(row) {
+            // Remove selected class from all rows
+            document.querySelectorAll('.profile-row').forEach(r => r.classList.remove('selected'));
             
-            // Add selected class to clicked card
-            card.classList.add('selected');
+            // Add selected class to clicked row
+            row.classList.add('selected');
             
             // Update hidden input
-            const profileId = card.getAttribute('data-profile-id');
+            const profileId = row.getAttribute('data-profile-id');
             document.getElementById('selectedProfileId').value = profileId;
             
             // Enable continue button
             document.getElementById('continueBtn').disabled = false;
         }
 
-        // Get URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-
         // Auto-select if only one profile
         <% if (profiles && profiles.length === 1) { %>
             window.onload = function() {
-                const card = document.querySelector('.profile-card');
-                if (card) {
-                    selectCard(card);
+                const row = document.querySelector('.profile-row');
+                if (row) {
+                    selectRow(row);
                 }
             };
         <% } %>

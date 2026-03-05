@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { AmazonApiService, ReportPayload, } from "./amazon-api.service";
+import { IAmazonAuth } from "src/interfaces/index.type";
 
 export interface ICampaignFilter {
   state?: string[];
@@ -64,11 +65,11 @@ const CAMPAIGN_MATRICS = [
 
 @Injectable()
 export class CampaignApiService extends AmazonApiService {
-  async getCampaigns(scopeId: string = this.scopeId, filter = {} as ICampaignFilter) {
+  async getCampaigns(auth: IAmazonAuth, filter = {} as ICampaignFilter) {
     try {
       const campaigns = await this.httpClient.post(`/sp/campaigns/list`,
         this.filterBuilder(filter),
-        this.scopeBuilder(scopeId)
+        this.authBuilder(auth)
       );
       return campaigns.data?.campaigns;
     } catch (error) {
@@ -77,10 +78,10 @@ export class CampaignApiService extends AmazonApiService {
     }
   }
 
-  async updateCampaign(campaignId: string, data: any, scopeId: string = this.scopeId) {
+  async updateCampaign(campaignId: string, data: any, auth: IAmazonAuth) {
     try {
       const response = await this.httpClient.put(`/sp/campaigns`, data, {
-        ...this.scopeBuilder(scopeId)
+        ...this.authBuilder(auth)
       });
       return response.data;
     } catch (error) {
@@ -89,33 +90,33 @@ export class CampaignApiService extends AmazonApiService {
     }
   }
 
-  async generateCampaignReport(payload: ReportPayload) {
-    return this.generateReport(payload, {
+  async generateCampaignReport(auth: IAmazonAuth,payload: ReportPayload) {
+    return this.generateReport(auth,payload, {
       reportTypeId: 'spCampaigns',
-      groupBy: ["campaign"],
+      groupBy: ["campaign"],  
       columns: CAMPAIGN_MATRICS
     });
   }
 
-  async getReports(reportId: string) {
-    try {
-      const response = await this.httpClient.get(`/reporting/reports/${reportId}`, {
-        ...this.scopeBuilder()
-      });
-      return response.data;
-    } catch (error) {
-      this.logger.error('Failed to get report', error.response?.data || error.message);
-      throw error;
-    }
-  }
+  // async getReports(auth: IAmazonAuth,reportId: string, ) {
+  //   try {
+  //     const response = await this.httpClient.get(`/reporting/reports/${reportId}`, 
+  //       this.authBuilder(auth)
+  //     );
+  //     return response.data;
+  //   } catch (error) {
+  //     this.logger.error('Failed to get report', error.response?.data || error.message);
+  //     throw error;
+  //   }
+  // }
 
-  async getBudgetUses(campaignIds: string[],scopeId: string = this.scopeId, ) {
+  async getBudgetUses(campaignIds: string[], auth: IAmazonAuth) {
     try {
       const response = await this.httpClient.post(`/sp/campaigns/budget/usage`, {
         campaignIds: campaignIds
-      }, this.scopeBuilder(scopeId)
+      }, this.authBuilder(auth)
       )
-      console.log(response.data)
+      // console.log(response.data)
       return response.data.success;
     } catch (error) {
       console.log(error,"data")

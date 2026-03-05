@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Amazon Bid Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff0854 0%, #d6006d 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .login-subtitle {
+            color: #718096;
+            margin-bottom: 2rem;
+        }
+
+        .login-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff0854 0%, #d6006d 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 8, 84, 0.4);
+        }
+
+        .amazon-icon {
+            margin-right: 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #68d391;
+        }
+
+        .features {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        .feature-icon {
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+        }
+
+        .divider {
+            margin: 2rem 0;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .help-text {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-logo">📊</div>
+            <h1 class="login-title">Amazon Bid Manager</h1>
+            <p class="login-subtitle">Automated ROI-based bid optimization</p>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error">
+                    <% if (error === 'access_denied') { %>
+                        ❌ Access denied. Please authorize the application to continue.
+                    <% } else if (error === 'no_code') { %>
+                        ❌ No authorization code received. Please try again.
+                    <% } else if (error === 'auth_failed') { %>
+                        ❌ Authentication failed. Please check your credentials and try again.
+                    <% } else { %>
+                        ❌ An error occurred during login. Please try again.
+                    <% } %>
+                </div>
+            <% } %>
+
+            <% if (typeof message !== 'undefined' && message === 'logged_out') { %>
+                <div class="alert alert-success">
+                    ✓ You have been successfully logged out.
+                </div>
+            <% } %>
+
+            <a href="/auth/amazon" class="login-btn">
+                <span class="amazon-icon">🔐</span>
+                Login with Amazon
+            </a>
+
+            <div class="divider"></div>
+
+            <div class="features">
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <span>Access your Amazon Advertising profiles</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📈</span>
+                    <span>Manage campaigns and bids</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🤖</span>
+                    <span>Automated bid optimization</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <span>Real-time performance tracking</span>
+                </div>
+            </div>
+
+            <p class="help-text">
+                By logging in, you authorize this application to manage your Amazon Advertising campaigns.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const message = urlParams.get('message');
+
+        // Show loading state when login button is clicked
+        document.querySelector('.login-btn').addEventListener('click', function(e) {
+            this.innerHTML = '<span class="amazon-icon">⏳</span> Redirecting to Amazon...';
+            this.style.pointerEvents = 'none';
+        });
+    </script>
+</body>
+</html>
