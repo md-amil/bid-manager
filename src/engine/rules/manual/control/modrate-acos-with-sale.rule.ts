@@ -1,6 +1,7 @@
 import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, TargetingType } from "src/engine/interfaces";
 import BaseRule, { config } from "../../base.rule";
 import { Type } from "src/schemas/campaign.schema";
+import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 
 /**
  * RULE 003: High ACOS but Sales Present
@@ -23,22 +24,28 @@ export class ModerateACOSWithSalesManualRule extends BaseRule implements ICampai
     );
   }
 
-  execute(): AutoCampaignAdjustment {
-    // const metrics = campaign.metrics7d!;
-    // const acos = metrics.spend / metrics.sales;
+  execute(): AdjustmentLog {
 
     return {
       ruleId: 'MANUAL_CONTROL_003',
       ruleName: 'Moderate ACOS Reduction - Gradual Approach',
       campaignId: this.campaign.campaignId,
-      adjustments: {
-        bidChanges: [
-          { targetingType: TargetingType.EXACT_MATCH, change: -20 },
-          { targetingType: TargetingType.PHRASE_MATCH, change: -20 },
-          { targetingType: TargetingType.BROAD_MATCH, change: -20 },
-        ],
-        action: 'DECREASE',
-      },
+      adjustments: [
+        {
+          action: EAction.DECREASE_BID,
+          change: -20,
+          target:ETarget.KEYWORDS
+        },
+      ],
+      keywords:this.keywordsIdText,
+      // adjustments: {
+      //   bidChanges: [
+      //     { targetingType: TargetingType.EXACT_MATCH, change: -20 },
+      //     { targetingType: TargetingType.PHRASE_MATCH, change: -20 },
+      //     { targetingType: TargetingType.BROAD_MATCH, change: -20 },
+      //   ],
+      //   action: 'DECREASE',
+      // },
       reasoning:
         `ACOS ${(this.acos * 100).toFixed(2)}% is slightly above target. Sales still happening (${this.sales} orders). ` +
         `Using gradual approach: reducing bids 20%. Will repeat max 3 times. ` +

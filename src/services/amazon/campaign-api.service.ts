@@ -63,6 +63,70 @@ const CAMPAIGN_MATRICS = [
 ];
 
 
+const TARGETING_MATRICS =  [
+    "impressions",
+    "addToList",
+    "qualifiedBorrows",
+    "royaltyQualifiedBorrows",
+    "clicks",
+    "costPerClick",
+    "clickThroughRate",
+    "cost",
+    "purchases1d",
+    "purchases7d",
+    "purchases14d",
+    "purchases30d",
+    "purchasesSameSku1d",
+    "purchasesSameSku7d",
+    "purchasesSameSku14d",
+    "purchasesSameSku30d",
+    "unitsSoldClicks1d",
+    "unitsSoldClicks7d",
+    "unitsSoldClicks14d",
+    "unitsSoldClicks30d",
+    "sales1d",
+    "sales7d",
+    "sales14d",
+    "sales30d",
+    "attributedSalesSameSku1d",
+    "attributedSalesSameSku7d",
+    "attributedSalesSameSku14d",
+    "attributedSalesSameSku30d",
+    "unitsSoldSameSku1d",
+    "unitsSoldSameSku7d",
+    "unitsSoldSameSku14d",
+    "unitsSoldSameSku30d",
+    "kindleEditionNormalizedPagesRead14d",
+    "kindleEditionNormalizedPagesRoyalties14d",
+    "salesOtherSku7d",
+    "unitsSoldOtherSku7d",
+    "acosClicks7d",
+    "acosClicks14d",
+    "roasClicks7d",
+    "roasClicks14d",
+    "keywordId",
+    "keyword",
+    "campaignBudgetCurrencyCode",
+    "date",
+    // "startDate",
+    // "endDate",
+    "portfolioId",
+    "campaignName",
+    "campaignId",
+    "campaignBudgetType",
+    "campaignBudgetAmount",
+    "campaignStatus",
+    "keywordBid",
+    "adGroupName",
+    "adGroupId",
+    "keywordType",
+    "matchType",
+    "targeting",
+    "topOfSearchImpressionShare"
+  ]
+
+
+
 @Injectable()
 export class CampaignApiService extends AmazonApiService {
   async getCampaigns(auth: IAmazonAuth, filter = {} as ICampaignFilter) {
@@ -96,6 +160,45 @@ export class CampaignApiService extends AmazonApiService {
       groupBy: ["campaign"],  
       columns: CAMPAIGN_MATRICS
     });
+  }
+  async generateTargetingReport(auth: IAmazonAuth, payload: ReportPayload){
+    return this.generateReport(auth,payload, {
+      reportTypeId: 'spTargeting',
+      groupBy: ["targeting"],  
+      columns: TARGETING_MATRICS
+    });
+    // adProduct": "SPONSORED_PRODUCTS",
+    //     "groupBy": [
+    //         "targeting"
+    //     ],
+    //     "columns": [
+    //         "adGroupId",
+    //         "campaignId",
+    //         "targeting",
+    //         "keywordId",
+    //         "matchType",
+    //         "impressions",
+    //         "clicks",
+    //         "cost",
+    //         "purchases1d",
+    //         "purchases7d",
+    //         "purchases14d",
+    //         "purchases30d",
+    //         "startDate",
+    //         "endDate"
+    //     ],
+    //     "filters": [
+    //         {
+    //             "field": "keywordType",
+    //             "values": [
+    //                 "TARGETING_EXPRESSION",
+    //                 "TARGETING_EXPRESSION_PREDEFINED"
+    //             ]
+    //         }
+    //     ],
+    //     "reportTypeId": "spTargeting",
+    //     "timeUnit": "SUMMARY",
+    //     "format": "GZIP_JSON"
   }
 
   // async getReports(auth: IAmazonAuth,reportId: string, ) {

@@ -44,7 +44,7 @@ export interface ReportPayload {
 
 export interface ReportConfig {
   scopeId?: string;
-  reportTypeId: 'spCampaigns' | 'spKeywords'| 'spSearchTerm';
+  reportTypeId: 'spCampaigns' | 'spKeywords'| 'spSearchTerm'|'spTargeting';
   groupBy: string[];
   columns: string[];
 }

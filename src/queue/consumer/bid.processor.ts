@@ -1,7 +1,6 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
 // import { ReportService } from "src/services/report.service";
-import { BidService } from "src/services/amazon/bid.service";
 import   Engine  from "src/engine/core/rule.engine";
 import { CampaignService } from "src/services/campaign.service";
 // import AdManager from "src/engine/manager";
@@ -11,8 +10,7 @@ export class BidProcessor extends WorkerHost {
 
     constructor(
         private readonly engine: Engine,
-        private readonly bidService: BidService,
-        private readonly campaignService: CampaignService
+        private readonly campaignService: CampaignService,
     ) {
         super();
     }
@@ -20,12 +18,7 @@ export class BidProcessor extends WorkerHost {
     async process(job: Job): Promise<any> {
         const bundle = await this.campaignService.findCampaignBundle(job.data.campaignId)
         const searchTerms = await this.campaignService.getSearchTermReport(job.data.campaignId)
-        const engine = new Engine({...bundle, searchTerms})
-        await engine.run({...bundle, searchTerms})
-        // const recommendations = engine.getAdjustments()
-        // const manager = new AdManager({bundle,searchTerm,budgetUsages:job.data.budgetUsages})
-        // const recommendations = manager.analyzeCampaign()
-        // console.log({recommendations})
+        await this.engine.run({...bundle, searchTerms})
     }
 
     @OnWorkerEvent('active')

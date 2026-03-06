@@ -18,13 +18,13 @@ export class Target {
   @Prop({ required: true, index: true })
   adGroupId: string;
 
-  @Prop()
-  bid?: number;
+  @Prop({required:true})
+  bid: number;
 
   @Prop({
     type: [
       {
-         _id: false,   
+        _id: false,   
         type: { type: String },
         value: { type: String },
       },

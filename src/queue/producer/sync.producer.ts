@@ -17,15 +17,11 @@ export class SyncProducer {
     const scopeId = this.cls.get('scopeId');
     const accessToken = this.cls.get('accessToken');
     try {
-      const endDate = new Date().toISOString();
-      const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const job = await this.syncQueue.add('sync', {
         auth:auth??{
           accessToken,
           scopeId,
         },
-        endDate,
-        startDate,
       });
       return job;
     } catch (error) {

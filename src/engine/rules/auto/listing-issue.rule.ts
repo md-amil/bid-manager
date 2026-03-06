@@ -1,3 +1,4 @@
+import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 import { AutoCampaignAdjustment, TargetingType, ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
 import AutoCampaignBaseRule, { config } from "../base.rule";
 
@@ -22,20 +23,25 @@ export class ListingConversionIssuesRule extends AutoCampaignBaseRule implements
     // return hasGoodTraffic && poorConversion;
   }
 
-  execute(): AutoCampaignAdjustment {
-    return {
-      ruleId: 'RULE_005',
-      ruleName: 'Listing Conversion Issues Detected',
-      campaignId: this.campaign.campaignId,
-      adjustments: {
-        bidChanges: [
+  execute(): AdjustmentLog {
+    const targetings = [
           { targetingType: TargetingType.CLOSE_MATCH, change: -50 },
           { targetingType: TargetingType.LOOSE_MATCH, change: -50 },
           { targetingType: TargetingType.SUBSTITUTES, change: -50 },
           { targetingType: TargetingType.COMPLEMENTS, change: -50 },
-        ],
-        action: 'DECREASE',
-      },
+        ]
+    return {
+      ruleId: 'RULE_005',
+      ruleName: 'Listing Conversion Issues Detected',
+      campaignId: this.campaign.campaignId,
+      adjustments:[
+        {
+          action:EAction.DECREASE_BID,
+          target:ETarget.TARGETING,
+          change:-50
+        }
+      ],
+      targetings,
       reasoning:
         `Good impressions and clicks detected but low sales indicate listing conversion issues ` +
         `(poor reviews, pricing, or content). Reducing all bids by 50% until listing improvements are made.`,

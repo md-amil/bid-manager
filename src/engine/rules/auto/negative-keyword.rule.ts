@@ -1,3 +1,4 @@
+import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
 import AutoCampaignBaseRule, { config } from "../base.rule";
 
@@ -14,21 +15,24 @@ export class NegativeKeywordRule extends AutoCampaignBaseRule implements ICampai
     return poorSearchTerms.length > 0;
   }
 
-  execute(): AutoCampaignAdjustment {
+  execute(): AdjustmentLog {
     const termsToNegate = this.getLowPerformingSearchTerms();
-    const negativKeywords = termsToNegate.map(st => st.searchTerm);
+    const negativeKeywords = termsToNegate.map(st => st.searchTerm);
 
     return {
       ruleId: 'RULE_010',
       ruleName: 'Add Negative Keywords',
       campaignId: this.campaign.campaignId,
-      adjustments: {
-        negativeKeywordsToAdd: negativKeywords,
-        action: 'ADD_NEGATIVE',
-      },
+      adjustments:[
+        {
+          action:EAction.ADD_NEGATIVE,
+          target:ETarget.KEYWORDS
+        }
+      ],
+      keywords:negativeKeywords,
       reasoning:
         `Found ${termsToNegate.length} search terms with 20+ clicks/200+ spend and zero sales. ` +
-        `Adding ${negativKeywords.length} terms as negative exact/phrase keywords to reduce wasted spend.`,
+        `Adding ${negativeKeywords.length} terms as negative exact/phrase keywords to reduce wasted spend.`,
     };
   }
 }

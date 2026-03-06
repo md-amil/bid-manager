@@ -10,10 +10,9 @@ import { ViewController } from './controllers/view.controller';
 import { ProfileController } from './controllers/profile.controller';
 import { AuthController } from './controllers/auth.controller';
 import { Campaign, CampaignSchema } from './schemas/campaign.schema';
-import { BidAdjustmentLog, BidAdjustmentLogSchema } from './schemas/bid-adjustment-log.schema';
+import { AdjustmentLog, AdjustmentLogSchema } from './schemas/log.schema';
 import { CampaignReport, CampaignReportSchema, } from './schemas/reports/report.schema';
 import { AmazonApiService } from './services/amazon/amazon-api.service';
-import { BidService } from './services/amazon/bid.service';
 import { CronService } from './services/cron.service';
 import { AuthService } from './services/auth.service';
 import { BullModule } from '@nestjs/bullmq';
@@ -42,6 +41,7 @@ import { Organization, OrganizationSchema } from './schemas/organization.schema'
 import Engine from './engine/core/rule.engine';
 import { AuthApiService } from './services/amazon/auth-api.service';
 import { ClsMiddleware } from './middleware/cls.middleware';
+import { AdjustmentLogService } from './services/log.service';
 
 @Module({
   imports: [
@@ -64,14 +64,14 @@ import { ClsMiddleware } from './middleware/cls.middleware';
     MongooseModule.forFeature([
       { name: OptimizationLog.name, schema: OptimizationLogSchema },
       { name: Campaign.name, schema: CampaignSchema },
-      { name: BidAdjustmentLog.name, schema: BidAdjustmentLogSchema },
+      { name: AdjustmentLog.name, schema: AdjustmentLogSchema },
       { name: CampaignReport.name, schema: CampaignReportSchema },
       { name: AdGroup.name, schema: AdGroupSchema },
       { name: Ad.name, schema: AdSchema },
       { name: Keyword.name, schema: KeywordSchema },
       { name: Target.name, schema: TargetSchema },
       { name: KeywordReport.name, schema: KeywordReportSchema },
-       { name: SearchTermReport.name, schema: SearchTermReportSchema },
+      { name: SearchTermReport.name, schema: SearchTermReportSchema },
 
       { name: Profile.name, schema: ProfileSchema },
       { name: User.name, schema: UserSchema },
@@ -86,7 +86,17 @@ import { ClsMiddleware } from './middleware/cls.middleware';
     }),
   ],
   controllers: [AppController, CampaignController, ViewController, ProfileController, AuthController],
-  providers: [AppService,AuthApiService,AdGroupApiService, AmazonApiService,Engine, CampaignApiService,BidService, CronService, AuthService, AmazonSyncService, AmazonSyncProcessor, BidProcessor, ReportProcessor, CampaignService, SyncProducer, ReportProducer, BidProducer, ReportService],
+  providers: [
+    AmazonSyncService, AmazonSyncProcessor,
+    AdGroupApiService, AmazonApiService,
+    AppService, AuthApiService,
+    Engine, CampaignApiService,
+    CronService, AuthService,
+    BidProcessor, ReportProcessor,
+    CampaignService, SyncProducer,
+    ReportProducer, BidProducer,
+    ReportService, AdjustmentLogService
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

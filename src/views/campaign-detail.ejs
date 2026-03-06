@@ -221,88 +221,138 @@
             <div class="section">
                 <h3>Optimization History</h3>
                 <% if (logs && logs.length > 0) { %>
-                    <div class="table-responsive">
-                        <table class="log-table">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>Type</th>
-                                    <th>Action</th>
-                                    <th>Old Value</th>
-                                    <th>New Value</th>
-                                    <th>Change</th>
-                                    <th>Reason</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% logs.forEach(log => { %>
-                                    <tr class="<%= log.status %>">
-                                        <td>
-                                            <div class="timestamp">
-                                                <%= new Date(log.createdAt).toLocaleDateString() %>
-                                                <span class="time"><%= new Date(log.createdAt).toLocaleTimeString() %></span>
+                    <div class="accordion-container">
+                        <% logs.forEach((log, index) => { %>
+                            <div class="accordion-item">
+                                <div class="accordion-header" onclick="toggleAccordion(this)">
+                                    <div class="accordion-summary">
+                                        <div class="summary-date">
+                                            <i class="fas fa-calendar"></i>
+                                            <span><%= new Date(log.createdAt).toLocaleDateString() %></span>
+                                            <span class="time"><%= new Date(log.createdAt).toLocaleTimeString() %></span>
+                                        </div>
+                                        <div class="summary-rule">
+                                            <i class="fas fa-cog"></i>
+                                            <span class="rule-name"><%= log.ruleName || 'Rule' %></span>
+                                            <span class="rule-id">ID: <%= log.ruleId || 'N/A' %></span>
+                                        </div>
+                                        <div class="summary-actions">
+                                            <% if (log.adjustments && log.adjustments.length > 0) { %>
+                                                <% log.adjustments.forEach(adj => { %>
+                                                    <span class="action-badge-mini <%= adj.action.toLowerCase().replace(/_/g, '-') %>">
+                                                        <%= adj.action.replace(/_/g, ' ') %>
+                                                    </span>
+                                                <% }); %>
+                                            <% } %>
+                                        </div>
+                                        <div class="accordion-toggle">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-content">
+                                    <div class="accordion-inner">
+                                        <!-- <div class="log-meta">
+                                            <div class="meta-item">
+                                                <i class="fas fa-hashtag"></i>
+                                                <span class="meta-label">Rule ID:</span>
+                                                <span class="meta-value"><%= log.ruleId || 'N/A' %></span>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <span class="type-badge <%= log.type.toLowerCase().replace('_', '-') %>">
-                                                <%= log.type.replace('_', ' ') %>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <% if (log.action) { %>
-                                                <span class="action-badge"><%= log.action %></span>
-                                            <% } else { %>
-                                                -
-                                            <% } %>
-                                        </td>
-                                        <td>
-                                            <% if (log.oldValue !== null && log.oldValue !== undefined) { %>
-                                                $<%= log.oldValue.toFixed(2) %>
-                                            <% } else { %>
-                                                -
-                                            <% } %>
-                                        </td>
-                                        <td>
-                                            <% if (log.newValue !== null && log.newValue !== undefined) { %>
-                                                $<%= log.newValue.toFixed(2) %>
-                                            <% } else { %>
-                                                -
-                                            <% } %>
-                                        </td>
-                                        <td>
-                                            <% if (log.adjustmentPercentage !== null && log.adjustmentPercentage !== undefined) { %>
-                                                <% 
-                                                    const changeClass = log.adjustmentPercentage > 0 ? 'increase' : 'decrease';
-                                                %>
-                                                <span class="change <%= changeClass %>">
-                                                    <%= log.adjustmentPercentage > 0 ? '+' : '' %><%= log.adjustmentPercentage.toFixed(1) %>%
-                                                </span>
-                                            <% } else if (log.oldValue && log.newValue) { %>
-                                                <% 
-                                                    const change = ((log.newValue - log.oldValue) / log.oldValue * 100).toFixed(1);
-                                                    const changeClass = change > 0 ? 'increase' : 'decrease';
-                                                %>
-                                                <span class="change <%= changeClass %>">
-                                                    <%= change > 0 ? '+' : '' %><%= change %>%
-                                                </span>
-                                            <% } else { %>
-                                                -
-                                            <% } %>
-                                        </td>
-                                        <td class="reason-cell"><%= log.reason %></td>
-                                        <td>
-                                            <span class="status-badge <%= log.status %>">
-                                                <%= log.status %>
-                                            </span>
-                                            <% if (log.errorMessage) { %>
-                                                <div class="error-message"><%= log.errorMessage %></div>
-                                            <% } %>
-                                        </td>
-                                    </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
+                                            <div class="meta-item">
+                                                <i class="fas fa-tag"></i>
+                                                <span class="meta-label">Rule Name:</span>
+                                                <span class="meta-value"><%= log.ruleName || 'N/A' %></span>
+                                            </div>
+                                        </div> -->
+                                        
+                                        <% if (log.reasoning) { %>
+                                            <div class="reasoning-box">
+                                                <i class="fas fa-lightbulb"></i>
+                                                <span><%= log.reasoning %></span>
+                                            </div>
+                                        <% } %>
+                                        
+                                        <!-- <% if (log.adjustments && log.adjustments.length > 0) { %>
+                                            <div class="adjustments-section">
+                                                <h4><i class="fas fa-list-ul"></i> Adjustments</h4>
+                                                <div class="adjustments-list">
+                                                    <% log.adjustments.forEach(adj => { %>
+                                                        <div class="adjustment-item <%= adj.action.toLowerCase().replace(/_/g, '-') %>">
+                                                            <div class="adj-action">
+                                                                <span class="action-badge <%= adj.action.toLowerCase().replace(/_/g, '-') %>">
+                                                                    <%= adj.action.replace(/_/g, ' ') %>
+                                                                </span>
+                                                            </div>
+                                                            <% if (adj.target) { %>
+                                                                <div class="adj-target">
+                                                                    <i class="fas fa-crosshairs"></i>
+                                                                    <%= adj.target %>
+                                                                </div>
+                                                            <% } %>
+                                                            <% if (adj.change !== null && adj.change !== undefined) { %>
+                                                                <div class="adj-change <%= adj.change > 0 ? 'positive' : 'negative' %>">
+                                                                    <i class="fas fa-<%= adj.change > 0 ? 'arrow-up' : 'arrow-down' %>"></i>
+                                                                    <%= adj.change > 0 ? '+' : '' %><%= adj.change.toFixed(1) %>%
+                                                                </div>
+                                                            <% } %>
+                                                        </div>
+                                                    <% }); %>
+                                                </div>
+                                            </div>
+                                        <% } %> -->
+
+                                        <% if (log.targetings && log.targetings.length > 0) { %>
+                                            <div class="targets-section">
+                                                <h4><i class="fas fa-bullseye"></i> Targetings</h4>
+                                                <div class="targets-list">
+                                                    <% log.targetings.forEach(t => { %>
+                                                        <div class="target-item">
+                                                            <span class="target-id"><%= t.targetId || t._id || t||'N/A' %></span>
+                                                            <span class="target-bid">
+                                                                <% if (t.bid !== undefined) { %>
+                                                                    $<%= t.bid.toFixed(2) %>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                                    <% }); %>
+                                                </div>
+                                            </div>
+                                        <% } %>
+
+                                        <% if (log.keywords && log.keywords.length > 0) { %>
+                                            <div class="keywords-section">
+                                                <h4><i class="fas fa-key"></i> Keywords</h4>
+                                                <div class="keywords-list">
+                                                    <% log.keywords.forEach(k => { %>
+                                                        <div class="keyword-item">
+                                                            <span class="keyword-text"><%= k.keywordText || k.text || 'N/A' %></span>
+                                                            <span class="keyword-bid">
+                                                                <% if (k.bid !== undefined) { %>
+                                                                    $<%= k.bid.toFixed(2) %>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                                    <% }); %>
+                                                </div>
+                                            </div>
+                                        <% } %>
+
+                                        <% if (log.searchTerms && log.searchTerms.length > 0) { %>
+                                            <div class="search-terms-section">
+                                                <h4><i class="fas fa-search"></i> Search Terms</h4>
+                                                <div class="search-terms-list">
+                                                    <% log.searchTerms.forEach(st => { %>
+                                                        <div class="search-term-item">
+                                                            <span class="term-text"><%= st.searchTerm || st.term || 'N/A' %></span>
+                                                        </div>
+                                                    <% }); %>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
                     </div>
                 <% } else { %>
                     <p class="no-data">No optimization history yet for this campaign.</p>
@@ -318,5 +368,527 @@
     </main>
     
     <%- include('partials/footer') %>
+
+<style>
+/* Accordion Styles */
+.accordion-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.accordion-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.accordion-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.accordion-header {
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.accordion-header:hover {
+    background: #f8fafc;
+}
+
+.accordion-summary {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 2fr auto;
+    align-items: center;
+    gap: 16px;
+}
+
+.summary-date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.summary-date i {
+    color: #94a3b8;
+}
+
+.summary-date .time {
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+.summary-rule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.summary-rule i {
+    color: #111d33;
+}
+
+.summary-rule .rule-name {
+    font-weight: 600;
+}
+
+.summary-rule .rule-id {
+    font-size: 0.75rem;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.summary-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.action-badge-mini {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Action Colors - Mini Badges */
+.action-badge-mini.increase-bid {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.action-badge-mini.decrease-bid {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.action-badge-mini.increase-budget {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.action-badge-mini.decrease-budget {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.action-badge-mini.pause-campaign {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.action-badge-mini.resume-campaign {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.action-badge-mini.add-negative {
+    background: #fae8ff;
+    color: #86198f;
+}
+
+.action-badge-mini.remove-negative {
+    background: #fce7f3;
+    color: #9d174d;
+}
+
+.action-badge-mini.move {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.action-badge-mini.suggested {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px dashed #86efac;
+}
+
+.accordion-toggle {
+    color: #94a3b8;
+    transition: transform 0.3s ease;
+}
+
+.accordion-item.active .accordion-toggle {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.accordion-item.active .accordion-content {
+    max-height: 2000px;
+}
+
+.accordion-inner {
+    padding: 20px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+/* Log Meta */
+.log-meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.meta-item i {
+    color: #94a3b8;
+}
+
+.meta-label {
+    color: #64748b;
+}
+
+.meta-value {
+    color: #111d33;
+    font-weight: 600;
+    font-family: monospace;
+}
+
+/* Reasoning Box */
+.reasoning-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #fcd34d;
+}
+
+.reasoning-box i {
+    color: #d97706;
+    font-size: 1.1rem;
+    margin-top: 2px;
+}
+
+.reasoning-box span {
+    color: #78350f;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Adjustments Section */
+.adjustments-section,
+.targets-section,
+.keywords-section,
+.search-terms-section {
+    margin-bottom: 16px;
+}
+
+.adjustments-section:last-child,
+.targets-section:last-child,
+.keywords-section:last-child,
+.search-terms-section:last-child {
+    margin-bottom: 0;
+}
+
+.adjustments-section h4,
+.targets-section h4,
+.keywords-section h4,
+.search-terms-section h4 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #111d33;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.adjustments-section h4 i,
+.targets-section h4 i,
+.keywords-section h4 i,
+.search-terms-section h4 i {
+    color: #64748b;
+}
+
+.adjustments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.adjustment-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #94a3b8;
+}
+
+/* Adjustment Item Border Colors by Action */
+.adjustment-item.increase-bid {
+    border-left-color: #16a34a;
+    background: linear-gradient(90deg, #f0fdf4 0%, white 20%);
+}
+
+.adjustment-item.decrease-bid {
+    border-left-color: #dc2626;
+    background: linear-gradient(90deg, #fef2f2 0%, white 20%);
+}
+
+.adjustment-item.increase-budget {
+    border-left-color: #2563eb;
+    background: linear-gradient(90deg, #eff6ff 0%, white 20%);
+}
+
+.adjustment-item.decrease-budget {
+    border-left-color: #d97706;
+    background: linear-gradient(90deg, #fffbeb 0%, white 20%);
+}
+
+.adjustment-item.pause-campaign {
+    border-left-color: #64748b;
+    background: linear-gradient(90deg, #f8fafc 0%, white 20%);
+}
+
+.adjustment-item.resume-campaign {
+    border-left-color: #059669;
+    background: linear-gradient(90deg, #ecfdf5 0%, white 20%);
+}
+
+.adjustment-item.add-negative {
+    border-left-color: #a21caf;
+    background: linear-gradient(90deg, #fdf4ff 0%, white 20%);
+}
+
+.adjustment-item.remove-negative {
+    border-left-color: #db2777;
+    background: linear-gradient(90deg, #fdf2f8 0%, white 20%);
+}
+
+.adjustment-item.move {
+    border-left-color: #4f46e5;
+    background: linear-gradient(90deg, #eef2ff 0%, white 20%);
+}
+
+.adjustment-item.suggested {
+    border-left-color: #22c55e;
+    border-left-style: dashed;
+    background: linear-gradient(90deg, #f0fdf4 0%, white 20%);
+}
+
+.adj-action .action-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Action Badge Colors - Full Size */
+.action-badge.increase-bid {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.action-badge.decrease-bid {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.action-badge.increase-budget {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.action-badge.decrease-budget {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.action-badge.pause-campaign {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.action-badge.resume-campaign {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.action-badge.add-negative {
+    background: #fae8ff;
+    color: #86198f;
+}
+
+.action-badge.remove-negative {
+    background: #fce7f3;
+    color: #9d174d;
+}
+
+.action-badge.move {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.action-badge.suggested {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px dashed #86efac;
+}
+
+.adj-target {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.adj-target i {
+    color: #94a3b8;
+}
+
+.adj-change {
+    margin-left: auto;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.adj-change.positive {
+    color: #16a34a;
+}
+
+.adj-change.negative {
+    color: #dc2626;
+}
+
+/* Targets, Keywords, Search Terms Lists */
+.targets-list,
+.keywords-list,
+.search-terms-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.target-item,
+.keyword-item,
+.search-term-item {
+    padding: 8px 14px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.target-id,
+.keyword-text,
+.term-text {
+    color: #334155;
+}
+
+.target-bid,
+.keyword-bid {
+    color: #111d33;
+    font-weight: 600;
+}
+
+/* No data */
+.no-data {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .accordion-summary {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .accordion-toggle {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .accordion-header {
+        position: relative;
+        padding-right: 40px;
+    }
+
+    .adjustment-item {
+        flex-wrap: wrap;
+    }
+
+    .adj-change {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+</style>
+
+<script>
+function toggleAccordion(header) {
+    const item = header.parentElement;
+    const isActive = item.classList.contains('active');
+    
+    // Close all accordion items
+    document.querySelectorAll('.accordion-item').forEach(acc => {
+        acc.classList.remove('active');
+    });
+    
+    // Open clicked item if it wasn't active
+    if (!isActive) {
+        item.classList.add('active');
+    }
+}
+
+// Open first accordion item by default
+document.addEventListener('DOMContentLoaded', function() {
+    const firstItem = document.querySelector('.accordion-item');
+    if (firstItem) {
+        firstItem.classList.add('active');
+    }
+});
+</script>
 </body>
 </html>

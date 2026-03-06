@@ -1,5 +1,6 @@
 import { Campaign, CampaignDocument } from "src/schemas/campaign.schema"
 import { Keyword } from "src/schemas/keyword.schema"
+import { AdjustmentLog } from "src/schemas/log.schema"
 import { KeywordReport } from "src/schemas/reports/keyword-report.schema"
 import { CampaignReport, } from "src/schemas/reports/report.schema"
 import { SearchTermDocument, SearchTermReport } from "src/schemas/reports/search-term-report.schema"
@@ -109,7 +110,12 @@ export interface AutoCampaignAdjustment {
 
 export interface ICampaignRuleDecision {
     shouldApply(): boolean;
-    execute(): AutoCampaignAdjustment;
+    execute(): AutoCampaignAdjustment|AdjustmentLog;
 }
 
 
+
+export interface IAutoRuleDecision{
+    shouldApply(): boolean;
+    execute(): AutoCampaignAdjustment;
+}

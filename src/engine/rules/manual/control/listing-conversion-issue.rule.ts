@@ -1,6 +1,7 @@
 import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, TargetingType } from "src/engine/interfaces";
 import { Type } from "src/schemas/campaign.schema";
 import BaseRule, { config } from "../../base.rule";
+import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 
 /**
  * RULE 005: Listing Conversion Issue
@@ -21,29 +22,34 @@ export class ListingConversionIssueManualRule extends BaseRule implements ICampa
     const expectedSales = this.clicks * config.expectedConversionRate;
     return (
       this.impressions >= config.minImpressions &&
-      this.clicks > 20 &&
+      this.clicks > config.minClicks &&
       this.cvr < config.expectedConversionRate * 0.5 && // 50% or lower than expected
       this.sales < expectedSales
     );
   }
 
-  execute(): AutoCampaignAdjustment {
+  execute(): AdjustmentLog {
     // const metrics = campaign.metrics7d!;
     // const conversionRate = (metrics.orders / metrics.clicks * 100).toFixed(2);
-      const conversionRate = this.cvr.toFixed(2);
+    const conversionRate = this.cvr.toFixed(2);
 
     return {
       ruleId: 'MANUAL_CONTROL_005',
       ruleName: 'Reduce Bids - Listing Conversion Issue',
       campaignId: this.campaign.campaignId,
-      adjustments: {
-        bidChanges: [
-          { targetingType: TargetingType.EXACT_MATCH, change: -50 },
-          { targetingType: TargetingType.PHRASE_MATCH, change: -50 },
-          { targetingType: TargetingType.BROAD_MATCH, change: -50 },
-        ],
-        action: 'DECREASE',
-      },
+      adjustments: [
+        // {
+        //   action: EAction.DECREASE_BID,
+        //   change: -50,
+        //   target: ETarget.TARGETING,
+        // },
+        {
+          action: EAction.DECREASE_BID,
+          change: -50,
+          target: ETarget.KEYWORDS,
+        }
+      ],
+      keywords:this.keywordsIdText,
       reasoning:
         `Good traffic (${this.impressions} impressions, ${this.clicks} clicks) but poor conversion (${conversionRate}%). ` +
         `This indicates listing issue (poor reviews, pricing, or images), NOT keyword issue. ` +

@@ -3,19 +3,20 @@ import type { Response } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Campaign, CampaignDocument } from '../schemas/campaign.schema';
-import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../schemas/bid-adjustment-log.schema';
+// import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../schemas/bid-adjustment-log.schema';
 import { OptimizationLog, OptimizationLogDocument } from '../schemas/optimization.schema';
 import { CampaignReport, ReportDocument } from '../schemas/reports/report.schema';
 import { CampaignService } from 'src/services/campaign.service';
 import { ReportService } from 'src/services/report.service';
 import { AuthService } from 'src/services/auth.service';
 import { SyncProducer } from 'src/queue/producer/sync.producer';
+import { AdjustmentLog, LogDocument } from 'src/schemas/log.schema';
 
 @Controller()
 export class ViewController {
   constructor(
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
-    @InjectModel(BidAdjustmentLog.name) private bidLogModel: Model<BidAdjustmentLogDocument>,
+    @InjectModel(AdjustmentLog.name) private bidLogModel: Model<LogDocument>,
     @InjectModel(OptimizationLog.name) private optimizationLogModel: Model<OptimizationLogDocument>,
     @InjectModel(CampaignReport.name) private reportModel: Model<ReportDocument>,
     private campaignService: CampaignService,
@@ -48,15 +49,15 @@ export class ViewController {
       campaign.state?.toLowerCase() === 'enabled'
     );
     const recentLogs = await this.bidLogModel.find().sort({ createdAt: -1 }).limit(10).exec();
-    const report = await this.campaignService.getLatestReportSum() ?? {}
+    const report = await this.campaignService.getLatestReportSum(allCampaigns.map(c => c.campaignId)) ?? {}
 
     const stats = {
       totalCampaigns: allCampaigns.length,
       activeCampaigns: campaigns.length,
       totalSpend: report.totalSpend ?? 0,
-      totalSales: report.totalSales14d ?? 0,
-      averageROI: report.totalSales14d / report.totalSpend,
-      acos14: report.totalSpend / report.totalSales14d
+      totalSales: report.totalSales7d ?? 0,
+      averageROI: report.totalSales7d / report.totalSpend,
+      acos14: report.totalSpend / report.totalSales7d*100
     };
 
     return res.render('index', {
@@ -126,7 +127,9 @@ export class ViewController {
   ) {
     let campaign = null as any;
     let adGroups = [];
+    let logs = [];
     let metrics = null as any;
+
     const selectedPeriod = period || 'daily';
     let dateFilter: any = {};
     let days = 1;
@@ -142,9 +145,9 @@ export class ViewController {
       if (selectedPeriod === 'monthly') days = 30;
     }
     try {
-      campaign = await this.campaignService.getCampaignById(id);
-      console.log(campaign)
-      adGroups = campaign.adGroups;
+      campaign = await this.campaignService.getCampaignById(id,['adgroups','adjustmentlogs']);
+      adGroups = campaign.adgroups;
+      logs = campaign.adjustmentlogs
       let query = this.reportModel.find({
         campaignId: parseInt(id),
         ...dateFilter
@@ -160,7 +163,6 @@ export class ViewController {
           impressions: reports.reduce((sum, r) => sum + (r.impressions || 0), 0),
           clicks: reports.reduce((sum, r) => sum + (r.clicks || 0), 0),
           spend: reports.reduce((sum, r) => sum + (r.spend || 0), 0),
-          // cost: reports.reduce((sum, r) => sum + (r.cost || 0), 0),
           sales14d: reports.reduce((sum, r) => sum + (r.sales14d || 0), 0),
           costPerClick: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.spend / r.clicks || 0), 0) / reports.length : 0,
           clickThroughRate: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.clicks / r.impressions || 0), 0) / reports.length : 0,
@@ -174,14 +176,14 @@ export class ViewController {
     }
 
     // Fetch optimization logs for this campaign
-    const logs = await this.optimizationLogModel
-      .find({
-        entityType: 'CAMPAIGN',
-        entityId: parseInt(id)
-      })
-      .sort({ createdAt: -1 })
-      .limit(50)
-      .exec();
+    // const logs = await this.optimizationLogModel
+    //   .find({
+    //     entityType: 'CAMPAIGN',
+    //     entityId: parseInt(id)
+    //   })
+    //   .sort({ createdAt: -1 })
+    //   .limit(50)
+    //   .exec();
 
     return {
       campaign,
@@ -347,10 +349,9 @@ export class ViewController {
     if (session.userId && !session.authenticated) {
       return res.redirect('/auth/connect-amazon');
     }
+
     const profiles = await this.authService.getProfiles(session.organizationId)
-    // if (!session.profiles) return res.redirect('/auth/login');
     const profile = profiles.find(p => p.profileId === profileId);
-    // console.log({ profile })
 
     if (!profile) return res.redirect('/select-profile?error=profile_not_found');
     session.selectedProfile = profile;
@@ -358,6 +359,7 @@ export class ViewController {
       accessToken: session.accessToken,
       scopeId: profile.profileId,
     })
+    
     session.save(err => {
       if (err) return console.log(err)
       return res.redirect('/');

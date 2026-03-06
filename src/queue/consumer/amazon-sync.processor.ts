@@ -3,11 +3,10 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
 import { AmazonSyncService } from "../../services/amazon/amazon-sync.service";
-import { ClsService } from "nestjs-cls";
 
 @Processor('campaignSync')
 export class AmazonSyncProcessor extends WorkerHost {
-    constructor(private readonly syncService: AmazonSyncService, private readonly cls: ClsService) {
+    constructor(private readonly syncService: AmazonSyncService) {
         super();
     }
 
@@ -26,7 +25,7 @@ export class AmazonSyncProcessor extends WorkerHost {
     @OnWorkerEvent('active')
     onActive(job: Job) {
         console.log(
-            `Processing job ${job.id} of type ${job.name} with data ${job.data}...`,
+            `Processing job ${job.id} of type ${job.data.keywordId} with data ${job.data}...`,
         );
     }
 

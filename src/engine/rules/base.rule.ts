@@ -1,4 +1,4 @@
-import { ICampaignBundle, TargetingType } from "src/engine/interfaces";
+import { ICampaignBundle, keywordWithReport, TargetingType } from "src/engine/interfaces";
 import { Campaign } from "src/schemas/campaign.schema";
 import { CampaignReport } from "src/schemas/reports/report.schema";
 import { SearchTermDocument } from "src/schemas/reports/search-term-report.schema";
@@ -19,10 +19,11 @@ export default class BaseRule {
     protected searchTerms: SearchTermDocument[]
     protected metrics: CampaignReport
     protected campaign: Campaign
+    protected keywords:keywordWithReport[]
     protected budgetUsage: any
 
     constructor(bundle: ICampaignBundle) {
-        const { searchTerms, matrics, budgetUsage, ...campaign } = bundle
+        const { searchTerms, matrics, budgetUsage, keywords, ...campaign } = bundle
         this.searchTerms = searchTerms
         this.metrics = matrics
         this.campaign = campaign
@@ -69,13 +70,18 @@ export default class BaseRule {
     }
 
     get spend() {
-        console.log(this.metrics, "spend in base rule")
         return this.metrics.spend
     }
 
     get sales() {
         return this.metrics.sales7d
     }
+    get keywordsIdText(){{
+        return this.keywords?.map((keyword) => ({ 
+        keywordId: keyword.keywordId,
+        keywordText: keyword.keywordText,
+      }))||[]
+    }}
 
 
     getUtilization(): number {

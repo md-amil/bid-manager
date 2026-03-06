@@ -1,0 +1,29 @@
+import { Injectable, Logger } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { AdjustmentLog } from "src/schemas/log.schema";
+
+@Injectable()
+export class AdjustmentLogService {
+  private readonly logger = new Logger(AdjustmentLogService.name);
+
+  constructor(
+    @InjectModel(AdjustmentLog.name) private logModel: Model<AdjustmentLog>,
+  ) {
+
+  }
+
+
+  async saveLogs(logs: AdjustmentLog[]) {
+    await this.logModel.insertMany(logs)
+  }
+
+  createLog(log: Partial<AdjustmentLog>) {
+    const logEntry = new this.logModel(log);
+    return logEntry.save();
+  }
+
+  getLogsByCampaign(campaignId: string) {
+    return this.logModel.find({ campaignId }).sort({ date: -1 }).exec();
+  }
+}

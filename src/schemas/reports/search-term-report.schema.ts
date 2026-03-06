@@ -7,8 +7,8 @@ export type SearchTermDocument = SearchTermReport & Document;
 export class SearchTermReport {
     @Prop({ index: true }) date: string;
     @Prop({ index: true }) keywordId: string;
-    @Prop() campaignId: string; 
-    @Prop() adGroupId: string; 
+    @Prop() campaignId: string;
+    @Prop() adGroupId: string;
     
     @Prop() matchType: string;
     @Prop() keyword: string;

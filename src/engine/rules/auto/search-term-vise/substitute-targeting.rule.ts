@@ -1,7 +1,7 @@
 import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, TargetingType } from "src/engine/interfaces";
-import AutoCampaignBaseRule, { config } from "../../base.rule";
+import BaseRule ,{ config }from "../../base.rule";
 
-export class SubstituteTargetingOptimizationRule extends AutoCampaignBaseRule implements ICampaignRuleDecision {
+export class SubstituteTargetingOptimizationRule extends BaseRule implements ICampaignRuleDecision {
   constructor(bundle: ICampaignBundle) {
     super(bundle)
   }

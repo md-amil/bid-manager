@@ -42,10 +42,6 @@ export class AddNewKeywordsFromDiscoveryRule extends BaseRule implements ICampai
         `Found ${promisingKeywords.length} promising keywords with 2+ sales and acceptable ACOS. ` +
         `Recommend: Add to campaign as Exact match AND Phrase match. ` +
         `Keep discovery campaign running at lower bids to continue testing.`,
-      estimatedImpact: {
-        estimatedSpend: promisingKeywords.reduce((sum, kw) => sum + kw.spend, 0) * 1.2,
-        estimatedSales: promisingKeywords.reduce((sum, kw) => sum + kw.sales7d, 0) * 1.5,
-      },
     };
   }
 }

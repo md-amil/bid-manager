@@ -12,16 +12,13 @@ export class TopOfSearchPerformanceManualRule extends AutoCampaignBaseRule imple
 
   constructor(bundle: ICampaignBundle, performanceGapThreshold: number = 0.1) {
     super(bundle)
-    // this.performanceGapThreshold = performanceGapThreshold;
   }
 
-  // constructor(performanceGapThreshold: number = 0.1) {
-  //   // this.performanceGapThreshold = performanceGapThreshold;
-  // }
+ 
 
   shouldApply(): boolean {
     if (this.campaign.targetingType !== Type.MANUAL) return false;
-    // if (!campaign.metrics7d) return false;
+    if (!this.metrics) return false;
 
     // In real implementation, would have topOfSearchAcos and restOfSearchAcos from campaign
     // This is simplified - would need actual placement data

@@ -67,7 +67,7 @@
                                     <td><%= campaign.name %></td>
                                     <td>$<%= campaign.budget.budget %></td>
                                     <td>
-                                        <span class="status-badge <%= campaign.state.toLowerCase() %>">
+                                        <span class="status-badge <%= campaign.state %>">
                                             <%= campaign.state %>
                                         </span>
                                     </td>
@@ -110,26 +110,26 @@
                                 <tr>
                                     <td><%= new Date(log.createdAt).toLocaleString() %></td>
                                     <td>
-                                        <span class="entity-badge <%= log.entityType.toLowerCase() %>">
+                                        <span class="entity-badge <%= log.entityType %>">
                                             <%= log.entityType %>
                                         </span>
                                     </td>
                                     <td><%= log.entityId %></td>
                                     <td>
-                                        <span class="type-badge <%= log.type.toLowerCase().replace('_', '-') %>">
-                                            <%= log.type.replace('_', ' ') %>
+                                        <span class="type-badge <%= log.type%>">
+                                            <%= log.type %>
                                         </span>
                                     </td>
                                     <td>
                                         <% if (log.oldValue !== null && log.oldValue !== undefined) { %>
-                                            $<%= log.oldValue.toFixed(2) %>
+                                            $<%= log.oldValue %>
                                         <% } else { %>
                                             -
                                         <% } %>
                                     </td>
                                     <td>
                                         <% if (log.newValue !== null && log.newValue !== undefined) { %>
-                                            $<%= log.newValue.toFixed(2) %>
+                                            $<%= log.newValue %>
                                         <% } else { %>
                                             -
                                         <% } %>
@@ -140,11 +140,11 @@
                                                 const changeClass = log.adjustmentPercentage > 0 ? 'increase' : 'decrease';
                                             %>
                                             <span class="change <%= changeClass %>">
-                                                <%= log.adjustmentPercentage > 0 ? '+' : '' %><%= log.adjustmentPercentage.toFixed(1) %>%
+                                                <%= log.adjustmentPercentage > 0 ? '+' : '' %><%= log.adjustmentPercentage %>%
                                             </span>
                                         <% } else if (log.oldValue && log.newValue) { %>
                                             <% 
-                                                const change = ((log.newValue - log.oldValue) / log.oldValue * 100).toFixed(1);
+                                                const change = ((log.newValue - log.oldValue) / log.oldValue * 100);
                                                 const changeClass = change > 0 ? 'increase' : 'decrease';
                                             %>
                                             <span class="change <%= changeClass %>">

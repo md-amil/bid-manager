@@ -1,6 +1,7 @@
 import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision } from "src/engine/interfaces";
 import AutoCampaignBaseRule, { config } from "../../base.rule";
 import { Type } from "src/schemas/campaign.schema";
+import { AdjustmentLog, EAction } from "src/schemas/log.schema";
 
 /**
  * RULE 004: Budget Wastage Without Returns
@@ -34,7 +35,7 @@ export class BudgetWastageManualRule  extends AutoCampaignBaseRule implements IC
     );
   }
 
-  execute(): AutoCampaignAdjustment {
+  execute(): AdjustmentLog {
     // const metrics = campaign.metrics7d!;
     // const acos = (metrics.spend / metrics.sales * 100).toFixed(2);
 
@@ -42,10 +43,12 @@ export class BudgetWastageManualRule  extends AutoCampaignBaseRule implements IC
       ruleId: 'MANUAL_CONTROL_004',
       ruleName: 'Reduce Budget - Wastage Without Returns',
       campaignId: this.campaign.campaignId,
-      adjustments: {
-        budgetChange: -25,
-        action: 'DECREASE',
-      },
+      adjustments:[
+        {
+          action:EAction.DECREASE_BUDGET,
+          change:-25
+        }
+      ],
       reasoning:
         `Campaign spending ${this.spend.toFixed(2)} with ACOS ${this.acos}% and only ${this.sales} sales. ` +
         `Budget is being wasted. Reducing budget 25% and recommending shift to better-performing campaign.`,

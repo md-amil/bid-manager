@@ -15,7 +15,6 @@ export class ReportService {
     @InjectModel(CampaignReport.name) private campReport: Model<CampaignReport>,
     @InjectModel(KeywordReport.name) private keyReport: Model<KeywordReport>,
     @InjectModel(SearchTermReport.name) private searchReport: Model<SearchTermReport>,
-
     private campaignApi:CampaignApiService
   ) { }
 
@@ -37,9 +36,7 @@ export class ReportService {
   }
 
   async saveCampaignReport(payload: any[]) {
-    this.logger.log('Saving campaign report with', payload.length, 'entries');
-
-    // console.log
+    this.logger.log('Saving campaign report with' + payload.length + ' entries');
     const bulkOps = payload.map((data) => ({
       updateOne: {
         filter: { date: data.date,  campaignId: data.campaignId },
@@ -56,7 +53,7 @@ export class ReportService {
   }
 
   async saveKeywordReport(payload: any[]) {
-    this.logger.log('Saving keyword report with', payload.length, 'entries');
+    this.logger.log('Saving keyword report with' + payload.length + 'entries');
     const bulkOps = payload.map((data) => ({
       updateOne: {
         filter: { date: data.date, keywordId: data.keywordId },
@@ -75,7 +72,7 @@ export class ReportService {
   }
 
   async saveSearchTermReport(payload:any[]){
-    this.logger.log('Saving search term with', payload.length, 'entries');
+    this.logger.log('Saving search term with' + payload.length + ' entries');
     const bulkOps = payload.map((data) => ({
       updateOne: {
         filter: { date: data.date, keywordId: data.keywordId },

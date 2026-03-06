@@ -26,6 +26,8 @@ import { ComplementaryTargetingOptimizationRule } from "../rules/auto/search-ter
 import { SubstituteTargetingOptimizationRule } from "../rules/auto/search-term-vise/substitute-targeting.rule";
 import { DuplicateKeywordCleanupRule } from "../rules/manual/keyword-management/duplicate-keyword-cleanup.rule";
 import { PhraseKeywordToExactRule } from "../rules/manual/keyword-management/phrase-keyword-exact.rule";
+import { AdjustmentLog } from "src/schemas/log.schema";
+import { AdjustmentLogService } from "src/services/log.service";
 
 // import { CloseMatchOptimizationRule, ComplementaryTargetingOptimizationRule, LooseMatchOptimizationRule, SubstituteTargetingOptimizationRule } from "../rules/search-term.rules";
 
@@ -43,72 +45,72 @@ import { PhraseKeywordToExactRule } from "../rules/manual/keyword-management/phr
 // }
 
 
-// @Injectable()
+@Injectable()
 export default class Engine {
   private adjustments: AutoCampaignAdjustment[] = []
-  constructor(private bundle: ICampaignBundle) { }
+  constructor(private logService: AdjustmentLogService) { }
 
   private runRuleEngine(
     rules: ICampaignRuleDecision[],
   ) {
-
+    const adjustments: AdjustmentLog[] = []
     for (const rule of rules) {
-      
       if (rule.shouldApply()) {
-        const adjustment = rule.execute();
-        this.adjustments.push(adjustment);
+        adjustments.push(rule.execute() as AdjustmentLog);
       }
     }
-    console.log(this.adjustments, "adjustment")
+    this.logService.saveLogs(adjustments)
+
+    console.log(adjustments, "adjustment")
   }
 
 
   async run(bundle: ICampaignBundle) {
     if (bundle.state == 'PAUSED') return console.log("campaign is paused skipping...")
     if (bundle.targetingType === Type.AUTO) return this.runAuto(bundle);
-    return this.runManual();
+    return this.runManual(bundle);
   }
 
-  runAuto(bundle:ICampaignBundle) {
+  runAuto(bundle: ICampaignBundle) {
     const autoCampaignRules = [
-       ProfitableSearchTermsRule,
-       NewProductLaunchRule,
-       LimitedImpressionsHighConversionRule,
-       HighSpendPoorConversionRule,
-       ListingConversionIssuesRule,
-       NegativeKeywordRule,
-      // search term rules
-       CloseMatchOptimizationRule,
-       ComplementaryTargetingOptimizationRule,
-       LooseMatchOptimizationRule,
-       SubstituteTargetingOptimizationRule
-    ].map(Class=>new Class(bundle))
+      ProfitableSearchTermsRule,
+      NewProductLaunchRule,
+      LimitedImpressionsHighConversionRule,
+      HighSpendPoorConversionRule,
+      ListingConversionIssuesRule,
+      NegativeKeywordRule,
+      //  search term rules
+      //  CloseMatchOptimizationRule,
+      //  ComplementaryTargetingOptimizationRule,
+      //  LooseMatchOptimizationRule,
+      //  SubstituteTargetingOptimizationRule
+    ].map(Class => new Class(bundle))
     console.log("running auto rules")
     this.runRuleEngine(autoCampaignRules)
   }
 
-  runManual() {
+  runManual(bundle: ICampaignBundle) {
     const manuanCampaignRules = [
-      //scaling rules
+      //   //scaling rules
       NewProductLaunchRule,
-       BudgetExhaustionManualCampaignRule,
-       CompetitorASINTargetingConvertingRule,
-       LowImpressionsHighConversionManualRule,
-       ProfitableManualCampaignScalingRule,
-       TopOfSearchPerformanceManualRule,
+      BudgetExhaustionManualCampaignRule,
+      CompetitorASINTargetingConvertingRule,
+      LowImpressionsHighConversionManualRule,
+      ProfitableManualCampaignScalingRule,
+      TopOfSearchPerformanceManualRule,
       // control rules
-       BudgetWastageManualRule,
-       HighAcosManualReductionRule,
-       HighSpendZeroSalesManualRule,
-       ListingConversionIssueManualRule,
-       ModerateACOSWithSalesManualRule,
-      //kewyword management rules
-       AddNewKeywordsFromDiscoveryRule,
-       BroadKeywordScalingRule,
-       DuplicateKeywordCleanupRule,
-       NegativeKeywordManualRule,
-       PhraseKeywordToExactRule
-    ].map(Class=>new Class(this.bundle))
+      BudgetWastageManualRule,
+      HighAcosManualReductionRule,
+      HighSpendZeroSalesManualRule,
+      ListingConversionIssueManualRule,
+      ModerateACOSWithSalesManualRule,
+      //    kewyword management rules
+      //    AddNewKeywordsFromDiscoveryRule,
+      //    BroadKeywordScalingRule,
+      //    DuplicateKeywordCleanupRule,
+      //    NegativeKeywordManualRule,
+      //    PhraseKeywordToExactRule
+    ].map(Class => new Class(bundle))
     this.runRuleEngine(manuanCampaignRules)
   }
 
@@ -120,6 +122,6 @@ export default class Engine {
   // sevenDaysAgo(){
 
   // }
-  
+
 }
 

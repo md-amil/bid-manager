@@ -1,12 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { BidService } from './amazon/bid.service';
 
 @Injectable()
 export class CronService {
   private readonly logger = new Logger(CronService.name);
 
-  constructor(private bidService: BidService) {}
+  constructor() {}
 
   // Run every 4 hours
   // @Cron('0 */4 * * *', {

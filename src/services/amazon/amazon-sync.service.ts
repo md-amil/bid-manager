@@ -41,7 +41,6 @@ export class AmazonSyncService {
   async syncCampains(auth: IAmazonAuth) {
     console.log('Syncing Campaigns...')
     const campaigns = await this.campaignApi.getCampaigns(auth);
-    console.log(campaigns[0])
     const campaignBulkOps = campaigns.map(c => ({
       updateOne: {
         filter: { campaignId: c.campaignId },
@@ -85,9 +84,9 @@ export class AmazonSyncService {
 
 
   async syncKeywards(auth: IAmazonAuth, nextToken?: string) {
-    console.log('Syncing Keywords...', auth.scopeId)
     const { keywords, nextToken: next } = await this.adGroupApi.getKeywords(auth, { nextToken })
-    console.log(keywords.length, (!!next))
+    console.log('Syncing Keywords...', keywords.length, (!!next))
+
     const adBulkOps = keywords.map(a => ({
       updateOne: {
         filter: { keywordId: a.keywordId },
@@ -96,7 +95,6 @@ export class AmazonSyncService {
       },
     }));
     const keywordResult = await this.keywardModel.bulkWrite(adBulkOps);
-    console.log(keywordResult)
     if (next) return await this.syncKeywards(auth, next)
     return keywordResult;
   }
@@ -119,6 +117,7 @@ export class AmazonSyncService {
     console.log('Syncing Targets...')
     const { targetingClauses, nextToken: next } = await this.adGroupApi.getTargets(auth, { nextToken })
     console.log({ targets: targetingClauses.length })
+    console.log(targetingClauses)
     const adBulkOps = targetingClauses.map(a => ({
       updateOne: {
         filter: { targetId: a.targetId },
@@ -134,6 +133,7 @@ export class AmazonSyncService {
   async syncNegativeTargets(auth: IAmazonAuth, nextToken?: string) {
     console.log('Syncing Negative Targets...')
     const { negativeTargetingClauses, nextToken: next } = await this.adGroupApi.getNegativeTargets(auth, { nextToken })
+    console.log()
     const adBulkOps = negativeTargetingClauses.map(a => ({
       updateOne: {
         filter: { targetId: a.targetId },
