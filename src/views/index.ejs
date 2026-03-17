@@ -1,298 +1,315 @@
-<%- include('partials/header', { currentPage: 'dashboard', selectedProfile, profiles }) %>
+<%- include('partials/header', { currentPage: 'dashboard' , selectedProfile, profiles }) %>
 
-<div class="page-header">
-    <h2>Dashboard</h2>
-    <div class="actions">
-        <button onclick="syncCampaigns()" class="btn">
-            <i class="fas fa-sync-alt"></i>
-            Sync from Amazon
-        </button>
-        <button onclick="adjustBids()" class="btn btn-primary">
-            <i class="fas fa-bolt"></i>
-            Adjust Bids Now
-        </button>
-    </div>
-</div>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Campaigns</h3>
-                <p class="stat-value"><%= stats.totalCampaigns %></p>
-            </div>
-            <div class="stat-card">
-                <h3>Active Campaigns</h3>
-                <p class="stat-value"><%= stats.activeCampaigns %></p>
-            </div>
-            <div class="stat-card">
-                <h3>Total Spend</h3>
-                <p class="stat-value">₹<%= stats.totalSpend.toFixed(2) %></p>
-            </div>
-            <div class="stat-card">
-                <h3>Total Sales</h3>
-                <p class="stat-value">₹<%= stats.totalSales.toFixed(2) %></p>
-            </div>
-            <div class="stat-card">
-                <h3>Average ROAS</h3>
-                <p class="stat-value <%= stats.averageROI >= 3 ? 'high-roi' : stats.averageROI <= 1 ? 'low-roi' : '' %>">
-                    <%= stats.averageROI.toFixed(2) %>
-                </p>
-            </div>
-             <div class="stat-card">
-                <h3>Acos</h3>
-                <p class="stat-value <%= stats.acos14 >= 3 ? 'high-roi' : stats.acos14 <= 1 ? 'low-acos' : '' %>">
-                    <%= stats.acos14.toFixed(2) %>
-                </p>
-            </div>
+    <div class="page-header">
+        <h2>Dashboard</h2>
+        <div class="actions">
+            <button onclick="reportSync()" class="btn">
+                <i class="fas fa-sync-alt"></i>
+                Sync Report
+            </button>
+            <button onclick="adjustBids()" class="btn btn-primary">
+                <i class="fas fa-bolt"></i>
+                Adjust Bids Now
+            </button>
         </div>
-
-        <div class="section">
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Campaigns</h3>
+            <p class="stat-value">
+                <%= stats.totalCampaigns %>
+            </p>
+        </div>
+        <div class="stat-card">
             <h3>Active Campaigns</h3>
+            <p class="stat-value">
+                <%= stats.activeCampaigns %>
+            </p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Spend</h3>
+            <p class="stat-value">₹<%= stats.totalSpend.toFixed(2) %>
+            </p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Sales</h3>
+            <p class="stat-value">₹<%= stats.totalSales.toFixed(2) %>
+            </p>
+        </div>
+        <div class="stat-card">
+            <h3>Average ROAS</h3>
+            <p class="stat-value <%= stats.averageROI >= 3 ? 'high-roi' : stats.averageROI <= 1 ? 'low-roi' : '' %>">
+                <%= stats.averageROI.toFixed(2) %>
+            </p>
+        </div>
+        <div class="stat-card">
+            <h3>Acos</h3>
+            <p class="stat-value <%= stats.acos14 >= 3 ? 'high-roi' : stats.acos14 <= 1 ? 'low-acos' : '' %>">
+                <%= stats.acos14.toFixed(2) %>
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Active Campaigns</h3>
+        <div class="table-responsive">
+            <table class="campaign-table">
+                <thead>
+                    <tr>
+                        <th>Campaign ID</th>
+
+                        <th>Campaign</th>
+                        <th>Budget</th>
+                        <!-- <th>ROI</th> -->
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (campaigns && campaigns.length> 0) { %>
+                        <% campaigns.slice(0, 5).forEach(campaign=> { %>
+                            <tr>
+                                <td>
+                                    <%= campaign.campaignId %>
+                                </td>
+                                <td>
+                                    <%= campaign.name %>
+                                </td>
+                                <td>$<%= campaign.budget.budget %>
+                                </td>
+                                <td>
+                                    <span class="status-badge <%= campaign.state %>">
+                                        <%= campaign.state %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="/campaigns/<%= campaign.campaignId %>" class="btn-small">View</a>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="no-data">No active campaigns found</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <a href="/campaigns" class="btn">View All Campaigns</a>
+    </div>
+
+    <div class="section">
+        <h3>Recent Optimizations</h3>
+        <% if (recentLogs && recentLogs.length> 0) { %>
             <div class="table-responsive">
-                <table class="campaign-table">
+                <table class="log-table">
                     <thead>
                         <tr>
-                             <th>Campaign ID</th>
-                            
-                            <th>Campaign</th>
-                            <th>Budget</th>
-                            <!-- <th>ROI</th> -->
+                            <th>Time</th>
+                            <th>Entity Type</th>
+                            <th>Entity ID</th>
+                            <th>Type</th>
+                            <th>Old Value</th>
+                            <th>New Value</th>
+                            <th>Change</th>
+                            <th>Reason</th>
                             <th>Status</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% if (campaigns && campaigns.length > 0) { %>
-                            <% campaigns.slice(0, 5).forEach(campaign => { %>
-                                <tr>
-                                    <td><%= campaign.campaignId %></td>
-                                    <td><%= campaign.name %></td>
-                                    <td>$<%= campaign.budget.budget %></td>
-                                    <td>
-                                        <span class="status-badge <%= campaign.state %>">
-                                            <%= campaign.state %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <a href="/campaigns/<%= campaign.campaignId %>" class="btn-small">View</a>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        <% } else { %>
+                        <% recentLogs.forEach(log=> { %>
                             <tr>
-                                <td colspan="5" class="no-data">No active campaigns found</td>
+                                <td>
+                                    <%= new Date(log.createdAt).toLocaleString() %>
+                                </td>
+                                <td>
+                                    <span class="entity-badge <%= log.entityType %>">
+                                        <%= log.entityType %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <%= log.entityId %>
+                                </td>
+                                <td>
+                                    <span class="type-badge <%= log.type%>">
+                                        <%= log.type %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <% if (log.oldValue !==null && log.oldValue !==undefined) { %>
+                                        $<%= log.oldValue %>
+                                            <% } else { %>
+                                                -
+                                                <% } %>
+                                </td>
+                                <td>
+                                    <% if (log.newValue !==null && log.newValue !==undefined) { %>
+                                        $<%= log.newValue %>
+                                            <% } else { %>
+                                                -
+                                                <% } %>
+                                </td>
+                                <td>
+                                    <% if (log.adjustmentPercentage !==null && log.adjustmentPercentage !==undefined) {
+                                        %>
+                                        <% const changeClass=log.adjustmentPercentage> 0 ? 'increase' : 'decrease';
+                                            %>
+                                            <span class="change <%= changeClass %>">
+                                                <%= log.adjustmentPercentage> 0 ? '+' : '' %><%=
+                                                        log.adjustmentPercentage %>%
+                                            </span>
+                                            <% } else if (log.oldValue && log.newValue) { %>
+                                                <% const change=((log.newValue - log.oldValue) / log.oldValue * 100);
+                                                    const changeClass=change> 0 ? 'increase' : 'decrease';
+                                                    %>
+                                                    <span class="change <%= changeClass %>">
+                                                        <%= change> 0 ? '+' : '' %><%= change %>%
+                                                    </span>
+                                                    <% } else { %>
+                                                        -
+                                                        <% } %>
+                                </td>
+                                <td>
+                                    <%= log.reason %>
+                                </td>
+                                <td>
+                                    <span class="status-badge <%= log.status %>">
+                                        <%= log.status %>
+                                    </span>
+                                </td>
                             </tr>
-                        <% } %>
+                            <% }); %>
                     </tbody>
                 </table>
             </div>
-            <a href="/campaigns" class="btn">View All Campaigns</a>
-        </div>
-
-        <div class="section">
-            <h3>Recent Optimizations</h3>
-            <% if (recentLogs && recentLogs.length > 0) { %>
-                <div class="table-responsive">
-                    <table class="log-table">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Entity Type</th>
-                                <th>Entity ID</th>
-                                <th>Type</th>
-                                <th>Old Value</th>
-                                <th>New Value</th>
-                                <th>Change</th>
-                                <th>Reason</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% recentLogs.forEach(log => { %>
-                                <tr>
-                                    <td><%= new Date(log.createdAt).toLocaleString() %></td>
-                                    <td>
-                                        <span class="entity-badge <%= log.entityType %>">
-                                            <%= log.entityType %>
-                                        </span>
-                                    </td>
-                                    <td><%= log.entityId %></td>
-                                    <td>
-                                        <span class="type-badge <%= log.type%>">
-                                            <%= log.type %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <% if (log.oldValue !== null && log.oldValue !== undefined) { %>
-                                            $<%= log.oldValue %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                    <td>
-                                        <% if (log.newValue !== null && log.newValue !== undefined) { %>
-                                            $<%= log.newValue %>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                    <td>
-                                        <% if (log.adjustmentPercentage !== null && log.adjustmentPercentage !== undefined) { %>
-                                            <% 
-                                                const changeClass = log.adjustmentPercentage > 0 ? 'increase' : 'decrease';
-                                            %>
-                                            <span class="change <%= changeClass %>">
-                                                <%= log.adjustmentPercentage > 0 ? '+' : '' %><%= log.adjustmentPercentage %>%
-                                            </span>
-                                        <% } else if (log.oldValue && log.newValue) { %>
-                                            <% 
-                                                const change = ((log.newValue - log.oldValue) / log.oldValue * 100);
-                                                const changeClass = change > 0 ? 'increase' : 'decrease';
-                                            %>
-                                            <span class="change <%= changeClass %>">
-                                                <%= change > 0 ? '+' : '' %><%= change %>%
-                                            </span>
-                                        <% } else { %>
-                                            -
-                                        <% } %>
-                                    </td>
-                                    <td><%= log.reason %></td>
-                                    <td>
-                                        <span class="status-badge <%= log.status %>">
-                                            <%= log.status %>
-                                        </span>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
             <% } else { %>
                 <div class="empty-state">
                     <p>No recent optimizations found.</p>
                     <p>Optimizations will appear here after bid adjustments are made.</p>
                 </div>
-            <% } %>
-            <a href="/logs" class="btn">View All Logs</a>
-        </div>
+                <% } %>
+                    <a href="/logs" class="btn">View All Logs</a>
+    </div>
 
-<script>
-    async function syncCampaigns() {
-        // Show custom confirmation modal
-        showConfirmationModal(
-            'Confirm Sync from Amazon', 
-            'Sync campaign data from Amazon? This will update all campaign information.',
-            async () => {
-                const button = event.target;
-                const originalText = button.innerHTML;
-                
-                // Show loading state
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
-                button.disabled = true;
-                
-                try {
-                    const response = await fetch('/api/campaigns/sync', { 
-                        method: 'POST', 
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        // Show success message
-                        button.innerHTML = '<i class="fas fa-check"></i> Sync Complete';
-                        button.style.background = '#4caf50';
-                        
-                        // Show notification
-                        showNotification(`Sync completed successfully! ${result.message}`, 'success');
-                        
-                        // Reload page after 2 seconds to show updated data
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
-                    } else {
-                        throw new Error(result.message || 'Sync failed');
-                    }
-                } catch (error) {
-                    console.error('Sync error:', error);
-                    showNotification(`Error syncing campaigns: ${error.message}`, 'error');
-                    
-                    // Reset button
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                    button.style.background = '';
-                }
-            }
-        );
-    }
+    <script>
+        async function reportSync() {
+            // Show custom confirmation modal
+            showConfirmationModal(
+                'Confirm Sync from Amazon',
+                'Sync campaign data from Amazon? This will update all campaign information.',
+                async () => {
+                    const button = event.target;
+                    const originalText = button.innerHTML;
 
-    async function adjustBids() {
-        // Show custom confirmation modal
-        showConfirmationModal(
-            'Confirm Bid Adjustment', 
-            'Manually trigger bid adjustment for all campaigns? This will analyze performance and adjust bids automatically.',
-            async () => {
-                const button = event.target;
-                const originalText = button.innerHTML;
-                
-                // Show loading state
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adjusting...';
-                button.disabled = true;
-                
-                try {
-                    const response = await fetch('/api/campaigns/adjust-bids', { 
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json'
+                    // Show loading state
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+                    button.disabled = true;
+
+                    try {
+                        const response = await fetch('/api/campaigns/report-sync', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            // Show success message
+                            button.innerHTML = '<i class="fas fa-check"></i> Sync Complete';
+                            button.style.background = '#4caf50';
+
+                            // Show notification
+                            showNotification(`Sync completed successfully! ${result.message}`, 'success');
+
+                            // Reload page after 2 seconds to show updated data
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            throw new Error(result.message || 'Sync failed');
                         }
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        // Show success message
-                        button.innerHTML = '<i class="fas fa-check"></i> Adjustment Complete';
-                        button.style.background = '#4caf50';
-                        
-                        // Show notification
-                        showNotification(`Bid adjustment completed successfully! ${result.message}`, 'success');
-                        
-                        // Reload page after 2 seconds to show updated data
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
-                    } else {
-                        throw new Error(result.message || 'Bid adjustment failed');
+                    } catch (error) {
+                        console.error('Sync error:', error);
+                        showNotification(`Error syncing campaigns: ${error.message}`, 'error');
+
+                        // Reset button
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        button.style.background = '';
                     }
-                } catch (error) {
-                    console.error('Bid adjustment error:', error);
-                    showNotification(`Error adjusting bids: ${error.message}`, 'error');
-                    
-                    // Reset button
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                    button.style.background = '';
                 }
-            }
-        );
-    }
-    
-    // Confirmation Modal Functions
-    function showConfirmationModal(title, message, onConfirm) {
-        // Remove any existing modals
-        const existingModal = document.querySelector('.confirmation-modal');
-        if (existingModal) existingModal.remove();
-        
-        // Create modal overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay';
-        
-        // Create modal content
-        const modal = document.createElement('div');
-        modal.className = 'confirmation-modal';
-        modal.innerHTML = `
+            );
+        }
+
+        async function adjustBids() {
+            // Show custom confirmation modal
+            showConfirmationModal(
+                'Confirm Bid Adjustment',
+                'Manually trigger bid adjustment for all campaigns? This will analyze performance and adjust bids automatically.',
+                async () => {
+                    const button = event.target;
+                    const originalText = button.innerHTML;
+
+                    // Show loading state
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adjusting...';
+                    button.disabled = true;
+
+                    try {
+                        const response = await fetch('/api/campaigns/adjust-bids', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            // Show success message
+                            button.innerHTML = '<i class="fas fa-check"></i> Adjustment Complete';
+                            button.style.background = '#4caf50';
+
+                            // Show notification
+                            showNotification(`Bid adjustment completed successfully! ${result.message}`, 'success');
+
+                            // Reload page after 2 seconds to show updated data
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            throw new Error(result.message || 'Bid adjustment failed');
+                        }
+                    } catch (error) {
+                        console.error('Bid adjustment error:', error);
+                        showNotification(`Error adjusting bids: ${error.message}`, 'error');
+
+                        // Reset button
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        button.style.background = '';
+                    }
+                }
+            );
+        }
+
+        // Confirmation Modal Functions
+        function showConfirmationModal(title, message, onConfirm) {
+            // Remove any existing modals
+            const existingModal = document.querySelector('.confirmation-modal');
+            if (existingModal) existingModal.remove();
+
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+
+            // Create modal content
+            const modal = document.createElement('div');
+            modal.className = 'confirmation-modal';
+            modal.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>${title}</h3>
@@ -307,67 +324,67 @@
                 </div>
             </div>
         `;
-        
-        // Add to document
-        document.body.appendChild(overlay);
-        document.body.appendChild(modal);
-        
-        // Store the confirm callback
-        window.confirmationCallback = onConfirm;
-    }
-    
-    function closeConfirmationModal() {
-        const modal = document.querySelector('.confirmation-modal');
-        const overlay = document.querySelector('.modal-overlay');
-        
-        if (modal) modal.remove();
-        if (overlay) overlay.remove();
-        
-        // Clean up callback
-        delete window.confirmationCallback;
-    }
-    
-    function confirmAction() {
-        if (window.confirmationCallback) {
-            window.confirmationCallback();
+
+            // Add to document
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+
+            // Store the confirm callback
+            window.confirmationCallback = onConfirm;
         }
-        closeConfirmationModal();
-    }
-    
-    // Close modal when clicking outside
-    document.addEventListener('click', function(e) {
-        const modal = document.querySelector('.confirmation-modal');
-        const overlay = document.querySelector('.modal-overlay');
-        
-        if (overlay && e.target === overlay) {
+
+        function closeConfirmationModal() {
+            const modal = document.querySelector('.confirmation-modal');
+            const overlay = document.querySelector('.modal-overlay');
+
+            if (modal) modal.remove();
+            if (overlay) overlay.remove();
+
+            // Clean up callback
+            delete window.confirmationCallback;
+        }
+
+        function confirmAction() {
+            if (window.confirmationCallback) {
+                window.confirmationCallback();
+            }
             closeConfirmationModal();
         }
-    });
-    
-    // Notification function
-    function showNotification(message, type = 'info') {
-        // Remove any existing notifications
-        const existingNotifications = document.querySelectorAll('.notification');
-        existingNotifications.forEach(notification => notification.remove());
-        
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function (e) {
+            const modal = document.querySelector('.confirmation-modal');
+            const overlay = document.querySelector('.modal-overlay');
+
+            if (overlay && e.target === overlay) {
+                closeConfirmationModal();
+            }
+        });
+
+        // Notification function
+        function showNotification(message, type = 'info') {
+            // Remove any existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
             <span class="notification-message">${message}</span>
             <button class="notification-close" onclick="this.parentElement.remove()">×</button>
         `;
-        
-        // Add to top of body
-        document.body.appendChild(notification);
-        
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 5000);
-    }
-</script>
 
-<%- include('partials/footer') %>
+            // Add to top of body
+            document.body.appendChild(notification);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+
+    <%- include('partials/footer') %>

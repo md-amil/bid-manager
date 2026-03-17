@@ -2,24 +2,27 @@ import { Campaign, CampaignDocument } from "src/schemas/campaign.schema"
 import { Keyword } from "src/schemas/keyword.schema"
 import { AdjustmentLog } from "src/schemas/log.schema"
 import { KeywordReport } from "src/schemas/reports/keyword-report.schema"
-import { CampaignReport, } from "src/schemas/reports/report.schema"
+import { CampaignReport, } from "src/schemas/reports/campaign-report"
 import { SearchTermDocument, SearchTermReport } from "src/schemas/reports/search-term-report.schema"
+import { Target } from "src/schemas/target.schema"
+import { TargetReport } from "src/schemas/reports/target-report.schema"
 
 
 export enum TargetingType {
     // AUTO = 'AUTO',
-    CLOSE_MATCH = 'CLOSE_MATCH',
-    LOOSE_MATCH = 'LOOSE_MATCH',
-    SUBSTITUTES = 'SUBSTITUTES',
-    COMPLEMENTS = 'COMPLEMENTS',
+    CLOSE_MATCH = 'close-match',
+    LOOSE_MATCH = 'loose-match',
+    
+    SUBSTITUTES = 'substitutes',
+    COMPLEMENTS = 'complements',
     //manual
     PRODUCT_PAGE = 'PRODUCT_PAGE',
     PRODUCT_PAGE_PLACEMENT = 'PRODUCT_PAGE_PLACEMENT',
     TOP_OF_SEARCH = 'TOP_OF_SEARCH',
     REST_OF_SEARCH = 'REST_OF_SEARCH',
-    EXACT_MATCH = 'EXACT_MATCH',
-    PHRASE_MATCH = 'PHRASE_MATCH',
-    BROAD_MATCH = 'BROAD_MATCH',
+    // EXACT_MATCH = 'EXACT',
+    // PHRASE_MATCH = 'PHRASE',
+    // BROAD_MATCH = 'BROAD',
 }
 
 export interface RecommendationParams {
@@ -77,13 +80,18 @@ export class Recommendation {
     }
 }
 
-export interface keywordWithReport extends Keyword {
-    keywordReports: KeywordReport
+export interface keywordWithMetrics extends Keyword {
+    metrics: KeywordReport
+}
+
+export interface TargetWithMetrics extends Target {
+    metrics: TargetReport
 }
 
 export interface ICampaignBundle extends CampaignDocument {
     matrics: CampaignReport
-    keywords: keywordWithReport[]
+    keywords: keywordWithMetrics[]
+    targets:TargetWithMetrics[]
     budgetUsage: any
     searchTerms: SearchTermDocument[]
 }

@@ -1,5 +1,5 @@
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
-import { TargetingType, ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
+import {  ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
 import BaseRule, { config } from "../base.rule";
 
 export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecision {
@@ -8,19 +8,19 @@ export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecis
   }
 
   shouldApply(): boolean {
-    console.log(`spend ${this.spend} and clicks ${this.clicks}, term length ${this.searchTerms.length} sales ${this.sales}`)
-    if (this.spend < config.minSpend) return true
+    console.log(`spend ${this.cost} and clicks ${this.clicks}, term length ${this.searchTerms.length} sales ${this.sales}`)
+    if (this.cost < config.minSpend) return true
     return this.searchTerms.length == 0 && this.clicks <= config.minClicks && this.sales == 0
   }
 
   execute(): AdjustmentLog {
-    const allTargetingTypes = [
-      TargetingType.CLOSE_MATCH,
-      TargetingType.LOOSE_MATCH,
-      TargetingType.SUBSTITUTES,
-      TargetingType.COMPLEMENTS,
-    ];
-
+    // const allTargetingTypes = [
+    //   TargetingType.CLOSE_MATCH,
+    //   TargetingType.LOOSE_MATCH,
+    //   TargetingType.SUBSTITUTES,
+    //   TargetingType.COMPLEMENTS,
+    // ];
+    const targetings = this.getTargeting()
     return {
       ruleId: 'RULE_002',
       ruleName: 'New Product Launch Phase',
@@ -29,7 +29,7 @@ export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecis
         action: EAction.SUGGESTED,
         target: ETarget.TARGETING
       }],
-      targetings: allTargetingTypes,
+      targetings,
       reasoning:
         `New ASIN with no keyword data and no ranking history detected.` +
         `Enabling all four auto targeting types (Close, Loose, Substitute, Complementary)` +
@@ -37,3 +37,4 @@ export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecis
     };
   }
 }
+

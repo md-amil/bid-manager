@@ -1,9 +1,7 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
-// import { ReportService } from "src/services/report.service";
 import   Engine  from "src/engine/core/rule.engine";
 import { CampaignService } from "src/services/campaign.service";
-// import AdManager from "src/engine/manager";
 
 @Processor('bidProcessor')
 export class BidProcessor extends WorkerHost {

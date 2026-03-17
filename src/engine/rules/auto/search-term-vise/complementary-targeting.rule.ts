@@ -1,8 +1,8 @@
 import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, TargetingType } from "src/engine/interfaces";
 import AutoCampaignBaseRule, { config } from "../../base.rule";
+import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 
 export class ComplementaryTargetingOptimizationRule extends AutoCampaignBaseRule implements ICampaignRuleDecision {
-  
    constructor (bundle:ICampaignBundle){
     super(bundle)
   }
@@ -12,35 +12,40 @@ export class ComplementaryTargetingOptimizationRule extends AutoCampaignBaseRule
     return complementaryTerms.length > 0;
   }
 
-  execute(): AutoCampaignAdjustment {
+   execute(): AdjustmentLog {
     const complementaryTerms = this.getSearchTerms(TargetingType.COMPLEMENTS);
     const genuineComplements = complementaryTerms.filter(
       st => this.calculateACOS(st) <= config.targetAcos
     );
     const lowRelevance = complementaryTerms.filter(st =>  this.calculateACOS(st) > config.targetAcos);
 
-    let action: 'INCREASE' | 'DECREASE' | 'CONTROL' = 'CONTROL';
+    let action= EAction.INCREASE_BID;
     let change = 0;
 
     if (genuineComplements.length > 0) {
-      action = 'INCREASE';
+      action = EAction.INCREASE_BID;
       change = 25;
     } else if (lowRelevance.length > complementaryTerms.length * 0.5) {
-      action = 'DECREASE';
+      action =  EAction.DECREASE_BID;
       change = -50;
     }
+    const targetings =  this.getTargeting(TargetingType.COMPLEMENTS)
 
     return {
       ruleId: 'RULE_009',
       ruleName: 'Complementary Targeting Optimization',
       campaignId: this.campaign.campaignId,
-      adjustments: {
-        bidChanges: [{ targetingType: TargetingType.COMPLEMENTS, change }],
-        action,
-      },
+      adjustments:[
+        {
+          target:ETarget.TARGETING,
+          action,
+          change
+        }
+      ],
+      targetings:targetings,
       reasoning:
         `Complementary targeting analysis: ${genuineComplements.length} genuine complements found. ` +
-        `${action === 'INCREASE' ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(change)}%.`,
+        `${action ===EAction.INCREASE_BID ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(change)}%.`,
     };
  }
 }

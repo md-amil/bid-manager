@@ -31,25 +31,72 @@
 
         <!-- Ads Tab Content -->
         <% if (selectedTab === 'ads') { %>
-        <div class="section">
-            <h3>Product Ads</h3>
+        <div class="section white-bg">
+            <div class="section-header">
+                <div>
+                    <h3 class="glow-text-green"><i class="fas fa-box"></i> Product Ads</h3>
+                    <p class="subtitle"><i class="fas fa-info-circle"></i> Products advertised in this ad group</p>
+                </div>
+            </div>
             <% if (productAds && productAds.length > 0) { %>
                 <div class="table-responsive">
-                    <table>
+                    <table class="product-ads-table">
                         <thead>
                             <tr>
-                                <th>Ad ID</th>
-                                <th>ASIN</th>
-                                <th>SKU</th>
+                                <th>Image</th>
+                                <th>Title / Ad ID</th>
+                                <th>ASIN / SKU</th>
+                                <th>Brand</th>
+                                <th>Price</th>
+                                <th>Stock</th>
                                 <th>State</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% productAds.forEach(ad => { %>
+                            <% productAds.forEach(ad => { 
+                                const product = products[ad.asin] || {};
+                            %>
                                 <tr>
-                                    <td><%= ad.adId %></td>
-                                    <td><%= ad.asin || 'N/A' %></td>
-                                    <td><%= ad.sku || 'N/A' %></td>
+                                    <td class="img-cell">
+                                        <% if (product.imageUrl) { %>
+                                            <img src="<%= product.imageUrl %>" alt="<%= product.title || ad.asin %>" class="product-thumb">
+                                        <% } else { %>
+                                            <div class="product-thumb-placeholder">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <div class="title-cell">
+                                            <div class="product-title-text" title="<%= product.title || 'Unknown Product' %>">
+                                                <%= product.title || 'Unknown Product' %>
+                                            </div>
+                                            <div class="product-ad-id"><%= ad.adId %></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="asin-sku-cell">
+                                            <div class="asin-text"><%= ad.asin || 'N/A' %></div>
+                                            <div class="sku-text"><%= product.sku || ad.sku || 'N/A' %></div>
+                                        </div>
+                                    </td>
+                                    <td><%= product.brand || '-' %></td>
+                                    <td>
+                                        <% if (product.priceToPay) { %>
+                                            <span class="price-text"><%= product.priceToPay.currency %> <%= product.priceToPay.amount.toLocaleString() %></span>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (product.availability === 'IN_STOCK') { %>
+                                            <span class="stock-badge in-stock"><i class="fas fa-check"></i> In Stock</span>
+                                        <% } else if (product.availability) { %>
+                                            <span class="stock-badge out-of-stock"><%= product.availability %></span>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
                                     <td>
                                         <span class="status-badge <%= ad.state.toLowerCase() %>">
                                             <%= ad.state %>
@@ -61,7 +108,9 @@
                     </table>
                 </div>
             <% } else { %>
-                <p class="no-data">No product ads found for this ad group.</p>
+                <div class="empty-state">
+                    <p>No product ads found for this ad group.</p>
+                </div>
             <% } %>
         </div>
         <% } %>
@@ -364,6 +413,127 @@
             border: 1px solid #e2e8f0;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
         }
+        
+        /* Product Ads Table */
+        .product-ads-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .product-ads-table th {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .product-ads-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        
+        .product-ads-table tr:hover {
+            background: #fafafa;
+        }
+        
+        .img-cell {
+            width: 60px;
+        }
+        
+        .product-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: #f8fafc;
+        }
+        
+        .product-thumb-placeholder {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border-radius: 6px;
+            color: #cbd5e1;
+        }
+        
+        .title-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .product-title-text {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.85rem;
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .product-ad-id {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+        
+        .asin-sku-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .asin-text {
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+        
+        .sku-text {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        
+        .price-text {
+            font-weight: 700;
+            color: #059669;
+        }
+        
+        .stock-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .stock-badge.in-stock {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .stock-badge.out-of-stock {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .text-muted {
+            color: #94a3b8;
+        }
+        
         .keyword-text-container {
             display: flex;
             flex-direction: column;
@@ -419,7 +589,6 @@
             color: #dc2626;
         }
         
-        /* Decorative pulse for latest report data */
         @keyframes pulse-subtle {
             0% { opacity: 1; }
             50% { opacity: 0.8; }
@@ -438,6 +607,25 @@
             background: #10b981;
             border-radius: 50%;
             animation: pulse-subtle 2s infinite;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
         }
     </style>
     

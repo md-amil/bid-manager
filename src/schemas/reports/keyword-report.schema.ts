@@ -4,12 +4,12 @@ export type KeywordReportDocument = KeywordReport & Document;
 @Schema({
   collection: 'keyword_reports',
 })
+
 export class KeywordReport {
   @Prop({ index: true }) date: string;
-
   @Prop({ index: true }) keywordId: string;
+  
   @Prop() keyword: string;
-  @Prop() matchType: string;
 
   @Prop() impressions: number;
   @Prop() clicks: number;
@@ -24,7 +24,6 @@ export class KeywordReport {
   @Prop() unitsSoldClicks7d: number;
   @Prop() unitsSoldClicks14d: number;
   @Prop() topOfSearchImpressionShare: number;
-  @Prop({default:"INR"}) currency: string;
 }
 
 export const KeywordReportSchema =

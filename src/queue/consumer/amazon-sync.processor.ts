@@ -1,5 +1,3 @@
-// import { AmazonSyncService } from "./amazon-sync.service";
-
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
 import { AmazonSyncService } from "../../services/amazon/amazon-sync.service";
@@ -19,13 +17,14 @@ export class AmazonSyncProcessor extends WorkerHost {
         await this.syncService.syncNegativeKeywards(auth)
         await this.syncService.syncTargets(auth)
         await this.syncService.syncNegativeTargets(auth)
+        await this.syncService.syncProducts(auth)
         // await this.syncService.syncProfile(job.data.organisationId)
     }
 
     @OnWorkerEvent('active')
     onActive(job: Job) {
         console.log(
-            `Processing job ${job.id} of type ${job.data.keywordId} with data ${job.data}...`,
+            `Processing job ${job.id} of type  with data ${job.data}...`,
         );
     }
 
@@ -37,7 +36,7 @@ export class AmazonSyncProcessor extends WorkerHost {
     @OnWorkerEvent('completed')
     onComplete(job: Job) {
         console.log(
-            `completed job ${job.id} of type ${job.name} with data ${job.data}...`,
+            `completed job ${job.id} of type ${job.name} with data ${job.data.auth.profileId}...`,
         );
     }
 

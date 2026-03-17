@@ -13,7 +13,7 @@ export class BudgetExhaustionManualCampaignRule extends AutoCampaignBaseRule imp
     super(bundle);
   }
   shouldApply(): boolean {
-    console.log(`Evaluating BudgetExhaustionManualCampaignRule for campaign ${this.campaign.campaignId} - Targeting Type: ${this.campaign.targetingType}`);
+    // console.log(`Evaluating BudgetExhaustionManualCampaignRule for campaign ${this.campaign.campaignId} - Targeting Type: ${this.campaign.targetingType}`);
     if (this.campaign.targetingType == Type.AUTO) return false;
     // const { matrics, budget } = campaign
     // const { impressions, clicks, sales7d, spend } = matrics

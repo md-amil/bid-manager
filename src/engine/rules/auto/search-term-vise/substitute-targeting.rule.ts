@@ -1,5 +1,6 @@
 import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, TargetingType } from "src/engine/interfaces";
-import BaseRule ,{ config }from "../../base.rule";
+import BaseRule, { config } from "../../base.rule";
+import { Adjustment, AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 
 export class SubstituteTargetingOptimizationRule extends BaseRule implements ICampaignRuleDecision {
   constructor(bundle: ICampaignBundle) {
@@ -11,37 +12,51 @@ export class SubstituteTargetingOptimizationRule extends BaseRule implements ICa
     return substituteTerms.length > 0;
   }
 
-  execute(): AutoCampaignAdjustment {
+  execute(): AdjustmentLog {
     const substituteTerms = this.getSearchTerms(TargetingType.SUBSTITUTES);
     const competitiveWins = substituteTerms.filter(
       st => this.calculateACOS(st) <= config.targetAcos
     );
-    const poorCompetitiveMatch = substituteTerms.filter(
+    const poor = substituteTerms.filter(
       st => st.clicks > config.minClicks && st.sales7d === 0
     );
 
-    let action: 'INCREASE' | 'DECREASE' | 'CONTROL' = 'CONTROL';
-    let change = 0;
-
-    if (competitiveWins.length > 0) {
-      action = 'INCREASE';
-      change = 25;
-    } else if (poorCompetitiveMatch.length > 0) {
-      action = 'DECREASE';
-      change = -50;
-    }
+    const adjustment = this.getAdjustment(competitiveWins, poor)
 
     return {
       ruleId: 'RULE_008',
       ruleName: 'Substitute Targeting Optimization',
       campaignId: this.campaign.campaignId,
-      adjustments: {
-        bidChanges: [{ targetingType: TargetingType.SUBSTITUTES, change }],
-        action,
-      },
+      adjustments: [adjustment],
       reasoning:
         `Substitute targeting analysis: ${competitiveWins.length} competitive wins detected. ` +
-        `${action === 'INCREASE' ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(change)}%.`,
+        `${adjustment.action ===EAction.INCREASE_BID ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(adjustment.change!)}%.`,
     };
+  }
+
+  private getAdjustment(rich, poor): Adjustment {
+    if (rich.length > 0) {
+      return {
+        action: EAction.INCREASE_BID,
+        target: ETarget.TARGETING,
+        change: 25
+      }
+    }
+    return {
+      action: EAction.DECREASE_BID,
+      target: ETarget.TARGETING,
+      change: -50
+    }
+
+    // let action: 'INCREASE' | 'DECREASE' | 'CONTROL' = 'CONTROL';
+    // let change = 0;
+
+    // if (rich.length > 0) {
+    //   action = 'INCREASE';
+    //   change = 25;
+    // } else if (poor.length > 0) {
+    //   action = 'DECREASE';
+    //   change = -50;
+    // }
   }
 }

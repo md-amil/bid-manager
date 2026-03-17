@@ -67,4 +67,29 @@ export class AmazonMapper {
     return {}
   }
 
+  static targetReport(metric:any){
+    return {
+      ...metric,
+      targetId:metric.keywordId
+    }
+  }
+
+  static product(p: any, profileId: string) {
+    return {
+      profileId,
+      asin: p.asin,
+      availability: p.availability,
+      bestSellerRank: p.bestSellerRank,
+      brand: p.brand,
+      category: p.category,
+      imageUrl: p.imageUrl,
+      priceToPay: p.priceToPay ? {
+        amount: p.priceToPay.amount,
+        currency: p.priceToPay.currency,
+      } : undefined,
+      sku: p.sku,
+      title: p.title,
+    };
+  }
+
 }

@@ -1,0 +1,2749 @@
+[
+    {
+        "campaignId": "93618166928305",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "massger-auto",
+        "startDate": "2026-01-22",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-01-22T03:59:58.447Z",
+        "lastUpdatedDateTime": "2026-02-07T04:57:12.841Z"
+    },
+    {
+        "campaignId": "2834576461140",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solat-auto",
+        "startDate": "2026-01-22",
+        "state": "ENABLED",
+        "deliveryStatus": "DELIVERING",
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "RULE_BASED",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 15000.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-01-22T03:58:46.255Z",
+        "lastUpdatedDateTime": "2026-02-17T14:19:40.703Z"
+    },
+    {
+        "campaignId": "258101842796133",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar-manual",
+        "startDate": "2026-01-29",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 40,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 40,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 499.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2026-01-29T10:12:24.196Z",
+        "lastUpdatedDateTime": "2026-02-07T04:53:52.099Z"
+    },
+    {
+        "campaignId": "2496346438196",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar auto",
+        "startDate": "2026-01-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 35,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                },
+                {
+                    "percentage": 35,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 35,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 35,
+                    "placement": "PRODUCT_PAGE"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 350.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-01-30T08:12:00.071Z",
+        "lastUpdatedDateTime": "2026-01-30T08:16:28.168Z"
+    },
+    {
+        "campaignId": "101652565912709",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar-auto-f",
+        "startDate": "2026-01-31",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 350.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-01-31T06:56:30.007Z",
+        "lastUpdatedDateTime": "2026-02-14T18:34:08.045Z"
+    },
+    {
+        "campaignId": "112343850801371",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "seoul-19998-AUTO",
+        "startDate": "2026-02-08",
+        "state": "ENABLED",
+        "deliveryStatus": "DELIVERING",
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 425.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-02-08T04:07:36.526Z",
+        "lastUpdatedDateTime": "2026-02-08T04:07:36.526Z"
+    },
+    {
+        "campaignId": "235882805467163",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "NEW SOLAR AUTO",
+        "startDate": "2026-02-28",
+        "state": "ENABLED",
+        "deliveryStatus": "DELIVERING",
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 425.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-02-28T17:26:08.096Z",
+        "lastUpdatedDateTime": "2026-02-28T17:26:08.096Z"
+    },
+    {
+        "campaignId": "33658672034301",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "p-so-1-auto",
+        "startDate": "2026-02-28",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 425.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-02-28T05:24:43.664Z",
+        "lastUpdatedDateTime": "2026-03-01T11:21:00.636Z"
+    },
+    {
+        "campaignId": "255492498962823",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "pp-solar-11-auto",
+        "startDate": "2026-02-28",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 425.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-02-28T05:23:45.165Z",
+        "lastUpdatedDateTime": "2026-03-01T11:21:09.350Z"
+    },
+    {
+        "campaignId": "458087743741751",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "12-12-2025 fuel pump",
+        "startDate": "2025-01-12",
+        "endDate": "2025-01-22",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 100,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-12T05:35:38.947Z",
+        "lastUpdatedDateTime": "2025-01-15T09:01:49.187Z"
+    },
+    {
+        "campaignId": "503449846697780",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "New product",
+        "startDate": "2025-01-13",
+        "endDate": "2025-01-31",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-13T10:27:08.022Z",
+        "lastUpdatedDateTime": "2025-01-25T05:43:12.026Z"
+    },
+    {
+        "campaignId": "437555906252928",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "face cover mask - B0DS814C6Z - 12/1/2025 16:23:18",
+        "startDate": "2025-01-12",
+        "endDate": "2025-01-28",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "NONE",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-12T10:59:29.804Z",
+        "lastUpdatedDateTime": "2025-01-15T09:01:47.013Z"
+    },
+    {
+        "campaignId": "346741560796763",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "KEY AD",
+        "startDate": "2025-01-11",
+        "endDate": "2025-01-31",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-11T08:32:22.671Z",
+        "lastUpdatedDateTime": "2025-01-26T07:47:05.138Z"
+    },
+    {
+        "campaignId": "324294624801004",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign - 13/1/2025 17:36:14.632",
+        "startDate": "2025-01-13",
+        "endDate": "2025-07-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "NONE",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-13T12:07:15.446Z",
+        "lastUpdatedDateTime": "2025-01-15T18:31:51.768Z"
+    },
+    {
+        "campaignId": "413345435737024",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0DSC6CPZL - 13/1/2025 17:35:15",
+        "startDate": "2025-01-13",
+        "endDate": "2025-07-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-13T12:05:25.517Z",
+        "lastUpdatedDateTime": "2025-01-15T09:09:01.598Z"
+    },
+    {
+        "campaignId": "561070639099053",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "FIRST AD",
+        "startDate": "2025-01-11",
+        "endDate": "2025-01-21",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-11T08:27:39.590Z",
+        "lastUpdatedDateTime": "2025-01-17T09:18:18.563Z"
+    },
+    {
+        "campaignId": "429462884636122",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "knief - MANU",
+        "startDate": "2025-01-13",
+        "endDate": "2025-02-27",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 70,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 40,
+                    "placement": "PRODUCT_PAGE"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-13T12:00:55.641Z",
+        "lastUpdatedDateTime": "2025-02-27T18:32:51.825Z"
+    },
+    {
+        "campaignId": "515049404599120",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0DS14J8DY - 13/1/2025 17:28:27",
+        "startDate": "2025-01-13",
+        "endDate": "2025-07-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-13T11:58:52.585Z",
+        "lastUpdatedDateTime": "2025-01-15T09:01:43.478Z"
+    },
+    {
+        "campaignId": "545418330062439",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign - 16/1/2025 17:18:44.072",
+        "startDate": "2025-01-16",
+        "endDate": "2025-07-20",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-16T11:49:59.578Z",
+        "lastUpdatedDateTime": "2025-01-18T03:52:28.663Z"
+    },
+    {
+        "campaignId": "381965501215394",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ice cube Campaign - 16/1/2025 18:38:06.122",
+        "startDate": "2025-01-16",
+        "endDate": "2025-07-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-16T13:11:34.770Z",
+        "lastUpdatedDateTime": "2025-01-18T03:52:26.760Z"
+    },
+    {
+        "campaignId": "403240652168696",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ALL PRODUCT",
+        "startDate": "2025-01-20",
+        "endDate": "2025-03-25",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-20T09:37:08.694Z",
+        "lastUpdatedDateTime": "2025-03-19T09:41:51.990Z"
+    },
+    {
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "SP Campaign Recommendation - Suggested Products - 01/20/2025 0edff3",
+        "startDate": "2025-01-23",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-23T12:33:09.803Z",
+        "lastUpdatedDateTime": "2025-01-24T11:54:06.724Z"
+    },
+    {
+        "campaignId": "411677012742873",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Gr potential asin 2025 3006e4",
+        "startDate": "2025-01-27",
+        "endDate": "2025-07-31",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-27T07:02:48.582Z",
+        "lastUpdatedDateTime": "2025-01-27T09:17:23.286Z"
+    },
+    {
+        "campaignId": "361248104155380",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "CAM.",
+        "startDate": "2025-01-31",
+        "endDate": "2025-02-27",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-31T08:43:04.412Z",
+        "lastUpdatedDateTime": "2025-02-11T07:53:49.431Z"
+    },
+    {
+        "campaignId": "543328990717975",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "CAM",
+        "startDate": "2025-01-25",
+        "endDate": "2025-02-20",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-25T05:45:20.512Z",
+        "lastUpdatedDateTime": "2025-02-10T05:57:00.435Z"
+    },
+    {
+        "campaignId": "390103653819360",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Pack Child Anti Lost",
+        "startDate": "2025-01-31",
+        "endDate": "2025-02-27",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-01-31T08:49:52.128Z",
+        "lastUpdatedDateTime": "2025-02-11T07:53:47.772Z"
+    },
+    {
+        "campaignId": "562275780713083",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Suggested",
+        "startDate": "2025-01-28",
+        "endDate": "2025-02-27",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-28T06:40:39.109Z",
+        "lastUpdatedDateTime": "2025-02-11T07:53:50.601Z"
+    },
+    {
+        "campaignId": "448570496852549",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ALL",
+        "startDate": "2025-01-28",
+        "endDate": "2025-03-25",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-01-28T06:38:22.385Z",
+        "lastUpdatedDateTime": "2025-03-19T09:41:49.293Z"
+    },
+    {
+        "campaignId": "493689455852584",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "AUTO RUN .CAM...",
+        "startDate": "2025-02-08",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 5,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 70.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-02-08T11:59:39.456Z",
+        "lastUpdatedDateTime": "2025-03-19T09:41:46.344Z"
+    },
+    {
+        "campaignId": "431018743255268",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "AUTO ALL PRODUCTS",
+        "startDate": "2025-02-08",
+        "endDate": "2025-03-25",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 3,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-02-08T11:53:57.401Z",
+        "lastUpdatedDateTime": "2025-03-19T09:41:47.595Z"
+    },
+    {
+        "campaignId": "406021719277369",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Suggestedd",
+        "startDate": "2025-03-12",
+        "endDate": "2025-03-25",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-03-12T12:48:57.200Z",
+        "lastUpdatedDateTime": "2025-03-19T09:41:43.942Z"
+    },
+    {
+        "campaignId": "409185000738118",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "C0M",
+        "startDate": "2025-03-12",
+        "endDate": "2025-03-25",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-03-12T12:42:46.396Z",
+        "lastUpdatedDateTime": "2025-03-19T09:41:45.163Z"
+    },
+    {
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "SP Campaign Recommendation - Suggested Products - 03/11/2025 9d4350",
+        "startDate": "2025-03-17",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 450.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-03-17T12:36:57.936Z",
+        "lastUpdatedDateTime": "2025-03-18T15:18:59.846Z"
+    },
+    {
+        "campaignId": "448251947569497",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "New AD",
+        "startDate": "2025-03-17",
+        "endDate": "2025-03-25",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-03-17T13:30:53.272Z",
+        "lastUpdatedDateTime": "2025-03-18T15:18:57.367Z"
+    },
+    {
+        "campaignId": "393473002393515",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Sugg",
+        "startDate": "2025-03-28",
+        "endDate": "2025-03-31",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 2,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 80.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-03-28T13:44:33.628Z",
+        "lastUpdatedDateTime": "2025-09-23T16:10:05.344Z"
+    },
+    {
+        "campaignId": "346136153347051",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "bag",
+        "startDate": "2025-04-22",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 1,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 79.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-04-22T06:54:41.488Z",
+        "lastUpdatedDateTime": "2025-04-24T05:11:35.427Z"
+    },
+    {
+        "campaignId": "459638111700881",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "STAINLESS-S- MN- 3",
+        "startDate": "2025-04-24",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 2,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 79.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-04-24T05:26:44.472Z",
+        "lastUpdatedDateTime": "2025-06-03T10:53:23.124Z"
+    },
+    {
+        "campaignId": "528186241014177",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "stainless steel",
+        "startDate": "2025-04-24",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 2,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 79.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-04-24T05:21:35.183Z",
+        "lastUpdatedDateTime": "2025-06-03T10:53:24.317Z"
+    },
+    {
+        "campaignId": "448261792021770",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FCYLR82F - 30/6/2025 19:58:00.391",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.900Z",
+        "lastUpdatedDateTime": "2025-07-02T11:19:15.579Z"
+    },
+    {
+        "campaignId": "380884993131019",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FDQG85B6 - 30/6/2025 19:58:00.444",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.887Z",
+        "lastUpdatedDateTime": "2025-07-02T11:19:20.883Z"
+    },
+    {
+        "campaignId": "343691402420534",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FF2DR7K8 - 30/6/2025 19:58:00.271",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.862Z",
+        "lastUpdatedDateTime": "2025-07-02T11:19:13.375Z"
+    },
+    {
+        "campaignId": "408236623284223",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0F4PBY7Q4 - 30/6/2025 19:58:00.164",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.858Z",
+        "lastUpdatedDateTime": "2025-07-02T11:19:12.292Z"
+    },
+    {
+        "campaignId": "535048844604731",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FDQG1YGH - 30/6/2025 19:58:00.236",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.895Z",
+        "lastUpdatedDateTime": "2025-07-02T18:32:17.369Z"
+    },
+    {
+        "campaignId": "336072650496257",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FDQCF5MP - 30/6/2025 19:58:00.130",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.891Z",
+        "lastUpdatedDateTime": "2025-07-02T18:35:08.111Z"
+    },
+    {
+        "campaignId": "381659189293212",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FDQP46M7 - 30/6/2025 19:58:00.100",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.897Z",
+        "lastUpdatedDateTime": "2025-07-02T11:19:10.940Z"
+    },
+    {
+        "campaignId": "464886102946262",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FD3SLRKF - 30/6/2025 19:58:00.301",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.897Z",
+        "lastUpdatedDateTime": "2025-07-02T11:19:16.269Z"
+    },
+    {
+        "campaignId": "557227596842913",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0F9YSLRX3 - 30/6/2025 19:58:00.200",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.901Z",
+        "lastUpdatedDateTime": "2025-07-02T11:19:19.414Z"
+    },
+    {
+        "campaignId": "492225241193742",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0F9YP26MZ - 30/6/2025 19:58:00.419",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.901Z",
+        "lastUpdatedDateTime": "2025-07-02T18:37:09.949Z"
+    },
+    {
+        "campaignId": "414872007842319",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FD3ZTP5W - 30/6/2025 19:58:00.361",
+        "startDate": "2025-06-30",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-06-30T14:28:38.899Z",
+        "lastUpdatedDateTime": "2025-07-02T11:19:18.639Z"
+    },
+    {
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "SP Campaign Recommendation - Suggested Products - 07/07/2025 1d96cb",
+        "startDate": "2025-07-11",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 500.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-07-11T12:59:08.411Z",
+        "lastUpdatedDateTime": "2025-07-12T18:37:04.391Z"
+    },
+    {
+        "campaignId": "461425195560288",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "shoe cleaning bag",
+        "startDate": "2025-07-10",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 10,
+                    "placement": "PRODUCT_PAGE"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 500.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-07-10T13:27:23.113Z",
+        "lastUpdatedDateTime": "2025-07-13T18:48:29.206Z"
+    },
+    {
+        "campaignId": "480848134524755",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign - 18/7/2025 20:16:21.079",
+        "startDate": "2025-07-18",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 10,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 10,
+                    "placement": "REST_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-07-18T14:47:17.432Z",
+        "lastUpdatedDateTime": "2025-07-21T07:54:52.070Z"
+    },
+    {
+        "campaignId": "288030330646386",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign - 18/7/2025 20:17:41.619",
+        "startDate": "2025-07-18",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 20,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 50,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 20,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                },
+                {
+                    "percentage": 20,
+                    "placement": "PRODUCT_PAGE"
+                }
+            ],
+            "shopperCohortBidAdjustment": [
+                {
+                    "shopperCohortType": "AUDIENCE_SEGMENT",
+                    "percentage": 10,
+                    "audienceSegments": [
+                        {
+                            "audienceId": "409816952926330179",
+                            "audienceSegmentType": "BEHAVIOR_DYNAMIC"
+                        }
+                    ]
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 425.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-07-18T14:50:39.888Z",
+        "lastUpdatedDateTime": "2025-07-21T07:54:53.353Z"
+    },
+    {
+        "campaignId": "513608031560826",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "medkiit-manual",
+        "startDate": "2025-08-06",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 70,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 499.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-08-06T11:53:23.223Z",
+        "lastUpdatedDateTime": "2025-08-11T08:29:45.665Z"
+    },
+    {
+        "campaignId": "414249266654749",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FH2RP287 - 10/8/2025 04:04:47.704",
+        "startDate": "2025-08-10",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-08-10T04:04:47.733Z",
+        "lastUpdatedDateTime": "2025-08-11T08:29:46.736Z"
+    },
+    {
+        "campaignId": "337862584219447",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Campaign with presets - B0FH2RP287 - 11/8/2025 08:29:58.464",
+        "startDate": "2025-08-11",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-08-11T08:29:58.494Z",
+        "lastUpdatedDateTime": "2025-08-13T09:45:22.731Z"
+    },
+    {
+        "campaignId": "328034125901575",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "TL_EL_SPN_SG_Growz | SP Auto - PrankPond Product Line - 47321",
+        "startDate": "2025-08-20",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-08-20T12:14:15.671Z",
+        "lastUpdatedDateTime": "2025-09-01T18:36:59.720Z"
+    },
+    {
+        "campaignId": "307550848081999",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "TL_EL_SPN_SG_first aid -auto",
+        "startDate": "2025-09-01",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 40,
+                    "placement": "PRODUCT_PAGE"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-09-01T04:45:12.404Z",
+        "lastUpdatedDateTime": "2025-09-15T04:57:16.126Z"
+    },
+    {
+        "campaignId": "438482331566183",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "TL_EL_SPN_SG_Growz | SP Auto - PrankPond Product Range - 73435",
+        "startDate": "2025-09-10",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-09-10T17:34:59.726Z",
+        "lastUpdatedDateTime": "2025-09-15T18:33:26.412Z"
+    },
+    {
+        "campaignId": "372362424923979",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "TL_EL_SPN_SG_Growz | SP Auto - PrankPond Product Line - 48791",
+        "startDate": "2025-09-17",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 100.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-09-17T12:03:41.378Z",
+        "lastUpdatedDateTime": "2025-10-03T18:35:48.367Z"
+    },
+    {
+        "campaignId": "337829062187360",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "TL_EL_SPN_SG_anti choking manual",
+        "startDate": "2025-09-22",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-09-22T16:31:52.172Z",
+        "lastUpdatedDateTime": "2025-10-03T18:35:48.366Z"
+    },
+    {
+        "campaignId": "508936636274550",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "TL_EL_SPN_SG_Growz | SP - Auto - Group 1  - 45671",
+        "startDate": "2025-09-23",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES_DOWN_ONLY",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 50,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 50,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 50,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 560.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-09-23T16:11:34.943Z",
+        "lastUpdatedDateTime": "2025-11-14T18:31:20.696Z"
+    },
+    {
+        "campaignId": "284474961141302",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "TL_EL_SPN_SG_anti choking-product target",
+        "startDate": "2025-09-22",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 40,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 40,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 40,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 300.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-09-22T16:36:23.973Z",
+        "lastUpdatedDateTime": "2025-10-03T18:35:48.366Z"
+    },
+    {
+        "campaignId": "496282202642809",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP AUTO - B0FN412WTD - 48780",
+        "startDate": "2025-10-14",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 200.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-10-14T07:22:02.091Z",
+        "lastUpdatedDateTime": "2025-10-14T15:56:44.272Z"
+    },
+    {
+        "campaignId": "426895761343931",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP AUTO - B0FN412WTD - 46254",
+        "startDate": "2025-10-14",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 200.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-10-14T09:20:47.708Z",
+        "lastUpdatedDateTime": "2025-10-14T15:56:43.154Z"
+    },
+    {
+        "campaignId": "281493812850968",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ANTI CHOKING PUMP",
+        "startDate": "2025-10-04",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 40,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 52,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 117,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 2754.7
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-10-04T11:34:41.047Z",
+        "lastUpdatedDateTime": "2025-12-05T08:35:42.625Z"
+    },
+    {
+        "campaignId": "334161339483779",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "anti choking-auto",
+        "startDate": "2025-12-06",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 70,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 499.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2025-12-06T13:02:52.806Z",
+        "lastUpdatedDateTime": "2025-12-18T04:10:31.714Z"
+    },
+    {
+        "campaignId": "379151379354849",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "anti choking manual",
+        "startDate": "2025-12-06",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 70,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 499.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-12-06T13:01:35.721Z",
+        "lastUpdatedDateTime": "2025-12-18T04:10:32.403Z"
+    },
+    {
+        "campaignId": "477696692305602",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "anti choking manual-f",
+        "startDate": "2025-12-18",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": []
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 425.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-12-18T04:11:56.041Z",
+        "lastUpdatedDateTime": "2025-12-20T07:59:13.932Z"
+    },
+    {
+        "campaignId": "510530957613901",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "CHOKING DEVICE",
+        "startDate": "2025-12-20",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 100,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 90,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 90,
+                    "placement": "REST_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 999.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2025-12-20T08:00:41.404Z",
+        "lastUpdatedDateTime": "2026-01-01T06:35:07.046Z"
+    },
+    {
+        "campaignId": "550669026247354",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "m-chiking",
+        "startDate": "2026-01-03",
+        "state": "ENABLED",
+        "deliveryStatus": "DELIVERING",
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 35,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 35,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                },
+                {
+                    "percentage": 35,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 70,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 400.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2026-01-03T07:48:46.938Z",
+        "lastUpdatedDateTime": "2026-02-19T18:32:09.520Z"
+    },
+    {
+        "campaignId": "285057424563742",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "manual choking",
+        "startDate": "2026-01-01",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 70,
+                    "placement": "TOP_OF_SEARCH"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 30,
+                    "placement": "REST_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 400.0
+                }
+            }
+        },
+        "targetingSettings": "MANUAL",
+        "creationDateTime": "2026-01-01T06:37:31.713Z",
+        "lastUpdatedDateTime": "2026-01-08T06:01:49.045Z"
+    },
+    {
+        "campaignId": "425174312303133",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "auto-choking",
+        "startDate": "2026-01-03",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_OUT_OF_BUDGET"
+        ],
+        "tags": [],
+        "optimization": {
+            "bidStrategy": "SALES",
+            "placementBidAdjustments": [
+                {
+                    "percentage": 35,
+                    "placement": "PRODUCT_PAGE"
+                },
+                {
+                    "percentage": 35,
+                    "placement": "SITE_AMAZON_BUSINESS"
+                },
+                {
+                    "percentage": 35,
+                    "placement": "REST_OF_SEARCH"
+                },
+                {
+                    "percentage": 70,
+                    "placement": "TOP_OF_SEARCH"
+                }
+            ]
+        },
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 400.0
+                }
+            }
+        },
+        "targetingSettings": "AUTO",
+        "creationDateTime": "2026-01-03T07:49:47.686Z",
+        "lastUpdatedDateTime": "2026-03-09T09:37:01.064Z"
+    },
+    {
+        "campaignId": "416259617348872",
+        "adProduct": "SPONSORED_DISPLAY",
+        "name": "knife video",
+        "startDate": "2025-01-26",
+        "endDate": "2025-07-28",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "T00030",
+        "creationDateTime": "2025-01-26T07:44:13.533Z",
+        "lastUpdatedDateTime": "2025-01-26T07:45:44.938Z",
+        "costType": "CPC"
+    },
+    {
+        "campaignId": "524774354460565",
+        "adProduct": "SPONSORED_DISPLAY",
+        "name": "TL_EL_SPN_SG_Growz | Top Asin - Views ReMarketing - 81143",
+        "startDate": "2025-08-28",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 50.0
+                }
+            }
+        },
+        "targetingSettings": "T00030",
+        "creationDateTime": "2025-08-28T09:36:22.215Z",
+        "lastUpdatedDateTime": "2025-11-07T08:45:38.238Z",
+        "costType": "CPC"
+    },
+    {
+        "campaignId": "400892877307956",
+        "adProduct": "SPONSORED_DISPLAY",
+        "name": "TL_EL_SPN_SG_Growz | Top Asin - Views ReMarketing - 95545",
+        "startDate": "2025-10-07",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "budgetCaps": {
+            "recurrenceTimePeriod": "DAILY",
+            "budgetType": "MONETARY",
+            "budgetValue": {
+                "monetaryBudget": {
+                    "currencyCode": "INR",
+                    "amount": 250.0
+                }
+            }
+        },
+        "targetingSettings": "T00030",
+        "creationDateTime": "2025-10-07T12:40:49.927Z",
+        "lastUpdatedDateTime": "2025-11-07T18:36:11.641Z",
+        "costType": "CPC"
+    }
+]

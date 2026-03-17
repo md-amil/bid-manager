@@ -12,9 +12,8 @@ import { Target } from "src/schemas/target.schema";
 import { AdGroupApiService } from "./adgroup-api.service";
 import { AmazonApiService } from "./amazon-api.service";
 import { Profile } from "src/schemas/profile.schema";
+import { Product } from "src/schemas/product.schema";
 import { IAmazonAuth } from "src/interfaces/index.type";
-
-
 
 
 @Injectable()
@@ -32,6 +31,8 @@ export class AmazonSyncService {
     private targetModel: Model<Target>,
     @InjectModel(Profile.name)
     private profileModel: Model<Profile>,
+    @InjectModel(Product.name)
+    private productModel: Model<Product>,
     private amazonApi: AmazonApiService,
     private campaignApi: CampaignApiService,
     private adGroupApi: AdGroupApiService,
@@ -116,8 +117,6 @@ export class AmazonSyncService {
   async syncTargets(auth: IAmazonAuth, nextToken?: string) {
     console.log('Syncing Targets...')
     const { targetingClauses, nextToken: next } = await this.adGroupApi.getTargets(auth, { nextToken })
-    console.log({ targets: targetingClauses.length })
-    console.log(targetingClauses)
     const adBulkOps = targetingClauses.map(a => ({
       updateOne: {
         filter: { targetId: a.targetId },
@@ -158,6 +157,25 @@ export class AmazonSyncService {
     }));
     await this.profileModel.bulkWrite(adBulkOps);
     return profiles
+  }
+
+  async syncProducts(auth: IAmazonAuth) {
+    console.log('Syncing Products...')
+    const response = await this.amazonApi.getProductMeta(auth);
+    if (!response) {
+      console.log('No products found');
+      return null;
+    }
+    
+    const productBulkOps = response.map(p => ({
+      updateOne: {
+        filter: { asin: p.asin },
+        update: { $set: AmazonMapper.product(p, auth.scopeId) },
+        upsert: true,
+      },
+    }));
+    const productResult = await this.productModel.bulkWrite(productBulkOps);
+    return productResult;
   }
 
   async syncAll(auth: IAmazonAuth) {

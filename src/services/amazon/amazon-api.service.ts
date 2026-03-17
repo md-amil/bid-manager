@@ -10,7 +10,8 @@ export interface ReportResponse {
   url?: string;
   name?: string;
   configuration: {
-    reportTypeId: 'spCampaigns'|'spKeywords'|'spSearchTerm'
+    reportTypeId: 'spCampaigns' | 'spKeywords' | 'spSearchTerm' | 'spTargeting' | 'spAdvertisedProduct',
+    groupBy: string[];
   };
   startDate?: string;
   endDate?: string;
@@ -37,14 +38,14 @@ export interface IFilter {
 
 export interface ReportPayload {
   scopeId: string;
-  name: string;
+  name?: string;
   startDate: string;
   endDate: string;
 }
 
 export interface ReportConfig {
   scopeId?: string;
-  reportTypeId: 'spCampaigns' | 'spKeywords'| 'spSearchTerm'|'spTargeting';
+  reportTypeId: 'spCampaigns' | 'spKeywords' | 'spSearchTerm' | 'spTargeting' | 'spAdvertisedProduct';
   groupBy: string[];
   columns: string[];
 }
@@ -76,7 +77,7 @@ export class AmazonApiService {
   protected readonly refreshToken: string;
   protected readonly scopeId: string;
   protected readonly tokenUrl: string;
-  protected readonly redirectUri:string
+  protected readonly redirectUri: string
 
   constructor(protected configService: ConfigService, protected readonly cls: ClsService) {
     this.clientId = this.configService.get<string>('AMAZON_CLIENT_ID') || '';
@@ -111,8 +112,8 @@ export class AmazonApiService {
     const client = axios.create({
       baseURL,
       headers: {
-        'Accept': 'application/vnd.spCampaign.v3+json',
-        'Content-Type': 'application/vnd.spcampaign.v3+json',
+        // 'Accept': 'application/vnd.spCampaign.v3+json',
+        // 'Content-Type': 'application/vnd.spcampaign.v3+json',
         'Amazon-Advertising-API-ClientId': this.clientId
       },
     });
@@ -140,11 +141,11 @@ export class AmazonApiService {
     return client
   }
 
-   async refreshAccessToken(refreshToken:string) {
+  async refreshAccessToken(refreshToken: string) {
     try {
       const params = new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token:refreshToken,
+        refresh_token: refreshToken,
         client_id: this.clientId,
         client_secret: this.clientSecret,
       });
@@ -204,7 +205,7 @@ export class AmazonApiService {
     }, { ...(nextToken && { nextToken }) } as any)
   }
 
-  protected authBuilder({scopeId,accessToken}:IAmazonAuth) {
+  protected authBuilder({ scopeId, accessToken }: IAmazonAuth) {
     return {
       headers: {
         'Amazon-Advertising-API-Scope': scopeId,
@@ -213,23 +214,29 @@ export class AmazonApiService {
     }
   }
 
-  async getProductMeta(asins: string[] | string) {
+  async getProductMeta(auth:IAmazonAuth) {
+    const payload = {
+      "pageSize": 300,
+      "checkItemDetails": "true",
+      "pageIndex": 0
+    }
     try {
       const response = await this.httpClient.post(
-        '/product/metadata', {
-        "asins": Array.isArray(asins) ? asins : [asins],
-        "adType": "SP",
-        "pageSize": 5,
-        "pageIndex": 0
-      })
-      return response.data
+        '/product/metadata', payload, this.authBuilder(auth)
+        //   {
+        //   "asins": Array.isArray(asins) ? asins : [asins],
+        //   "adType": "SP",
+        //   "pageSize": 5,
+        // }
+      )
+      return response.data?.ProductMetadataList
     } catch (e) {
       this.logger.error('Failed to get keywords', e.response?.data || e.message);
     }
   }
 
 
-  async generateReport(auth:IAmazonAuth,payload: ReportPayload, config: ReportConfig) {
+  async generateReport(auth: IAmazonAuth, payload: ReportPayload, config: ReportConfig) {
     try {
       const response = await this.httpClient.post<ReportResponse>(
         '/reporting/reports',
@@ -315,10 +322,10 @@ export class AmazonApiService {
     }
   }
 
-  
-  
 
-  async updateProductAd(auth: IAmazonAuth,adId: string, data: any) {
+
+
+  async updateProductAd(auth: IAmazonAuth, adId: string, data: any) {
     try {
       const response = await this.httpClient.put(`/sp/productAds`, data, {
         ...this.authBuilder(auth)
@@ -330,10 +337,10 @@ export class AmazonApiService {
     }
   }
 
-  async updateKeyword(auth: IAmazonAuth,keywordId: string, data: any) {
+  async updateKeyword(auth: IAmazonAuth, keywordId: string, data: any) {
     try {
       const response = await this.httpClient.put(`/sp/keywords`, data, {
-        ...this.authBuilder(auth) 
+        ...this.authBuilder(auth)
       });
       return response.data;
     } catch (error) {
@@ -342,4 +349,3 @@ export class AmazonApiService {
     }
   }
 }
-

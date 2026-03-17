@@ -11,6 +11,7 @@ import { ReportProducer } from 'src/queue/producer/report.producer';
 import { CampaignApiService } from 'src/services/amazon/campaign-api.service';
 import { BidProducer } from 'src/queue/producer/bid.producer';
 import { CampaignService } from 'src/services/campaign.service';
+import { SyncProducer } from 'src/queue/producer/sync.producer';
 
 
 @Controller('api/campaigns')
@@ -18,7 +19,7 @@ export class CampaignController {
   constructor(
     // private campaignService: CampaignService,
     private campaignApi: CampaignApiService,
-    // private readonly syncProducer: SyncProducer,
+    private readonly syncProducer: SyncProducer,
     private readonly reportProducer: ReportProducer,
     private readonly bidProducer: BidProducer,
     private readonly campaignService: CampaignService,
@@ -40,10 +41,16 @@ export class CampaignController {
     return await campaign.save();
   }
 
-  @Post('sync')
-  async syncCampaigns() {
+  @Post('report-sync')
+  async reportSync() {
     const reportJob = await this.reportProducer.generateReport();
-    return { message: 'Campaign sync initiated',jobIds: reportJob?.map(j=>j.id).join(',') };
+    return { message: 'Report sync initiated',jobIds: reportJob?.map(j=>j.id).join(',') };
+  }
+
+  @Post('sync')
+  async campaignSync() {
+   const job  =  await this.syncProducer.syncCampaignData()
+    return { message: 'Campaign sync initiated', job:job.id};
   }
 
   @Post('adjust-bids')
@@ -53,8 +60,8 @@ export class CampaignController {
     const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c=>c.state === "ENABLED")
     // const campaignIds = campaigns.map(({ campaignId }) => campaignId)
     const budgetUsages = await this.campaignApi.getBudgetUses(['340981085273491'], {scopeId,accessToken})
-    console.log(campaigns.length, "campaign length",budgetUsages.length)
-    await this.bidProducer.scheduleBidAdjustment(campaigns,budgetUsages[0]);
+    console.log(campaigns.length, "campaign length", budgetUsages.length)
+    await this.bidProducer.scheduleBidAdjustment(campaigns, budgetUsages[0]);
     return { message: 'Bid adjustment scheduled' };
   }
 

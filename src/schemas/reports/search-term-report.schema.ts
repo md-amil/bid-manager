@@ -1,4 +1,14 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { MatchType } from "../keyword.schema";
+
+export enum AutoMatchType {
+    TARGETING_EXPRESSION_PREDEFINED = 'TARGETING_EXPRESSION_PREDEFINED'
+}
+
+export const MATCH_TYPE_VALUES = [
+    ...Object.values(MatchType),
+    ...Object.values(AutoMatchType),
+];
 
 export type SearchTermDocument = SearchTermReport & Document;
 @Schema({
@@ -9,16 +19,16 @@ export class SearchTermReport {
     @Prop({ index: true }) keywordId: string;
     @Prop() campaignId: string;
     @Prop() adGroupId: string;
-    
-    @Prop() matchType: string;
+
+    @Prop({ enum: MATCH_TYPE_VALUES }) matchType: MatchType | AutoMatchType;
     @Prop() keyword: string;
-    @Prop() searchTerm: string; 
-    @Prop() keywordType: string; 
-    @Prop() targeting: string; 
+    @Prop() searchTerm: string;
+    @Prop() keywordType: string;
+    @Prop() targeting: string;
 
     @Prop() impressions: number;
     @Prop() clicks: number;
-    @Prop() spend: number;
+    @Prop() cost: number;
 
     @Prop() sales7d: number;
     @Prop() sales14d: number;
@@ -30,7 +40,7 @@ export class SearchTermReport {
 }
 
 
-        
+
 
 export const SearchTermReportSchema =
-  SchemaFactory.createForClass(SearchTermReport);
+    SchemaFactory.createForClass(SearchTermReport);

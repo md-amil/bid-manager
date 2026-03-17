@@ -11,7 +11,7 @@ import { ProfileController } from './controllers/profile.controller';
 import { AuthController } from './controllers/auth.controller';
 import { Campaign, CampaignSchema } from './schemas/campaign.schema';
 import { AdjustmentLog, AdjustmentLogSchema } from './schemas/log.schema';
-import { CampaignReport, CampaignReportSchema, } from './schemas/reports/report.schema';
+import { CampaignReport, CampaignReportSchema, } from './schemas/reports/campaign-report';
 import { AmazonApiService } from './services/amazon/amazon-api.service';
 import { CronService } from './services/cron.service';
 import { AuthService } from './services/auth.service';
@@ -31,7 +31,6 @@ import { OptimizationLog, OptimizationLogSchema } from './schemas/optimization.s
 import { CampaignApiService } from './services/amazon/campaign-api.service';
 import { Keyword, KeywordSchema } from './schemas/keyword.schema';
 import { Target, TargetSchema } from './schemas/target.schema';
-// import { Engine } from './engine/core/rule.engine';
 import { AdGroupApiService } from './services/amazon/adgroup-api.service';
 import { Profile, ProfileSchema } from './schemas/profile.schema';
 import { KeywordReport, KeywordReportSchema } from './schemas/reports/keyword-report.schema';
@@ -42,6 +41,11 @@ import Engine from './engine/core/rule.engine';
 import { AuthApiService } from './services/amazon/auth-api.service';
 import { ClsMiddleware } from './middleware/cls.middleware';
 import { AdjustmentLogService } from './services/log.service';
+import { TargetReport, TargetReportSchema } from './schemas/reports/target-report.schema';
+import { Product, ProductSchema } from './schemas/product.schema';
+import { AdvertisedProductReport, AdvertisedProductReportSchema } from './schemas/reports/advertised-product-report.schema';
+import { AdGroupReport, AdGroupReportSchema } from './schemas/reports/adgroup-report.schema';
+import { ReportApiService } from './services/amazon/report-api.service';
 
 @Module({
   imports: [
@@ -71,11 +75,14 @@ import { AdjustmentLogService } from './services/log.service';
       { name: Keyword.name, schema: KeywordSchema },
       { name: Target.name, schema: TargetSchema },
       { name: KeywordReport.name, schema: KeywordReportSchema },
+      { name: TargetReport.name, schema: TargetReportSchema },
       { name: SearchTermReport.name, schema: SearchTermReportSchema },
-
       { name: Profile.name, schema: ProfileSchema },
       { name: User.name, schema: UserSchema },
       { name: Organization.name, schema: OrganizationSchema },
+      { name: Product.name, schema: ProductSchema },
+      { name: AdvertisedProductReport.name, schema: AdvertisedProductReportSchema },
+      { name: AdGroupReport.name, schema: AdGroupReportSchema },
     ]),
     ScheduleModule.forRoot(),
     ClsModule.forRoot({
@@ -87,15 +94,21 @@ import { AdjustmentLogService } from './services/log.service';
   ],
   controllers: [AppController, CampaignController, ViewController, ProfileController, AuthController],
   providers: [
-    AmazonSyncService, AmazonSyncProcessor,
-    AdGroupApiService, AmazonApiService,
-    AppService, AuthApiService,
-    Engine, CampaignApiService,
+    AdjustmentLogService,
+    CampaignApiService,
+    AmazonSyncService,
+    AmazonSyncProcessor,
+    AdGroupApiService,
+    AmazonApiService,
+    ReportApiService,
+    AppService,
+    AuthApiService,
+    Engine,
     CronService, AuthService,
     BidProcessor, ReportProcessor,
     CampaignService, SyncProducer,
     ReportProducer, BidProducer,
-    ReportService, AdjustmentLogService
+    ReportService,
   ],
 })
 export class AppModule implements NestModule {

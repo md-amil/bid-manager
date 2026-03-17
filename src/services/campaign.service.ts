@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, PipelineStage } from 'mongoose';
 import { Campaign, CampaignDocument } from 'src/schemas/campaign.schema';
 import { AdGroup, AdGroupDocument } from 'src/schemas/ad-group.schema';
-import { CampaignReport, ReportDocument } from 'src/schemas/reports/report.schema';
+import { CampaignReport, ReportDocument } from 'src/schemas/reports/campaign-report';
 import { SearchTermDocument, SearchTermReport } from 'src/schemas/reports/search-term-report.schema';
 
 @Injectable()
@@ -67,20 +67,86 @@ export class CampaignService {
 
 
   async findCampaignBundle(campaignId: string) {
+
+    const keywordQuery: PipelineStage = {
+      $lookup: {
+        from: 'keywords',
+        let: { campaignId: '$campaignId' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ['$campaignId', '$$campaignId'] },
+            },
+          },
+          {
+            $lookup: {
+              from: 'keyword_reports',
+              let: { keywordId: '$keywordId' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: { $eq: ['$keywordId', '$$keywordId'] },
+                  },
+                },
+                { $sort: { date: -1 } },
+                { $limit: 1 },
+              ],
+              as: 'metrics',
+            },
+          },
+          {
+            $unwind: {
+              path: '$metrics',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
+        as: 'keywords',
+      },
+    }
+
+    const targetQuery: PipelineStage = {
+      $lookup: {
+        from: 'targets',
+        let: { campaignId: '$campaignId' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ['$campaignId', '$$campaignId'] },
+            },
+          },
+          {
+            $lookup: {
+              from: 'target_reports',
+              let: { targetId: '$targetId' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: { $eq: ['$targetId', '$$targetId'] },
+                  },
+                },
+                { $sort: { date: -1 } },
+                { $limit: 1 },
+              ],
+              as: 'metrics',
+            },
+          },
+          {
+            $unwind: {
+              path: '$metrics',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ],
+        as: 'targets',
+      },
+    }
+
+
     const response = await this.campaignModel.aggregate([
       {
         $match: { campaignId },
       },
-
-      {
-        $lookup: {
-          from: 'targetings',
-          localField: 'campaignId',
-          foreignField: 'campaignId',
-          as: 'targetings',
-        },
-      },
-
       {
         $lookup: {
           from: 'campaign_reports',
@@ -99,49 +165,14 @@ export class CampaignService {
       },
       {
         $unwind: {
-          path: '$campaignReports',
+          path: '$matrics',
           preserveNullAndEmptyArrays: true,
         },
       },
-      {
-        $lookup: {
-          from: 'keywords',
-          let: { campaignId: '$campaignId' },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ['$campaignId', '$$campaignId'] },
-              },
-            },
-            {
-              $lookup: {
-                from: 'keyword_reports',
-                let: { keywordId: '$keywordId' },
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: { $eq: ['$keywordId', '$$keywordId'] },
-                    },
-                  },
-                  { $sort: { date: -1 } },
-                  { $limit: 1 },
-                ],
-                as: 'keywordReports',
-              },
-            },
-            {
-              $unwind: {
-                path: '$keywordReports',
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-          ],
-          as: 'keywords',
-        },
-      },
+      keywordQuery,
+      targetQuery
     ]);
-
-    return { ...response[0], matrics: response[0]?.matrics?.[0] ?? {} }
+    return response[0]
   }
 
 
@@ -149,31 +180,30 @@ export class CampaignService {
     return this.campaignModel.find({ scopeId }).sort({ createdAt: -1 }).exec();
   }
 
-  async getCampaignById(campaignId: string, populates:string[]) {
-
-    // console.log
-
-    const query: PipelineStage[] = [
-      {
-        $match: {
-          campaignId
-        }
-      },
-    ]
-    populates.forEach(from => {
-      query.push(
-        {
-          $lookup: {
-            from,
-            localField: 'campaignId',
-            foreignField: 'campaignId',
-            as: from
-          }
-        },
-      )
-    })
-    const data = await this.campaignModel.aggregate(query);
-    return data[0];
+  async getCampaignById(campaignId: string, populates: string[]) {
+    const match: any = { campaignId };
+    return this.getCampaignBy(match, populates)
+    // const query: PipelineStage[] = [
+    //   {
+    //     $match: {
+    //       campaignId
+    //     }
+    //   },
+    // ]
+    // populates.forEach(from => {
+    //   query.push(
+    //     {
+    //       $lookup: {
+    //         from,
+    //         localField: 'campaignId',
+    //         foreignField: 'campaignId',
+    //         as: from
+    //       }
+    //     },
+    //   )
+    // })
+    // const data = await this.campaignModel.aggregate(query);
+    // return data[0];
   }
 
   async getCampaignBy($match: PipelineStage.Match, populate: string[]) {
@@ -192,17 +222,41 @@ export class CampaignService {
     return data[0];
   }
 
-  async getAdGroupBy($match, populate: string[]) {
+  async getAdGroupBy($match, populate: (string | { from: string, field: string })[]) {
     const args: any[] = [{ $match }]
     for (const pop of populate) {
-      args.push({
-        $lookup: {
-          from: pop,
-          localField: 'adGroupId',
-          foreignField: 'adGroupId',
-          as: pop,
-        },
-      })
+      if (typeof pop === 'string') {
+        args.push({
+          $lookup: {
+            from: pop,
+            localField: 'adGroupId',
+            foreignField: 'adGroupId',
+            as: pop,
+          },
+        })
+      }
+      if (typeof pop === 'object') {
+        const [parent, child] = pop.from.split('.')
+        args.push({
+          $lookup: {
+            from: parent,
+            localField: "adGroupId",
+            foreignField: "adGroupId",
+            as: parent,
+            pipeline: [
+              {
+                $lookup: {
+                  from: child,
+                  localField: pop.field,
+                  foreignField: pop.field,
+                  as: child,
+                },
+              },
+            ],
+          },
+        })
+      }
+
     }
     return this.adgroup.aggregate(args)
   }

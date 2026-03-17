@@ -1,0 +1,1877 @@
+[
+    {
+        "adGroupId": "346655944459788",
+        "campaignId": "346741560796763",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 11/1/2025 13:58:55.057",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-11T08:32:22.932Z",
+        "lastUpdatedDateTime": "2025-01-11T09:56:00.356Z",
+        "bid": {
+            "defaultBid": 18.06,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "504657854997693",
+        "campaignId": "458087743741751",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 12/1/2025 11:00:39",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-12T05:35:39.189Z",
+        "lastUpdatedDateTime": "2025-01-12T05:35:39.313Z",
+        "bid": {
+            "defaultBid": 7.53,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "397856250479102",
+        "campaignId": "437555906252928",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 12/1/2025 16:23:18",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-12T10:59:30.061Z",
+        "lastUpdatedDateTime": "2025-01-13T06:26:30.198Z",
+        "bid": {
+            "defaultBid": 4.24,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "364298655068918",
+        "campaignId": "561070639099053",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 11/1/2025 13:53:51.690",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-11T08:27:39.832Z",
+        "lastUpdatedDateTime": "2025-01-11T08:27:39.912Z",
+        "bid": {
+            "defaultBid": 2.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "521191364343603",
+        "campaignId": "515049404599120",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 13/1/2025 17:28:27",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-13T11:58:52.862Z",
+        "lastUpdatedDateTime": "2025-01-17T09:37:18.743Z",
+        "bid": {
+            "defaultBid": 6.24,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "361621611848351",
+        "campaignId": "503449846697780",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "New product",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-13T10:27:08.338Z",
+        "lastUpdatedDateTime": "2025-01-13T10:27:08.377Z",
+        "bid": {
+            "defaultBid": 1.21,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "348645047104068",
+        "campaignId": "413345435737024",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 13/1/2025 17:35:15",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-13T12:05:25.757Z",
+        "lastUpdatedDateTime": "2025-01-15T09:00:58.321Z",
+        "bid": {
+            "defaultBid": 6.28,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "422698476626847",
+        "campaignId": "429462884636122",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "knief - MANU",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-13T12:00:55.964Z",
+        "lastUpdatedDateTime": "2025-01-20T13:27:53.690Z",
+        "bid": {
+            "defaultBid": 4.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "381827168622118",
+        "campaignId": "324294624801004",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 13/1/2025 17:36:14.631",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-13T12:07:15.714Z",
+        "lastUpdatedDateTime": "2025-01-15T09:00:26.860Z",
+        "bid": {
+            "defaultBid": 7.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "325343990507249",
+        "campaignId": "381965501215394",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ice cube",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-16T13:11:35.017Z",
+        "lastUpdatedDateTime": "2025-01-16T13:11:35.064Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "285406380517008",
+        "campaignId": "545418330062439",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "v shape face mask",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-16T11:49:59.855Z",
+        "lastUpdatedDateTime": "2025-01-16T11:49:59.898Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "362570087136275",
+        "campaignId": "403240652168696",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ALL PRODUCT",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-20T09:37:08.985Z",
+        "lastUpdatedDateTime": "2025-01-20T09:37:09.037Z",
+        "bid": {
+            "defaultBid": 1.21,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "385956188589293",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Bathroom Accessories & Organization",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:11.026Z",
+        "lastUpdatedDateTime": "2025-01-23T12:33:11.068Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "292320398816902",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Exterior Care",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:10.990Z",
+        "lastUpdatedDateTime": "2025-01-23T12:33:11.034Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "302119611396114",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Edge & Corner Guards",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:10.958Z",
+        "lastUpdatedDateTime": "2025-01-23T12:33:11.002Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "348236736625373",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Allergy/Sinus- NON-Licensed",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:10.989Z",
+        "lastUpdatedDateTime": "2025-01-24T11:11:14.023Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "337736563272510",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Drizzlers & Shakers",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:10.967Z",
+        "lastUpdatedDateTime": "2025-01-23T12:33:11.014Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "512582767758772",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Other",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:10.958Z",
+        "lastUpdatedDateTime": "2025-01-23T12:33:11.038Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "311425804370908",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Peelers",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:10.977Z",
+        "lastUpdatedDateTime": "2025-01-23T12:33:11.024Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "529936958497411",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - General Home Improvement",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:10.966Z",
+        "lastUpdatedDateTime": "2025-01-23T12:33:11.056Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "432688464012952",
+        "campaignId": "434636609685007",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - First Aid",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-23T12:33:11.019Z",
+        "lastUpdatedDateTime": "2025-01-23T12:33:11.062Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "295487499484038",
+        "campaignId": "411677012742873",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Peelers",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-27T07:02:49.383Z",
+        "lastUpdatedDateTime": "2025-01-27T07:02:49.422Z",
+        "bid": {
+            "defaultBid": 2.51,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "486035579136079",
+        "campaignId": "562275780713083",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Suggested",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-28T06:40:39.325Z",
+        "lastUpdatedDateTime": "2025-01-28T06:40:39.418Z",
+        "bid": {
+            "defaultBid": 1.11,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "358874448659470",
+        "campaignId": "543328990717975",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "CAM",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-25T05:45:20.755Z",
+        "lastUpdatedDateTime": "2025-01-25T05:45:20.796Z",
+        "bid": {
+            "defaultBid": 1.11,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "307006519809999",
+        "campaignId": "448570496852549",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ALL",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-28T06:38:22.621Z",
+        "lastUpdatedDateTime": "2025-01-28T06:38:22.669Z",
+        "bid": {
+            "defaultBid": 1.51,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "363883286395879",
+        "campaignId": "361248104155380",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "CAM.",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-31T08:43:04.645Z",
+        "lastUpdatedDateTime": "2025-01-31T08:43:04.688Z",
+        "bid": {
+            "defaultBid": 1.21,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "379687746829565",
+        "campaignId": "390103653819360",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Pack Child Anti Lost",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-01-31T08:49:52.373Z",
+        "lastUpdatedDateTime": "2025-02-01T08:54:22.514Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "310431364310088",
+        "campaignId": "431018743255268",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ALL PRODUCTS CAM....",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-02-08T11:53:57.672Z",
+        "lastUpdatedDateTime": "2025-02-08T11:53:57.719Z",
+        "bid": {
+            "defaultBid": 2.51,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "429615605698530",
+        "campaignId": "493689455852584",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "AUTO RUN....",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-02-08T11:59:39.705Z",
+        "lastUpdatedDateTime": "2025-02-08T11:59:39.749Z",
+        "bid": {
+            "defaultBid": 2.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "425476636772916",
+        "campaignId": "406021719277369",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "New product",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-12T12:48:57.496Z",
+        "lastUpdatedDateTime": "2025-03-12T12:48:57.539Z",
+        "bid": {
+            "defaultBid": 1.41,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "370228445216492",
+        "campaignId": "409185000738118",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "C0M",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-12T12:42:46.670Z",
+        "lastUpdatedDateTime": "2025-03-12T12:42:46.718Z",
+        "bid": {
+            "defaultBid": 1.31,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "386128246347260",
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Blenders",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T12:36:59.164Z",
+        "lastUpdatedDateTime": "2025-03-17T12:36:59.210Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "518871165532180",
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Desk Accessories & Workspace Organizers",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T12:36:59.544Z",
+        "lastUpdatedDateTime": "2025-03-17T12:36:59.590Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "439838677673113",
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Dinnerware Sets",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T12:36:59.190Z",
+        "lastUpdatedDateTime": "2025-03-17T12:36:59.233Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "471588117717455",
+        "campaignId": "448251947569497",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "New product",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T13:30:53.575Z",
+        "lastUpdatedDateTime": "2025-03-17T13:30:53.623Z",
+        "bid": {
+            "defaultBid": 1.51,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "470135529671657",
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Handheld Massage",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T12:36:59.142Z",
+        "lastUpdatedDateTime": "2025-03-17T12:36:59.190Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "340709581513081",
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Specialty Electrics",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T12:36:59.155Z",
+        "lastUpdatedDateTime": "2025-03-17T12:36:59.198Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "556071556626564",
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Tools, Gadgets & Barware Other",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T12:36:59.182Z",
+        "lastUpdatedDateTime": "2025-03-17T12:36:59.227Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "453251855044125",
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Other",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T12:36:59.214Z",
+        "lastUpdatedDateTime": "2025-03-17T12:36:59.301Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "473262848804836",
+        "campaignId": "299601438998169",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Bedsheets and Pillow Covers",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-17T12:36:59.143Z",
+        "lastUpdatedDateTime": "2025-03-17T12:36:59.193Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "360066397150222",
+        "campaignId": "393473002393515",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Suggested",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-03-28T13:44:33.941Z",
+        "lastUpdatedDateTime": "2025-03-28T13:44:33.994Z",
+        "bid": {
+            "defaultBid": 2.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "318593671386881",
+        "campaignId": "346136153347051",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad Group - 22/4/2025 12:22:00.446",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-04-22T06:54:41.803Z",
+        "lastUpdatedDateTime": "2025-04-22T06:54:41.861Z",
+        "bid": {
+            "defaultBid": 5.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "555738545713162",
+        "campaignId": "528186241014177",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad Group - 24/4/2025 10:50:14.390",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-04-24T05:21:35.446Z",
+        "lastUpdatedDateTime": "2025-05-24T08:24:44.197Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "471311329186237",
+        "campaignId": "459638111700881",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad Group - 24/4/2025 10:53:16.688",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-04-24T05:26:44.758Z",
+        "lastUpdatedDateTime": "2025-05-24T08:23:10.358Z",
+        "bid": {
+            "defaultBid": 2.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "356916792883585",
+        "campaignId": "381659189293212",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:59.173",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.261Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.316Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "548595399411491",
+        "campaignId": "535048844604731",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:59.002",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.259Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.317Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "470952941419502",
+        "campaignId": "336072650496257",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:58.899",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.246Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.302Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "319126024757374",
+        "campaignId": "492225241193742",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:59.116",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.265Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.317Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "544168729645637",
+        "campaignId": "557227596842913",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:59.061",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.266Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.321Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "306946778497348",
+        "campaignId": "380884993131019",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:58:00.072",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.265Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.319Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "394755800107996",
+        "campaignId": "414872007842319",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:58.827",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.255Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.304Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "376895624104867",
+        "campaignId": "448261792021770",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:59.959",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.267Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.327Z",
+        "bid": {
+            "defaultBid": 2.32,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "397877697494141",
+        "campaignId": "408236623284223",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:58:00.035",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.256Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.308Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "337620317002321",
+        "campaignId": "464886102946262",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:58.954",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.255Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.301Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "284050556323756",
+        "campaignId": "343691402420534",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad group - 30/6/2025 19:57:59.999",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-06-30T14:28:39.278Z",
+        "lastUpdatedDateTime": "2025-06-30T14:28:39.331Z",
+        "bid": {
+            "defaultBid": 5.35,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "291141053146366",
+        "campaignId": "461425195560288",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad Group - 10/7/2025 18:44:25.072",
+        "state": "PAUSED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-10T13:27:23.423Z",
+        "lastUpdatedDateTime": "2025-07-13T18:48:17.376Z",
+        "bid": {
+            "defaultBid": 12.55,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "375033720876402",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Blenders",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:09.551Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:09.611Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "318444050591376",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Thermal Drinkware",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:09.567Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:09.628Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "559917707046469",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Bathroom Accessories & Organization",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:10.416Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:10.464Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "370280372675140",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Tumblers",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:10.294Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:10.344Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "531583561060121",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Hardware",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:09.581Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:09.633Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "511602295904976",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Dinnerware Sets",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:09.554Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:09.607Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "418486150753932",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Other",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:09.546Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:09.599Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "524537049781579",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Misc",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:09.526Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:09.584Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "456782375317495",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PRANK POND - Bedsheets and Pillow Covers",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:09.580Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:09.637Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "365456315837459",
+        "campaignId": "536043792799649",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "PrankPond - Specialty Lighting",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-11T12:59:09.584Z",
+        "lastUpdatedDateTime": "2025-07-11T12:59:09.637Z",
+        "bid": {
+            "defaultBid": 1.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "406971483138542",
+        "campaignId": "288030330646386",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad Group - 18/7/2025 20:17:36.442",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-18T14:50:40.190Z",
+        "lastUpdatedDateTime": "2025-07-18T14:50:40.242Z",
+        "bid": {
+            "defaultBid": 6.43,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "341913694739489",
+        "campaignId": "480848134524755",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Ad Group - 18/7/2025 20:16:19.886",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-07-18T14:47:17.737Z",
+        "lastUpdatedDateTime": "2025-07-18T14:47:17.789Z",
+        "bid": {
+            "defaultBid": 6.43,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "413230203138106",
+        "campaignId": "513608031560826",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "MEDIKIT0-MENUAL",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-06T11:53:23.515Z",
+        "lastUpdatedDateTime": "2025-08-06T11:53:23.567Z",
+        "bid": {
+            "defaultBid": 4.22,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "315345811934134",
+        "campaignId": "414249266654749",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "B0FH2RP287 - 10/8/2025 04:04:47.704",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-10T04:04:48.003Z",
+        "lastUpdatedDateTime": "2025-08-10T04:04:48.059Z",
+        "bid": {
+            "defaultBid": 12.7,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "460131129527568",
+        "campaignId": "337862584219447",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "B0FH2RP287 - 11/8/2025 08:29:58.464",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-11T08:29:58.750Z",
+        "lastUpdatedDateTime": "2025-08-11T08:29:58.828Z",
+        "bid": {
+            "defaultBid": 9.03,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "323540287622613",
+        "campaignId": "328034125901575",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Stainless Steel Kitchen Tools - 61024 -  - 47321",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-20T12:14:16.443Z",
+        "lastUpdatedDateTime": "2025-08-20T12:14:16.497Z",
+        "bid": {
+            "defaultBid": 10.44,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "292899534696299",
+        "campaignId": "328034125901575",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Emergency & Survival Kits - 76314 -  - 47321",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-20T12:14:27.568Z",
+        "lastUpdatedDateTime": "2025-08-20T12:14:27.614Z",
+        "bid": {
+            "defaultBid": 10.44,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "508570058693172",
+        "campaignId": "328034125901575",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Lawn Care Tools - 83945 -  - 47321",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-20T12:14:35.103Z",
+        "lastUpdatedDateTime": "2025-08-20T12:14:35.149Z",
+        "bid": {
+            "defaultBid": 10.44,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "329794649714560",
+        "campaignId": "328034125901575",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Indoor Games & Activities - 55875 -  - 47321",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-20T12:14:20.210Z",
+        "lastUpdatedDateTime": "2025-08-20T12:14:20.259Z",
+        "bid": {
+            "defaultBid": 10.44,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "305222693675797",
+        "campaignId": "328034125901575",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Skincare Products - 94395 -  - 47321",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-20T12:14:23.867Z",
+        "lastUpdatedDateTime": "2025-08-20T12:14:23.921Z",
+        "bid": {
+            "defaultBid": 10.44,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "466484698546518",
+        "campaignId": "328034125901575",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Outdoor Solar Lights - 37664 -  - 47321",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-08-20T12:14:31.355Z",
+        "lastUpdatedDateTime": "2025-08-20T12:14:31.407Z",
+        "bid": {
+            "defaultBid": 10.44,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "494391186347478",
+        "campaignId": "307550848081999",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "first aid-auto",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-01T04:45:12.703Z",
+        "lastUpdatedDateTime": "2025-09-01T04:45:12.756Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "560455070561887",
+        "campaignId": "438482331566183",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Cordless Lawn Care Tools - 97977 -  - 73435",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-10T17:35:16.781Z",
+        "lastUpdatedDateTime": "2025-09-10T17:35:16.829Z",
+        "bid": {
+            "defaultBid": 11.47,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "357672293502668",
+        "campaignId": "438482331566183",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Outdoor Solar Lighting - 42161 -  - 73435",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-10T17:35:12.642Z",
+        "lastUpdatedDateTime": "2025-09-10T17:35:12.694Z",
+        "bid": {
+            "defaultBid": 11.47,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "517040103092760",
+        "campaignId": "438482331566183",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Skin Care Products - 34051 -  - 73435",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-10T17:35:08.584Z",
+        "lastUpdatedDateTime": "2025-09-10T17:35:08.641Z",
+        "bid": {
+            "defaultBid": 11.47,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "535303022203444",
+        "campaignId": "438482331566183",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Stainless Steel Kitchen Tools - 58871 -  - 73435",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-10T17:35:00.553Z",
+        "lastUpdatedDateTime": "2025-09-10T17:35:00.601Z",
+        "bid": {
+            "defaultBid": 11.47,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "316460751289630",
+        "campaignId": "438482331566183",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Indoor Games & Activities - 44399 -  - 73435",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-10T17:35:04.325Z",
+        "lastUpdatedDateTime": "2025-09-10T17:35:04.377Z",
+        "bid": {
+            "defaultBid": 11.47,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "427277699768323",
+        "campaignId": "372362424923979",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Indoor Games & Activities - 13439 -  - 48791",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-17T12:03:45.606Z",
+        "lastUpdatedDateTime": "2025-09-17T12:03:45.659Z",
+        "bid": {
+            "defaultBid": 11.57,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "358575504127060",
+        "campaignId": "372362424923979",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Skincare Products - 63019 -  - 48791",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-17T12:03:49.180Z",
+        "lastUpdatedDateTime": "2025-09-17T12:03:49.243Z",
+        "bid": {
+            "defaultBid": 11.57,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "374181337155203",
+        "campaignId": "372362424923979",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Stainless Steel Kitchen Tools - 13960 -  - 48791",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-17T12:03:42.093Z",
+        "lastUpdatedDateTime": "2025-09-17T12:03:42.156Z",
+        "bid": {
+            "defaultBid": 11.57,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "454277800486411",
+        "campaignId": "372362424923979",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Lawn Care Tools - 33174 -  - 48791",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-17T12:03:59.795Z",
+        "lastUpdatedDateTime": "2025-09-17T12:03:59.884Z",
+        "bid": {
+            "defaultBid": 11.57,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "414077082092368",
+        "campaignId": "372362424923979",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Outdoor Solar Lights - 27834 -  - 48791",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-17T12:03:56.131Z",
+        "lastUpdatedDateTime": "2025-09-17T12:03:56.179Z",
+        "bid": {
+            "defaultBid": 11.57,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "418902289622502",
+        "campaignId": "372362424923979",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Emergency & Survival Kits - 95681 -  - 48791",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-17T12:03:52.600Z",
+        "lastUpdatedDateTime": "2025-09-17T12:03:52.650Z",
+        "bid": {
+            "defaultBid": 11.57,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "410740141398605",
+        "campaignId": "284474961141302",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "anti choking-product target",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-22T16:36:24.277Z",
+        "lastUpdatedDateTime": "2025-09-22T16:36:24.351Z",
+        "bid": {
+            "defaultBid": 19.19,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "471628807497290",
+        "campaignId": "337829062187360",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "anti choking-manual",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-22T16:31:52.502Z",
+        "lastUpdatedDateTime": "2025-09-22T16:32:34.918Z",
+        "bid": {
+            "defaultBid": 7.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "321786347253425",
+        "campaignId": "508936636274550",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - AdGroup - 73588 -  - 45671",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-09-23T16:11:35.703Z",
+        "lastUpdatedDateTime": "2025-09-23T16:11:35.757Z",
+        "bid": {
+            "defaultBid": 15.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "517706072015700",
+        "campaignId": "281493812850968",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ANTI CHOKING",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-10-04T11:34:41.339Z",
+        "lastUpdatedDateTime": "2025-10-04T11:34:41.397Z",
+        "bid": {
+            "defaultBid": 9.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "549666216491301",
+        "campaignId": "496282202642809",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Mixed Variations - 78056 -  - 48780",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-10-14T07:22:02.750Z",
+        "lastUpdatedDateTime": "2025-10-14T07:22:02.799Z",
+        "bid": {
+            "defaultBid": 12.07,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "398459957906127",
+        "campaignId": "426895761343931",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "Growz | SP - Auto - Mixed Variations - 37605 -  - 46254",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-10-14T09:20:48.388Z",
+        "lastUpdatedDateTime": "2025-10-14T09:20:48.450Z",
+        "bid": {
+            "defaultBid": 12.07,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "346757286436237",
+        "campaignId": "334161339483779",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "anti choking-auto",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-12-06T13:02:53.118Z",
+        "lastUpdatedDateTime": "2025-12-06T13:02:53.169Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "294102572580526",
+        "campaignId": "379151379354849",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "anti choking manual",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-12-06T13:01:36.016Z",
+        "lastUpdatedDateTime": "2025-12-09T05:40:12.590Z",
+        "bid": {
+            "defaultBid": 9.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "438321179393517",
+        "campaignId": "477696692305602",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "ANTI CHOKING-manual-f",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-12-18T04:11:56.335Z",
+        "lastUpdatedDateTime": "2025-12-18T04:11:56.393Z",
+        "bid": {
+            "defaultBid": 11.4,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "414678191956108",
+        "campaignId": "510530957613901",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "CHOKING DEVICE",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2025-12-20T08:00:41.706Z",
+        "lastUpdatedDateTime": "2026-01-01T06:10:22.758Z",
+        "bid": {
+            "defaultBid": 12.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "491828341059054",
+        "campaignId": "285057424563742",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "manual choking",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2026-01-01T06:37:32.004Z",
+        "lastUpdatedDateTime": "2026-01-01T06:38:03.809Z",
+        "bid": {
+            "defaultBid": 9.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "347013336916629",
+        "campaignId": "425174312303133",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "auto-choking",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_OUT_OF_BUDGET"
+        ],
+        "creationDateTime": "2026-01-03T07:49:47.966Z",
+        "lastUpdatedDateTime": "2026-01-03T07:49:48.009Z",
+        "bid": {
+            "defaultBid": 19.93,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "323531413557908",
+        "campaignId": "550669026247354",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "chking auto",
+        "state": "ENABLED",
+        "deliveryStatus": "DELIVERING",
+        "creationDateTime": "2026-01-03T07:48:47.277Z",
+        "lastUpdatedDateTime": "2026-01-03T07:48:47.330Z",
+        "bid": {
+            "defaultBid": 50.1,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "388876823359664",
+        "campaignId": "2834576461140",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar-auto",
+        "state": "ENABLED",
+        "deliveryStatus": "DELIVERING",
+        "creationDateTime": "2026-01-22T03:58:46.559Z",
+        "lastUpdatedDateTime": "2026-02-13T04:50:53.017Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "367146698799880",
+        "campaignId": "93618166928305",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "massger-auto",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2026-01-22T03:59:58.753Z",
+        "lastUpdatedDateTime": "2026-01-22T03:59:58.800Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "321572087529453",
+        "campaignId": "258101842796133",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar-manual",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2026-01-29T10:12:24.512Z",
+        "lastUpdatedDateTime": "2026-02-07T04:11:12.030Z",
+        "bid": {
+            "defaultBid": 5.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "552770808135812",
+        "campaignId": "2496346438196",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar-auto-pk02",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2026-01-30T08:12:00.370Z",
+        "lastUpdatedDateTime": "2026-01-30T08:12:00.413Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "499664648672792",
+        "campaignId": "101652565912709",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar-f-auto",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2026-01-31T06:56:30.280Z",
+        "lastUpdatedDateTime": "2026-01-31T06:56:30.326Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "559910387716161",
+        "campaignId": "112343850801371",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "seoul-19998-AUTO",
+        "state": "ENABLED",
+        "deliveryStatus": "DELIVERING",
+        "creationDateTime": "2026-02-08T04:07:36.839Z",
+        "lastUpdatedDateTime": "2026-02-08T04:07:36.891Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "496910876282744",
+        "campaignId": "235882805467163",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "NEW SOLAR AUTO",
+        "state": "ENABLED",
+        "deliveryStatus": "DELIVERING",
+        "creationDateTime": "2026-02-28T17:26:08.429Z",
+        "lastUpdatedDateTime": "2026-02-28T17:26:08.480Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "498666324858047",
+        "campaignId": "33658672034301",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar new 2 auto",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2026-02-28T05:24:43.932Z",
+        "lastUpdatedDateTime": "2026-02-28T05:24:43.977Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    },
+    {
+        "adGroupId": "535081659307780",
+        "campaignId": "255492498962823",
+        "adProduct": "SPONSORED_PRODUCTS",
+        "name": "solar1-auto",
+        "state": "ENABLED",
+        "deliveryStatus": "NOT_DELIVERING",
+        "deliveryReasons": [
+            "CAMPAIGN_PAUSED"
+        ],
+        "creationDateTime": "2026-02-28T05:23:45.454Z",
+        "lastUpdatedDateTime": "2026-02-28T05:23:45.508Z",
+        "bid": {
+            "defaultBid": 3.0,
+            "currencyCode": "INR"
+        }
+    }
+]

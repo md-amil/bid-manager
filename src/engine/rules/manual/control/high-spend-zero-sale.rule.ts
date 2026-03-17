@@ -17,11 +17,11 @@ export class HighSpendZeroSalesManualRule extends BaseRule implements ICampaignR
   shouldApply(): boolean {
     if (this.campaign.targetingType !== Type.MANUAL) return false;
     if (!this.metrics) return false;
-    return this.sales === 0 && (this.clicks>=config.minClicks || this.spend >= config.minSpend)
+    return this.sales === 0 && (this.clicks>=config.minClicks || this.cost >= config.minSpend)
   }
 
   execute(): AdjustmentLog {
-    const zeroSalesTerms = this.searchTerms.filter(st => st.clicks >= config.minClicks && st.spend >= config.minSpend && st.sales7d === 0)
+    const zeroSalesTerms = this.searchTerms.filter(st => st.clicks >= config.minClicks && st.cost >= config.minSpend && st.sales7d === 0)
     return {
       ruleId: 'MANUAL_CONTROL_002',
       ruleName: 'High Spend Zero Sales - Emergency Reduction',
@@ -39,7 +39,7 @@ export class HighSpendZeroSalesManualRule extends BaseRule implements ICampaignR
       ],
       keywords: zeroSalesTerms.map(st => st.searchTerm),
       reasoning:
-        `${this.clicks} clicks with ${this.spend.toFixed(2)} spend generated zero sales. ` +
+        `${this.clicks} clicks with ${this.cost.toFixed(2)} spend generated zero sales. ` +
         `This is a hard rule violation. Immediately reducing bids 25%. ` +
         `Will pause if no improvement in 7 days. Adding high-spend/no-sales terms as negatives.`,
       // actionAfterDays: 7,

@@ -26,28 +26,26 @@ import { ComplementaryTargetingOptimizationRule } from "../rules/auto/search-ter
 import { SubstituteTargetingOptimizationRule } from "../rules/auto/search-term-vise/substitute-targeting.rule";
 import { DuplicateKeywordCleanupRule } from "../rules/manual/keyword-management/duplicate-keyword-cleanup.rule";
 import { PhraseKeywordToExactRule } from "../rules/manual/keyword-management/phrase-keyword-exact.rule";
+
 import { AdjustmentLog } from "src/schemas/log.schema";
 import { AdjustmentLogService } from "src/services/log.service";
 
-// import { CloseMatchOptimizationRule, ComplementaryTargetingOptimizationRule, LooseMatchOptimizationRule, SubstituteTargetingOptimizationRule } from "../rules/search-term.rules";
-
 
 // export const config = {
-//   // targetAcos: parseFloat(process.env.TARGET_ACOS || '0.2'),
-//   // minClicks: parseInt(process.env.MIN_SAMPLE_CLICKS || '20'),
-//   // minSpend: parseFloat(process.env.MIN_SAMPLE_SPEND || '200'),
-//   // minSales: 100,
-//   // fallbackClicks: 20,
-//   // minImpressions: 1000,
-//   // // minCvr: 0.08,
-//   // budgetUtilizationThreshold: 0.85
-//   // minSpendThreshold:parseFloat(process.env.MIN_THRESOLD_SPEND||)
+  // targetAcos: parseFloat(process.env.TARGET_ACOS || '0.2'),
+  // minClicks: parseInt(process.env.MIN_SAMPLE_CLICKS || '20'),
+  // minSpend: parseFloat(process.env.MIN_SAMPLE_SPEND || '200'),
+  // minSales: 100,
+  // fallbackClicks: 20,
+  // minImpressions: 1000,
+  // minCvr: 0.08,
+  // budgetUtilizationThreshold: 0.85
+  // minSpendThreshold:parseFloat(process.env.MIN_THRESOLD_SPEND||)
 // }
 
 
 @Injectable()
 export default class Engine {
-  private adjustments: AutoCampaignAdjustment[] = []
   constructor(private logService: AdjustmentLogService) { }
 
   private runRuleEngine(
@@ -60,7 +58,6 @@ export default class Engine {
       }
     }
     this.logService.saveLogs(adjustments)
-
     console.log(adjustments, "adjustment")
   }
 
@@ -79,17 +76,17 @@ export default class Engine {
       HighSpendPoorConversionRule,
       ListingConversionIssuesRule,
       NegativeKeywordRule,
-      //  search term rules
-      //  CloseMatchOptimizationRule,
-      //  ComplementaryTargetingOptimizationRule,
-      //  LooseMatchOptimizationRule,
-      //  SubstituteTargetingOptimizationRule
+      CloseMatchOptimizationRule,
+      ComplementaryTargetingOptimizationRule,
+      LooseMatchOptimizationRule,
+      SubstituteTargetingOptimizationRule
     ].map(Class => new Class(bundle))
     console.log("running auto rules")
     this.runRuleEngine(autoCampaignRules)
   }
 
   runManual(bundle: ICampaignBundle) {
+    return 
     const manuanCampaignRules = [
       //   //scaling rules
       NewProductLaunchRule,
@@ -115,13 +112,14 @@ export default class Engine {
   }
 
 
-  // threeDaysAgo(){
+  threeDaysAgo(){
 
-  // }
+  }
 
-  // sevenDaysAgo(){
+  sevenDaysAgo(){
 
-  // }
+  }
+  
 
 }
 

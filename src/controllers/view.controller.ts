@@ -5,12 +5,13 @@ import { Model } from 'mongoose';
 import { Campaign, CampaignDocument } from '../schemas/campaign.schema';
 // import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../schemas/bid-adjustment-log.schema';
 import { OptimizationLog, OptimizationLogDocument } from '../schemas/optimization.schema';
-import { CampaignReport, ReportDocument } from '../schemas/reports/report.schema';
+import { CampaignReport, ReportDocument } from '../schemas/reports/campaign-report';
 import { CampaignService } from 'src/services/campaign.service';
 import { ReportService } from 'src/services/report.service';
 import { AuthService } from 'src/services/auth.service';
 import { SyncProducer } from 'src/queue/producer/sync.producer';
 import { AdjustmentLog, LogDocument } from 'src/schemas/log.schema';
+import { Product, ProductDocument } from 'src/schemas/product.schema';
 
 @Controller()
 export class ViewController {
@@ -19,6 +20,7 @@ export class ViewController {
     @InjectModel(AdjustmentLog.name) private bidLogModel: Model<LogDocument>,
     @InjectModel(OptimizationLog.name) private optimizationLogModel: Model<OptimizationLogDocument>,
     @InjectModel(CampaignReport.name) private reportModel: Model<ReportDocument>,
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
     private campaignService: CampaignService,
     private reportService: ReportService,
     private authService: AuthService,
@@ -57,7 +59,7 @@ export class ViewController {
       totalSpend: report.totalSpend ?? 0,
       totalSales: report.totalSales7d ?? 0,
       averageROI: report.totalSales7d / report.totalSpend,
-      acos14: report.totalSpend / report.totalSales7d*100
+      acos14: report.totalSpend / report.totalSales7d * 100
     };
 
     return res.render('index', {
@@ -145,7 +147,7 @@ export class ViewController {
       if (selectedPeriod === 'monthly') days = 30;
     }
     try {
-      campaign = await this.campaignService.getCampaignById(id,['adgroups','adjustmentlogs']);
+      campaign = await this.campaignService.getCampaignById(id, ['adgroups', 'adjustmentlogs']);
       adGroups = campaign.adgroups;
       logs = campaign.adjustmentlogs
       let query = this.reportModel.find({
@@ -162,12 +164,12 @@ export class ViewController {
         metrics = {
           impressions: reports.reduce((sum, r) => sum + (r.impressions || 0), 0),
           clicks: reports.reduce((sum, r) => sum + (r.clicks || 0), 0),
-          spend: reports.reduce((sum, r) => sum + (r.spend || 0), 0),
+          spend: reports.reduce((sum, r) => sum + (r.cost || 0), 0),
           sales14d: reports.reduce((sum, r) => sum + (r.sales14d || 0), 0),
-          costPerClick: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.spend / r.clicks || 0), 0) / reports.length : 0,
+          costPerClick: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.cost / r.clicks || 0), 0) / reports.length : 0,
           clickThroughRate: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.clicks / r.impressions || 0), 0) / reports.length : 0,
-          roas14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.sales14d / r.spend || 0), 0) / reports.length : 0,
-          acos14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.spend / r.sales14d * 100 || 0), 0) / reports.length : 0,
+          roas14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.sales14d / r.cost || 0), 0) / reports.length : 0,
+          acos14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.cost / r.sales14d * 100 || 0), 0) / reports.length : 0,
           conversions14d: reports.reduce((sum, r) => sum + (r.purchases14d / r.clicks || 0), 0),
         };
       }
@@ -213,13 +215,25 @@ export class ViewController {
     let negativeKeywords = [];
     let targets = [];
     let campaign = null as any;
+    let products = {};
 
     const selectedTab = tab || 'ads';
     try {
-      const reps = await this.campaignService.getAdGroupBy({ adGroupId, campaignId }, ['keywords', 'ads', 'targets'])
-      // console.log({ group: reps[0] })
+      const reps = await this.campaignService.getAdGroupBy({ adGroupId, campaignId }, ['keywords', 'targets', { from: 'ads.products', field: 'asin' }])
       if (reps.length) {
         const { ads, keywords, targets, ...adGroup } = reps[0]
+
+        // Fetch product details for ASINs
+        if (ads && ads.length > 0) {
+          const asins = [...new Set(ads.map(ad => ad.asin).filter(Boolean))];
+          if (asins.length > 0) {
+            const productDocs = await this.productModel.find({ asin: { $in: asins } }).lean();
+            products = productDocs.reduce((map, p) => {
+              map[p.asin] = p;
+              return map;
+            }, {});
+          }
+        }
 
         // Fetch keyword reports if keywords exist
         let keywordReports: any[] = [];
@@ -235,6 +249,7 @@ export class ViewController {
           targets,
           adGroup,
           campaignId,
+          products,
           selectedProfile: session.selectedProfile,
           profiles: session.profiles,
           selectedTab
@@ -250,6 +265,7 @@ export class ViewController {
       campaignId,
       adGroup: adGroup,
       productAds,
+      products,
       keywords,
       keywordReports: [],
       negativeKeywords,
@@ -355,11 +371,12 @@ export class ViewController {
 
     if (!profile) return res.redirect('/select-profile?error=profile_not_found');
     session.selectedProfile = profile;
-    await this.syncProducer.syncCampaignData({
+
+    await this.syncProducer.initializeSyncing({
       accessToken: session.accessToken,
       scopeId: profile.profileId,
     })
-    
+
     session.save(err => {
       if (err) return console.log(err)
       return res.redirect('/');

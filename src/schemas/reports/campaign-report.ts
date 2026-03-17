@@ -40,7 +40,7 @@ export class CampaignReport {
 
   @Prop() impressions: number;
   @Prop() clicks: number;
-  @Prop() spend: number;
+  @Prop() cost: number;
 
   @Prop() sales1d: number;
   @Prop() sales7d: number;

@@ -7,6 +7,7 @@ import BaseRule from "../../base.rule";
  * Indicators: Same keyword in multiple campaigns, internal competition
  * Action: Keep keyword only in best ACOS campaign, Remove from others
  */
+
 export class DuplicateKeywordCleanupRule extends BaseRule implements ICampaignRuleDecision {
   constructor(bundle: ICampaignBundle) {
     super(bundle)

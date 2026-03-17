@@ -1,4 +1,4 @@
-import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, TargetingType } from "src/engine/interfaces";
+import {  ICampaignBundle, ICampaignRuleDecision } from "src/engine/interfaces";
 import BaseRule, { config } from "../../base.rule";
 import { Type } from "src/schemas/campaign.schema";
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
@@ -17,8 +17,7 @@ export class HighAcosManualReductionRule extends BaseRule implements ICampaignRu
   shouldApply(): boolean {
     if (this.campaign.targetingType !== Type.MANUAL) return false;
     if (!this.metrics) return false;
-    console.log(this.metrics, 'MANUAL_CONTROL_001')
-    console.log(`Evaluating High ACOS Rule: ACOS=${(this.acos).toFixed(2)}%, ROAS=${this.roas.toFixed(2)}x, Target ACOS=${(config.targetAcos * 100).toFixed(2)}%, Min ROAS=${config.minRoas}x`);
+    // console.log(`Evaluating High ACOS Rule: ACOS=${(this.acos).toFixed(2)}%, ROAS=${this.roas.toFixed(2)}x, Target ACOS=${(config.targetAcos * 100).toFixed(2)}%, Min ROAS=${config.minRoas}x`);
     return this.acos > config.targetAcos && this.roas < config.minRoas;
   }
 

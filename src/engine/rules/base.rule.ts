@@ -1,7 +1,8 @@
-import { ICampaignBundle, keywordWithReport, TargetingType } from "src/engine/interfaces";
-import { Campaign } from "src/schemas/campaign.schema";
-import { CampaignReport } from "src/schemas/reports/report.schema";
-import { SearchTermDocument } from "src/schemas/reports/search-term-report.schema";
+import { ICampaignBundle, keywordWithMetrics, TargetingType, TargetWithMetrics } from "src/engine/interfaces";
+import { Campaign, Type } from "src/schemas/campaign.schema";
+import { MatchType } from "src/schemas/keyword.schema";
+import { CampaignReport } from "src/schemas/reports/campaign-report";
+import { AutoMatchType, SearchTermDocument } from "src/schemas/reports/search-term-report.schema";
 
 export const config = {
     targetAcos: 0.2,
@@ -19,73 +20,79 @@ export default class BaseRule {
     protected searchTerms: SearchTermDocument[]
     protected metrics: CampaignReport
     protected campaign: Campaign
-    protected keywords:keywordWithReport[]
+    protected keywords: keywordWithMetrics[]
+    protected targets: TargetWithMetrics[]
     protected budgetUsage: any
 
     constructor(bundle: ICampaignBundle) {
-        const { searchTerms, matrics, budgetUsage, keywords, ...campaign } = bundle
+        const { searchTerms, matrics, budgetUsage, keywords, targets, ...campaign } = bundle
         this.searchTerms = searchTerms
         this.metrics = matrics
+        this.targets = targets
+        this.keywords = keywords
         this.campaign = campaign
         this.budgetUsage = budgetUsage
     }
+
     get isLaunchPhase(): boolean {
         return this.searchTerms.length == 0 && this.clicks <= config.minClicks && this.sales == 0
     }
 
     get acos(): number {
-        return this.metrics.spend && this.metrics.sales7d ? this.metrics.spend / this.metrics.sales7d : Infinity
+        return this.metrics.cost && this.metrics.sales7d ? this.metrics.cost / this.metrics.sales7d : Infinity
     }
     get roas(): number {
-        return this.metrics.sales7d && this.metrics.spend ? this.metrics.sales7d / this.metrics.spend : 0
+        return this.metrics.sales7d && this.metrics.cost ? this.metrics.sales7d / this.metrics.cost : 0
     }
     get roi(): number {
-        const profit = this.sales - this.spend;
-        return this.spend ? (profit / this.spend) * 100 : 0;
+        const profit = this.sales - this.cost;
+        return this.cost ? (profit / this.cost) * 100 : 0;
     }
 
     get cvr(): number {
         return this.metrics.clicks > 0 ? (this.metrics.purchases7d / this.metrics.clicks) * 100 : 0;
     }
 
-    get ctr() {
+    get ctr(): number {
         if (this.impressions === 0) return 0;
         return (this.clicks / this.impressions) * 100;
     }
 
-    get impressions() {
+    get impressions(): number {
         return this.metrics.impressions
     }
 
     get utilization(): number {
-        return this.campaign.budget.budget > 0 ? this.metrics.spend / this.campaign.budget.budget : 0;
+        return this.campaign.budget.budget > 0 ? this.metrics.cost / this.campaign.budget.budget : 0;
     }
 
     get budget() {
         return this.campaign.budget.budget ?? this.metrics.campaignBudgetAmount
     }
 
-    get clicks() {
+    get clicks(): number {
         return this.metrics.clicks
     }
 
-    get spend() {
-        return this.metrics.spend
+    get cost(): number {
+        return this.metrics.cost
     }
 
-    get sales() {
+    get sales(): number {
         return this.metrics.sales7d
     }
-    get keywordsIdText(){{
-        return this.keywords?.map((keyword) => ({ 
-        keywordId: keyword.keywordId,
-        keywordText: keyword.keywordText,
-      }))||[]
-    }}
+    get keywordsIdText(): { keywordId: string, keywordText: string }[] {
+        {
+            return this.keywords?.map((keyword) => ({
+                keywordId: keyword.keywordId,
+                keywordText: keyword.keywordText,
+            })) || []
+        }
+    }
 
 
     getUtilization(): number {
-        return this.campaign.budget.budget > 0 ? this.metrics.spend / this.campaign.budget.budget : 0;
+        return this.campaign.budget.budget > 0 ? this.metrics.cost / this.campaign.budget.budget : 0;
     }
 
     hasConsistentSales(): boolean {
@@ -97,15 +104,22 @@ export default class BaseRule {
     }
 
     minSpendThreshold() {
-        const { spend, clicks, sales7d } = this.metrics;
-        const avgCpc = clicks > 0 ? spend / clicks : 0;
+        const { cost, clicks, sales7d } = this.metrics;
+        const avgCpc = clicks > 0 ? cost / clicks : 0;
         const cvr = clicks > 0 ? sales7d / clicks : 0;
         const expectedClicksBeforeJudgement = cvr > 0 ? Math.ceil((1 / cvr) * 1.5) : config.minSpend;
         return avgCpc * expectedClicksBeforeJudgement;
     }
 
-    getSearchTerms(type: TargetingType) {
+    getSearchTerms(type: MatchType | AutoMatchType | TargetingType) {
+        if(this.campaign.targetingType==Type.AUTO) return this.searchTerms.filter(term=>term.keyword == type)
         return this.searchTerms.filter(term => term.matchType == type)
+    }
+
+    getTargeting(type?: TargetingType | TargetingType[]) {
+        if (!type?.length) return this.targets
+        if (Array.isArray(type)) return this.targets.filter(t => type.includes(t.metrics.targeting as TargetingType))
+        return this.targets.filter(t => t.metrics.targeting == type)
     }
 
     getProfitableTerms(minSales: number = config.minSales) {
@@ -113,7 +127,7 @@ export default class BaseRule {
     }
 
     getLowPerformingSearchTerms() {
-        return this.searchTerms.filter(st => st.clicks >= config.minClicks && st.spend >= config.minSpend && st.sales7d === 0)
+        return this.searchTerms.filter(st => st.clicks >= config.minClicks && st.cost >= config.minSpend && st.sales7d === 0)
         // return this.searchTerms.filter((term) => term.sales7d <= minSales && this.calculateACOS(term) >= config.targetAcos);
     }
 
@@ -127,27 +141,17 @@ export default class BaseRule {
         if (impressions === 0) return 0;
         return (clicks / impressions) * 100;
     }
-    calculateCPC({ spend, clicks }: { spend: number, clicks: number }): number {
+
+    calculateCPC({ cost, clicks }: { cost: number, clicks: number }): number {
         if (clicks === 0) return 0;
-        return spend / clicks;
+        return cost / clicks;
     }
 
-    calculateACOS(matric?: { spend: number, sales7d: number }): number {
-        if (matric) return matric.spend && matric.sales7d ? matric.spend / matric.sales7d : Infinity;
-        return this.metrics.spend && this.metrics.sales7d ? this.metrics.spend / this.metrics.sales7d : Infinity;
+    calculateACOS(matric?: { cost: number, sales7d: number }): number {
+        if (matric) return matric.cost && matric.sales7d ? matric.cost / matric.sales7d : Infinity;
+        return this.metrics.cost && this.metrics.sales7d ? this.metrics.cost / this.metrics.sales7d : Infinity;
     }
 
-
-    // calculateROAS(): number {
-    //     if (this.matrics.spend === 0) return 0;
-    //     return this.matrics.sales7d / this.matrics.spend;
-    // }
-
-
-    // calculateConversionRate(): number {
-    //     if (this.metrics.clicks === 0) return 0;
-    //     return (this.metrics.purchases7d / this.metrics.clicks) * 100;
-    // }
 
     calculateCostPerOrder(spend: number, orders: number): number {
         if (orders === 0) return 0;
@@ -159,10 +163,4 @@ export default class BaseRule {
         return sales / orders;
     }
 
-
-    // calculateROI(sales: number, spend: number): number {
-    //     const profit = sales - spend;
-    //     if (spend === 0) return 0;
-    //     return (profit / spend) * 100;
-    // }
 }

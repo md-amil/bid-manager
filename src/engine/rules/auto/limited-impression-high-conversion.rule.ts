@@ -19,10 +19,14 @@ export class LimitedImpressionsHighConversionRule extends AutoCampaignBaseRule i
   }
 
   execute(): AdjustmentLog {
-    const targetings = [
-      { targetingType: TargetingType.CLOSE_MATCH, change: 25 },
-      { targetingType: TargetingType.LOOSE_MATCH, change: 25 },
-    ]
+    // const targetings = [
+    //   { targetingType: TargetingType.CLOSE_MATCH, change: 25 },
+    //   { targetingType: TargetingType.LOOSE_MATCH, change: 25 },
+    // ]
+    const targetings = this.getTargeting([
+      TargetingType.CLOSE_MATCH,
+      TargetingType.LOOSE_MATCH,
+    ])
 
     return {
       ruleId: 'RULE_003',

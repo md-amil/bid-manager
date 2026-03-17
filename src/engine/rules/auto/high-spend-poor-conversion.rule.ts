@@ -11,18 +11,21 @@ export class HighSpendPoorConversionRule extends AutoCampaignBaseRule implements
 
   shouldApply(): boolean {
     const moreClick = this.metrics.clicks > config.minClicks
-    const moreSpend = this.metrics.spend > this.minSpendThreshold()
+    const moreSpend = this.metrics.cost > this.minSpendThreshold()
     const lowAcos = this.acos > config.targetAcos
     return moreClick && moreSpend && lowAcos;
   }
 
   execute(): AdjustmentLog {
-    const targeting = [
-      { targetingType: TargetingType.CLOSE_MATCH },
-      { targetingType: TargetingType.LOOSE_MATCH },
-      { targetingType: TargetingType.SUBSTITUTES },
-      { targetingType: TargetingType.COMPLEMENTS },
-    ];
+
+    // const targeting = [
+    //   { targetingType: TargetingType.CLOSE_MATCH },
+    //   { targetingType: TargetingType.LOOSE_MATCH },
+    //   { targetingType: TargetingType.SUBSTITUTES },
+    //   { targetingType: TargetingType.COMPLEMENTS },
+    // ];
+
+    const targetings = this.getTargeting()
 
     return {
       ruleId: 'RULE_004',
@@ -39,7 +42,7 @@ export class HighSpendPoorConversionRule extends AutoCampaignBaseRule implements
           target: ETarget.TARGETING
         }
       ],
-      targetings: targeting,
+      targetings,
       reasoning:
         `High clicks with low/zero sales and rising ACOS detected. ` +
         `Lowering bids and budget by 25% and recommending immediate search term review.`,

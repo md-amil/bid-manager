@@ -1,9 +1,8 @@
-import { InjectQueue, OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
-import { Job, Queue } from "bullmq";
+import {  OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
+import { Job } from "bullmq";
 import { AmazonApiService, ReportResponse } from "src/services/amazon/amazon-api.service";
 import { AxiosError } from "axios";
 import { ReportService } from "src/services/report.service";
-import { BidProducer } from "../producer/bid.producer";
 import { ReportProducer } from "../producer/report.producer";
 import { Logger } from "@nestjs/common";
 import * as fs from 'fs';
@@ -40,6 +39,7 @@ export class ReportProcessor extends WorkerHost {
             return []
         }
     }
+    
 
     async downloadReport(res: ReportResponse, attempt: number = 1) {
         if (attempt > 3) throw new Error('Max download attempts reached');
@@ -51,7 +51,7 @@ export class ReportProcessor extends WorkerHost {
             }
             const arrayBuffer = await response.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
-            const fileName = `${res.configuration.reportTypeId}-${res.endDate}.json.gz`;
+            const fileName = `${res.name}.json.gz`
             const reportsDir = path.join(process.cwd(), 'reports');
             if (!fs.existsSync(reportsDir)) {
                 fs.mkdirSync(reportsDir, { recursive: true });
@@ -71,7 +71,7 @@ export class ReportProcessor extends WorkerHost {
     async process(job: Job): Promise<any> {
         const reportResponse = await this.amazonApi.getReports(job.data.auth, job.data.reportId)
         if (reportResponse.status !== 'COMPLETED')
-            return Promise.reject({ status: reportResponse.status, type: reportResponse.configuration.reportTypeId });
+            return Promise.reject({ status: reportResponse.status, type: reportResponse.configuration.groupBy[0] });
         const fileName = await this.downloadReport(reportResponse);
         const report = await this.getReportMatrics(fileName);
         console.log('Report metrics extracted:', report.length);
@@ -81,7 +81,7 @@ export class ReportProcessor extends WorkerHost {
     @OnWorkerEvent('active')
     onActive(job: Job) {
         console.log(
-            `Processing job ${job.id} of type ${job.data.reportTypeId} with reportId ${job.data.reportId}...`,
+            `Processing job ${job.id}  with reportId ${job.data.reportId}...`,
         );
     }
 

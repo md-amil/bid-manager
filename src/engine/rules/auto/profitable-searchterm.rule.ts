@@ -36,7 +36,7 @@ export class ProfitableSearchTermsRule extends AutoCampaignBaseRule implements I
           change:this.campaign.budget.budget * 0.25
         },
         {
-          action : EAction.MOVE,
+          action : EAction.MOVE_TO_MANUAL,
           target : ETarget.TERMS
         }
       ],

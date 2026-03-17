@@ -1,5 +1,5 @@
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
-import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
+import { ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
 import AutoCampaignBaseRule, { config } from "../base.rule";
 
 // RULE for Negative Keywords

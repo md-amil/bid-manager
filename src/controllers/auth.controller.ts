@@ -4,9 +4,9 @@ import { AuthService } from '../services/auth.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
-import { Organization } from '../schemas/organization.schema';
+// import { Organization } from '../schemas/organization.schema';
 import { Profile } from '../schemas/profile.schema';
-import { AmazonApiService } from 'src/services/amazon/amazon-api.service';
+// import { AmazonApiService } from 'src/services/amazon/amazon-api.service';
 import { AuthApiService } from 'src/services/amazon/auth-api.service';
 
 @Controller('auth')
@@ -44,6 +44,7 @@ export class AuthController {
       this.logger.log('Refresh token found in environment, attempting auto-login');
       try {
         const tokens = await this.authApi.refreshAccessToken(envRefreshToken);
+        console.log(tokens)
         const profiles = await this.authService.getProfiles(tokens.access_token);
         session.accessToken = tokens.access_token;
         session.refreshToken = tokens.refresh_token;

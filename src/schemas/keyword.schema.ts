@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 
 export type KeywordDocument = Keyword & Document;
 
-enum MatchType {
+export enum MatchType {
   EXACT = "EXACT",
   PHRASE = "PHRASE",
   BROAD = "BROAD"
@@ -56,20 +56,3 @@ export class Keyword extends Document {
 }
 
 export const KeywordSchema = SchemaFactory.createForClass(Keyword);
-
-// "adGroupId": "78814888362047",
-// "bid": 10.37,
-// "campaignId": "71858877190671",
-// "expression": [
-//   {
-//      "type": "ASIN_ACCESSORY_RELATED"
-//   }
-// ],
-//  "expressionType": "AUTO",
-//  "resolvedExpression": [
-//      {
-//          "type": "ASIN_ACCESSORY_RELATED"
-//      }
-//  ],
-//  "state": "ENABLED",
-//  "targetId": "135759765815076"

@@ -24,12 +24,13 @@ export class ListingConversionIssuesRule extends AutoCampaignBaseRule implements
   }
 
   execute(): AdjustmentLog {
-    const targetings = [
-          { targetingType: TargetingType.CLOSE_MATCH, change: -50 },
-          { targetingType: TargetingType.LOOSE_MATCH, change: -50 },
-          { targetingType: TargetingType.SUBSTITUTES, change: -50 },
-          { targetingType: TargetingType.COMPLEMENTS, change: -50 },
-        ]
+    // const targetings = [
+    //       { targetingType: TargetingType.CLOSE_MATCH, change: -50 },
+    //       { targetingType: TargetingType.LOOSE_MATCH, change: -50 },
+    //       { targetingType: TargetingType.SUBSTITUTES, change: -50 },
+    //       { targetingType: TargetingType.COMPLEMENTS, change: -50 },
+    //     ]
+    const targetings = this.getTargeting()
     return {
       ruleId: 'RULE_005',
       ruleName: 'Listing Conversion Issues Detected',
