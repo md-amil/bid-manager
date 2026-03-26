@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Request, Req } from '@nestjs/common';
 import {  InjectModel } from '@nestjs/mongoose';
 import {  Model } from 'mongoose';
-import { Campaign, CampaignDocument } from '../schemas/campaign.schema';
+import { Campaign, CampaignDocument, Type } from '../schemas/campaign.schema';
 import { AdjustmentLog, LogDocument } from '../schemas/log.schema';
 // import { AmazonApiService } from 'src/services/amazon/amazon-api.service';
 // import { SyncProducer } from 'src/queue/producer/sync.producer';
@@ -57,11 +57,10 @@ export class CampaignController {
   async adjustBids(@Request() req: any) {
     const scopeId = req.session.selectedProfile?.profileId
     const accessToken = req.session?.accessToken;
-    const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c=>c.state === "ENABLED")
-    // const campaignIds = campaigns.map(({ campaignId }) => campaignId)
-    const budgetUsages = await this.campaignApi.getBudgetUses(['340981085273491'], {scopeId,accessToken})
-    console.log(campaigns.length, "campaign length", budgetUsages.length)
-    await this.bidProducer.scheduleBidAdjustment(campaigns, budgetUsages[0]);
+    const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c=>c.state === "ENABLED"&& c.campaignId=='235882805467163')
+    // const budgetUsages = await this.campaignApi.getBudgetUses(['340981085273491'], {scopeId,accessToken})
+    // console.log(campaigns.length, "campaign length", budgetUsages.length)
+    await this.bidProducer.scheduleBidAdjustment(campaigns);
     return { message: 'Bid adjustment scheduled' };
   }
 

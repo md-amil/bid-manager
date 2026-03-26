@@ -12,9 +12,9 @@ export class LimitedImpressionsHighConversionRule extends AutoCampaignBaseRule i
   }
 
   shouldApply(): boolean {
-    const { impressions, clicks, sales7d } = this.metrics
+    const { impressions, clicks, sales } = this.metrics
     if (clicks == 0) return false
-    const convRate = sales7d / clicks
+    const convRate = sales / clicks
     return convRate > 0.05 && impressions < 500 && this.utilization < config.budgetUtilizationThreshold;
   }
 

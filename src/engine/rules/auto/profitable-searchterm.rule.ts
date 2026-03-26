@@ -1,8 +1,9 @@
 import {  AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 import {  ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
 import AutoCampaignBaseRule, { config } from "../base.rule";
+import BaseRule from "../base.rule";
 
-export class ProfitableSearchTermsRule extends AutoCampaignBaseRule implements ICampaignRuleDecision {
+export class ProfitableSearchTermsRule extends BaseRule implements ICampaignRuleDecision {
   constructor(bundle: ICampaignBundle) {
     super(bundle)
   }

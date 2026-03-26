@@ -18,7 +18,7 @@ export class CompetitorASINTargetingConvertingRule extends BaseRule implements I
 
     return (
       hasASINTargeting &&
-        this.metrics.sales7d >= config.minSales &&
+        this.sales >= config.minSales &&
       this.acos <= config.targetAcos
     );
   }

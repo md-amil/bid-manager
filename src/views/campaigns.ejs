@@ -123,18 +123,16 @@
                 <thead>
                     <tr>
                         <th>S.No</th>
-                        <th>Campaign ID</th>
-                        <th>Campaign Name</th>
-                        <th>Targeting Type</th>
+                        <th>Campaign</th>
+                        <th>Targeting</th>
                         <th>Budget</th>
-                        <!-- <th>Current Bid</th> -->
-                        <!-- <th>Sales</th> -->
-                        <!-- <th>Spend</th> -->
-                        <!-- <th>Clicks</th> 
-                        <th>Impressions</th> -->
-                        <!-- <th>ROI</th> -->
+                        <th>Impr</th>
+                        <th>Clicks</th>
+                        <th>Cost</th>
+                        <th>Sales 7d</th>
+                        <th>Sales 14d</th>
+                        <th>ACOS</th>
                         <th>Status</th>
-                        <th>Last Adjusted</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -142,8 +140,12 @@
                     <% campaigns.forEach((campaign,i) => { %>
                         <tr>
                             <td><%= i+1 %></td>
-                            <td><%= campaign.campaignId %></td>
-                            <td><strong><%= campaign.name %></strong></td>
+                            <td>
+                                <div class="campaign-info">
+                                    <div class="campaign-name"><%= campaign.name %></div>
+                                    <div class="campaign-id">ID: <%= campaign.campaignId %></div>
+                                </div>
+                            </td>
                             <td>
                                 <span class="targeting-badge <%= campaign.targetingType ? campaign.targetingType.toLowerCase() : 'unknown' %>">
                                     <% if (campaign.targetingType === 'AUTO') { %>
@@ -155,25 +157,35 @@
                                     <% } %>
                                 </span>
                             </td>
-                            <td>₹ <%= campaign.budget.budget  %> <%= campaign.budget.budgetType  %></td>
-                            <!-- <td class="bid-amount">$<%= campaign.currentBid %></td> -->
-                            <!-- <td>$<%= campaign.sales%></td> -->
-                            <!-- <td>$<%= campaign.spend%></td> -->
-                            <!-- <td><%= campaign.clicks %></td>
-                            <td><%= campaign.impressions %></td> -->
-                            <!-- <td>
-                                <% const roi = campaign.roi || (campaign.spend > 0 ? campaign.sales / campaign.spend : 0); %>
-                                <span class="roi-badge <%= roi >= 3 ? 'high' : roi <= 1 ? 'low' : 'medium' %>">
-                                    <%= roi %>
-                                </span>
-                            </td> -->
+                            <td>₹<%= campaign.budget.budget %> <%= campaign.budget.budgetType %></td>
+                            <td class="metric-cell">
+                                <%= campaign.metrics ? campaign.metrics.impressions.toLocaleString() : '-' %>
+                            </td>
+                            <td class="metric-cell">
+                                <%= campaign.metrics ? campaign.metrics.clicks.toLocaleString() : '-' %>
+                            </td>
+                            <td class="metric-cell cost">
+                                <%= campaign.metrics ? '₹' + campaign.metrics.cost.toLocaleString() : '-' %>
+                            </td>
+                            <td class="metric-cell sales">
+                                <%= campaign.metrics ? '₹' + campaign.metrics.sales7d.toLocaleString() : '-' %>
+                            </td>
+                            <td class="metric-cell sales">
+                                <%= campaign.metrics ? '₹' + campaign.metrics.sales14d.toLocaleString() : '-' %>
+                            </td>
+                            <td class="metric-cell acos">
+                                <% if (campaign.metrics && campaign.metrics.acos14d > 0) { %>
+                                    <span class="acos-badge <%= campaign.metrics.acos14d < 20 ? 'good' : campaign.metrics.acos14d < 40 ? 'medium' : 'bad' %>">
+                                        <%= campaign.metrics.acos14d %>
+                                    </span>
+                                <% } else { %>
+                                    -
+                                <% } %>
+                            </td>
                             <td>
                                 <span class="status-badge <%= campaign.state.toLowerCase() %>">
                                     <%= campaign.state %>
                                 </span>
-                            </td>
-                            <td>
-                                <%= campaign.lastAdjustedAt ? new Date(campaign.lastAdjustedAt).toLocaleDateString() : 'Never' %>
                             </td>
                             <td>
                                 <a href="/campaigns/<%= campaign.campaignId %>" class="btn-small">View</a>

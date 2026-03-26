@@ -33,39 +33,7 @@ export class CampaignService {
   //   }
   // }
 
-  async getSearchTermReport(campaignId: string) {
-    const response = await this.searchReport.aggregate([
-      {
-        $match: { campaignId },
-      },
-      {
-        $sort: { date: -1 },
-      },
-      {
-        $group: {
-          _id: '$campaignId',
-          latestDate: { $first: '$date' },
-          docs: { $push: '$$ROOT' },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          latestDate: 1,
-          searchTerms: {
-            $filter: {
-              input: '$docs',
-              as: 'doc',
-              cond: { $eq: ['$$doc.date', '$latestDate'] },
-            },
-          },
-        },
-      },
-    ]);
-    return response[0]?.searchTerms || [];
-  }
-
-
+ 
   async findCampaignBundle(campaignId: string) {
 
     const keywordQuery: PipelineStage = {
@@ -142,33 +110,32 @@ export class CampaignService {
       },
     }
 
-
     const response = await this.campaignModel.aggregate([
       {
         $match: { campaignId },
       },
-      {
-        $lookup: {
-          from: 'campaign_reports',
-          let: { campaignId: '$campaignId' },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ['$campaignId', '$$campaignId'] },
-              },
-            },
-            { $sort: { date: -1 } },
-            { $limit: 1 },
-          ],
-          as: 'matrics',
-        },
-      },
-      {
-        $unwind: {
-          path: '$matrics',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      // {
+      //   $lookup: {
+      //     from: 'campaign_reports',
+      //     let: { campaignId: '$campaignId' },
+      //     pipeline: [
+      //       {
+      //         $match: {
+      //           $expr: { $eq: ['$campaignId', '$$campaignId'] },
+      //         },
+      //       },
+      //       { $sort: { date: -1 } },
+      //       { $limit: 1 },
+      //     ],
+      //     as: 'matrics',
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: '$matrics',
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
       keywordQuery,
       targetQuery
     ]);
@@ -272,14 +239,14 @@ export class CampaignService {
       {
         $group: {
           _id: "$date",
-          spend: { $sum: "$spend" },
+          cost: { $sum: "$cost" },
           sales7d: { $sum: "$sales7d" }
         }
       },
       {
         $group: {
           _id: null,
-          totalSpend: { $sum: "$spend" },
+          totalCost: { $sum: "$cost" },
           totalSales7d: { $sum: "$sales7d" }
         }
       }

@@ -56,10 +56,10 @@ export class ViewController {
     const stats = {
       totalCampaigns: allCampaigns.length,
       activeCampaigns: campaigns.length,
-      totalSpend: report.totalSpend ?? 0,
+      totalSpend: report.totalCost ?? 0,
       totalSales: report.totalSales7d ?? 0,
-      averageROI: report.totalSales7d / report.totalSpend,
-      acos14: report.totalSpend / report.totalSales7d * 100
+      averageROI: report.totalSales7d / report.totalCost,
+      acos14: report.totalCost / report.  totalSales7d * 100
     };
 
     return res.render('index', {
@@ -108,8 +108,30 @@ export class ViewController {
       );
     }
 
+    // Fetch latest reports for all campaigns
+    const campaignIds = campaigns.map(c => c.campaignId);
+    const latestReports = await this.reportService.getLatestCampaignReports(campaignIds);
+    const reportMap = new Map(latestReports.map(r => [r.campaignId, r]));
+    console.log(latestReports)
+    // Attach metrics to each campaign
+    const campaignsWithMetrics = campaigns.map(campaign => {
+      const report = reportMap.get(campaign.campaignId);
+      return {
+        ...campaign.toObject(),
+        metrics: report ? {
+          impressions: report.impressions || 0,
+          clicks: report.clicks || 0,
+          cost: report.cost || 0,
+          sales7d: report.sales7d || 0,
+          sales14d: report.sales14d || 0,
+          acos14d: report.sales14d > 0 ? (report.cost / report.sales14d * 100).toFixed(2) : '0.00'
+        } : null
+      };
+    });
+
+
     return res.render('campaigns', {
-      campaigns,
+      campaigns: campaignsWithMetrics,
       selectedProfile: session.selectedProfile,
       profiles: session.profiles || [],
       filterStatus: status || '',
@@ -128,9 +150,9 @@ export class ViewController {
     @Session() session: Record<string, any>
   ) {
     let campaign = null as any;
-    let adGroups = [];
+    let adGroups: any[] = [];
     let logs = [];
-    let metrics = null as any;
+    let metrics: any = null;
 
     const selectedPeriod = period || 'daily';
     let dateFilter: any = {};
@@ -172,6 +194,29 @@ export class ViewController {
           acos14d: reports.length > 0 ? reports.reduce((sum, r) => sum + (r.cost / r.sales14d * 100 || 0), 0) / reports.length : 0,
           conversions14d: reports.reduce((sum, r) => sum + (r.purchases14d / r.clicks || 0), 0),
         };
+      }
+
+      // Fetch adgroup reports for metrics
+      if (adGroups && adGroups.length > 0) {
+        const adGroupIds = adGroups.map(ag => ag.adGroupId);
+        const adGroupReports = await this.reportService.getLatestAdGroupReports(adGroupIds);
+        const adGroupReportMap = new Map(adGroupReports.map(r => [r.adGroupId, r]));
+
+        // Attach metrics to each adgroup
+        adGroups = adGroups.map(adGroup => {
+          const report = adGroupReportMap.get(adGroup.adGroupId);
+          return {
+            ...adGroup,
+            metrics: report ? {
+              impressions: report.impressions || 0,
+              clicks: report.clicks || 0,
+              cost: report.cost || 0,
+              sales7d: report.sales7d || 0,
+              sales14d: report.sales14d || 0,
+              acos14d: report.sales14d > 0 ? (report.cost / report.sales14d * 100).toFixed(2) : '0.00'
+            } : null
+          };
+        });
       }
     } catch (error) {
       console.error('Failed to fetch campaign details:', error.message);
@@ -216,6 +261,8 @@ export class ViewController {
     let targets = [];
     let campaign = null as any;
     let products = {};
+    let searchTerms: any[] = [];
+    let targetingReports: any[] = [];
 
     const selectedTab = tab || 'ads';
     try {
@@ -242,6 +289,16 @@ export class ViewController {
           keywordReports = await this.reportService.getLatestKeywordReports(keywordIds);
         }
 
+        // Fetch search terms for this adgroup
+        searchTerms = await this.reportService.getSearchTermsByAdGroup(adGroupId);
+
+        // Fetch targeting reports by targetIds
+        targetingReports = [];
+        if (targets && targets.length > 0) {
+          const targetIds = targets.map(t => t.targetId);
+          targetingReports = await this.reportService.getTargetingReportsByTargetIds(targetIds);
+        }
+
         return {
           productAds: ads,
           keywords,
@@ -250,12 +307,13 @@ export class ViewController {
           adGroup,
           campaignId,
           products,
+          searchTerms,
+          targetingReports,
           selectedProfile: session.selectedProfile,
           profiles: session.profiles,
           selectedTab
         }
       }
-      console.log({ keywords: keywords.length, targets: targets.length, adGroup })
     } catch (error) {
       console.error('Failed to fetch ad group details:', error.message);
     }
@@ -270,6 +328,8 @@ export class ViewController {
       keywordReports: [],
       negativeKeywords,
       targets,
+      searchTerms,
+      targetingReports,
       selectedTab,
       selectedProfile: session.selectedProfile || null,
       profiles: session.profiles || [],

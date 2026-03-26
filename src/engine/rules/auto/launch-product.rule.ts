@@ -8,18 +8,14 @@ export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecis
   }
 
   shouldApply(): boolean {
-    console.log(`spend ${this.cost} and clicks ${this.clicks}, term length ${this.searchTerms.length} sales ${this.sales}`)
-    if (this.cost < config.minSpend) return true
-    return this.searchTerms.length == 0 && this.clicks <= config.minClicks && this.sales == 0
+    return this.isLaunchPhase
+    // console.log(`cost ${this.cost} and clicks ${this.clicks}, term length ${this.searchTerms.length} sales ${this.sales}`)
+    // if (this.cost < config.minSpend) return true
+    // return this.searchTerms.length == 0 && this.clicks <= config.minClicks && this.sales == 0
   }
 
   execute(): AdjustmentLog {
-    // const allTargetingTypes = [
-    //   TargetingType.CLOSE_MATCH,
-    //   TargetingType.LOOSE_MATCH,
-    //   TargetingType.SUBSTITUTES,
-    //   TargetingType.COMPLEMENTS,
-    // ];
+  
     const targetings = this.getTargeting()
     return {
       ruleId: 'RULE_002',

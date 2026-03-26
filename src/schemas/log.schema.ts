@@ -105,6 +105,7 @@ export enum EAction {
 
 
 export enum ETarget {
+  CAMPAIGN = 'campaign',
   TARGETING = 'targetings',
   KEYWORDS = 'keywords',
   TERMS = 'searchTerms',
@@ -143,6 +144,9 @@ export class AdjustmentLog  {
 
   @Prop({ type: MongooseSchema.Types.Mixed })
   targetings?: any[];
+
+  @Prop({ type: MongooseSchema.Types.Mixed })
+  campaign?:any
 
   @Prop({ type: MongooseSchema.Types.Mixed })
   keywords?: any[];

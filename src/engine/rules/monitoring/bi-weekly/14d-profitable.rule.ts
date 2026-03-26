@@ -20,7 +20,7 @@ export class FourteenDayProfitabilityRule extends BaseRule implements ICampaignR
   shouldApply(): boolean {
     if (!this.metrics) return false;
 
-    if (this.sales === 0 || this.metrics.purchases7d < this.minOrders) return false;
+    if (this.sales === 0 || this.metrics.purchase < this.minOrders) return false;
 
     const acos = this.acos;
 
@@ -31,7 +31,7 @@ export class FourteenDayProfitabilityRule extends BaseRule implements ICampaignR
   execute(): AdjustmentLog {
     const acos = this.acos;
     const avgDailySpend = this.cost / 14;
-    const avgDailyOrders = this.metrics.purchases7d / 14;
+    const avgDailyOrders = this.metrics.purchase / 14;
 
     const adjustments: Adjustment[] = [
       { action: EAction.INCREASE_BUDGET, change: 25 },
@@ -47,7 +47,7 @@ export class FourteenDayProfitabilityRule extends BaseRule implements ICampaignR
       keywords: this.keywordsIdText,
       targetings: this.targets,
       reasoning:
-        `14-day profitability CONFIRMED: ${(acos * 100).toFixed(2)}% ACOS with ${this.metrics.purchases7d} orders. ` +
+        `14-day profitability CONFIRMED: ${(acos * 100).toFixed(2)}% ACOS with ${this.metrics.purchase} orders. ` +
         `Consistent daily performance (avg ${avgDailyOrders.toFixed(1)} orders, avg $${avgDailySpend.toFixed(2)}/day). ` +
         `This is proven, sustained success. Scaling aggressively: Budget +25%, Bids +25%.`,
     };

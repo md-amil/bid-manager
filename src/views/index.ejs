@@ -1,5 +1,286 @@
 <%- include('partials/header', { currentPage: 'dashboard' , selectedProfile, profiles }) %>
 
+<style>
+    /* Accordion Styles */
+    .accordion-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .accordion-item {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .accordion-item:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .accordion-header {
+        padding: 1rem;
+        cursor: pointer;
+        background: #f8fafc;
+        transition: background 0.2s ease;
+    }
+
+    .accordion-header:hover {
+        background: #f1f5f9;
+    }
+
+    .accordion-summary {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .summary-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #64748b;
+        font-size: 0.85rem;
+        min-width: 140px;
+    }
+
+    .summary-date .time {
+        color: #94a3b8;
+        font-size: 0.75rem;
+    }
+
+    .summary-campaign {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .summary-campaign i {
+        color: #3b82f6;
+    }
+
+    .campaign-name {
+        font-weight: 600;
+        color: #1e293b;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .campaign-id {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-family: monospace;
+    }
+
+    .summary-rule {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    .summary-rule i {
+        color: #f59e0b;
+    }
+
+    .rule-name {
+        font-weight: 500;
+    }
+
+    .summary-actions {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    .action-badge-mini {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+    .action-badge-mini.increase-bid,
+    .action-badge-mini.increase-budget {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .action-badge-mini.decrease-bid,
+    .action-badge-mini.decrease-budget {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .action-badge-mini.pause-campaign,
+    .action-badge-mini.pause-keyword {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .accordion-toggle {
+        margin-left: auto;
+        color: #64748b;
+        transition: transform 0.2s ease;
+    }
+
+    .accordion-toggle i {
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .accordion-inner {
+        padding: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .reasoning-box {
+        background: #eff6ff;
+        border-left: 4px solid #3b82f6;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0 4px 4px 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .reasoning-box i {
+        color: #3b82f6;
+        margin-top: 0.2rem;
+    }
+
+    .reasoning-box span {
+        color: #1e40af;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .adjustments-section {
+        margin-bottom: 1rem;
+    }
+
+    .adjustments-section h4 {
+        margin: 0 0 0.75rem 0;
+        font-size: 0.9rem;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .adjustments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .adjustment-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: #f9fafb;
+        border-radius: 6px;
+        border-left: 3px solid #e5e7eb;
+    }
+
+    .adjustment-item.increase-bid,
+    .adjustment-item.increase-budget {
+        border-left-color: #22c55e;
+    }
+
+    .adjustment-item.decrease-bid,
+    .adjustment-item.decrease-budget {
+        border-left-color: #ef4444;
+    }
+
+    .action-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .action-badge.increase-bid,
+    .action-badge.increase-budget {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .action-badge.decrease-bid,
+    .action-badge.decrease-budget {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .adj-target {
+        color: #6b7280;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .adj-change {
+        margin-left: auto;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .adj-change.positive {
+        color: #16a34a;
+    }
+
+    .adj-change.negative {
+        color: #dc2626;
+    }
+
+    .log-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 0.75rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-small {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #3b82f6;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
+
+    .btn-small:hover {
+        background: #2563eb;
+    }
+</style>
+
     <div class="page-header">
         <h2>Dashboard</h2>
         <div class="actions">
@@ -100,95 +381,101 @@
 
     <div class="section">
         <h3>Recent Optimizations</h3>
-        <% if (recentLogs && recentLogs.length> 0) { %>
-            <div class="table-responsive">
-                <table class="log-table">
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Entity Type</th>
-                            <th>Entity ID</th>
-                            <th>Type</th>
-                            <th>Old Value</th>
-                            <th>New Value</th>
-                            <th>Change</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% recentLogs.forEach(log=> { %>
-                            <tr>
-                                <td>
-                                    <%= new Date(log.createdAt).toLocaleString() %>
-                                </td>
-                                <td>
-                                    <span class="entity-badge <%= log.entityType %>">
-                                        <%= log.entityType %>
+        <% if (recentLogs && recentLogs.length > 0) { %>
+            <div class="accordion-container">
+                <% recentLogs.forEach((log, index) => { %>
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-summary">
+                                <div class="summary-date">
+                                    <i class="fas fa-calendar"></i>
+                                    <span><%= new Date(log.createdAt).toLocaleDateString() %></span>
+                                    <span class="time"><%= new Date(log.createdAt).toLocaleTimeString() %></span>
+                                </div>
+                                <div class="summary-campaign">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <span class="campaign-name" title="<%= log.campaignName || 'Campaign' %>">
+                                        <%= log.campaignName || 'Campaign' %>
                                     </span>
-                                </td>
-                                <td>
-                                    <%= log.entityId %>
-                                </td>
-                                <td>
-                                    <span class="type-badge <%= log.type%>">
-                                        <%= log.type %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <% if (log.oldValue !==null && log.oldValue !==undefined) { %>
-                                        $<%= log.oldValue %>
-                                            <% } else { %>
-                                                -
-                                                <% } %>
-                                </td>
-                                <td>
-                                    <% if (log.newValue !==null && log.newValue !==undefined) { %>
-                                        $<%= log.newValue %>
-                                            <% } else { %>
-                                                -
-                                                <% } %>
-                                </td>
-                                <td>
-                                    <% if (log.adjustmentPercentage !==null && log.adjustmentPercentage !==undefined) {
-                                        %>
-                                        <% const changeClass=log.adjustmentPercentage> 0 ? 'increase' : 'decrease';
-                                            %>
-                                            <span class="change <%= changeClass %>">
-                                                <%= log.adjustmentPercentage> 0 ? '+' : '' %><%=
-                                                        log.adjustmentPercentage %>%
+                                    <span class="campaign-id">ID: <%= log.campaignId || log.entityId || 'N/A' %></span>
+                                </div>
+                                <div class="summary-rule">
+                                    <i class="fas fa-cog"></i>
+                                    <span class="rule-name"><%= log.ruleName || 'Rule' %></span>
+                                </div>
+                                <div class="summary-actions">
+                                    <% if (log.adjustments && log.adjustments.length > 0) { %>
+                                        <% log.adjustments.forEach(adj => { %>
+                                            <span class="action-badge-mini <%= adj.action.toLowerCase().replace(/_/g, '-') %>">
+                                                <%= adj.action.replace(/_/g, ' ') %>
                                             </span>
-                                            <% } else if (log.oldValue && log.newValue) { %>
-                                                <% const change=((log.newValue - log.oldValue) / log.oldValue * 100);
-                                                    const changeClass=change> 0 ? 'increase' : 'decrease';
-                                                    %>
-                                                    <span class="change <%= changeClass %>">
-                                                        <%= change> 0 ? '+' : '' %><%= change %>%
-                                                    </span>
-                                                    <% } else { %>
-                                                        -
-                                                        <% } %>
-                                </td>
-                                <td>
-                                    <%= log.reason %>
-                                </td>
-                                <td>
-                                    <span class="status-badge <%= log.status %>">
-                                        <%= log.status %>
-                                    </span>
-                                </td>
-                            </tr>
-                            <% }); %>
-                    </tbody>
-                </table>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <span class="action-badge-mini <%= log.type ? log.type.toLowerCase() : 'adjust' %>">
+                                            <%= log.type || 'ADJUST' %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                                <div class="accordion-toggle">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-inner">
+                                <% if (log.reasoning || log.reason) { %>
+                                    <div class="reasoning-box">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <span><%= log.reasoning || log.reason %></span>
+                                    </div>
+                                <% } %>
+                                
+                                <% if (log.adjustments && log.adjustments.length > 0) { %>
+                                    <div class="adjustments-section">
+                                        <h4><i class="fas fa-list-ul"></i> Adjustments</h4>
+                                        <div class="adjustments-list">
+                                            <% log.adjustments.forEach(adj => { %>
+                                                <div class="adjustment-item <%= adj.action.toLowerCase().replace(/_/g, '-') %>">
+                                                    <div class="adj-action">
+                                                        <span class="action-badge <%= adj.action.toLowerCase().replace(/_/g, '-') %>">
+                                                            <%= adj.action.replace(/_/g, ' ') %>
+                                                        </span>
+                                                    </div>
+                                                    <% if (adj.target) { %>
+                                                        <div class="adj-target">
+                                                            <i class="fas fa-crosshairs"></i>
+                                                            <%= adj.target %>
+                                                        </div>
+                                                    <% } %>
+                                                    <% if (adj.change !== null && adj.change !== undefined) { %>
+                                                        <div class="adj-change <%= adj.change > 0 ? 'positive' : 'negative' %>">
+                                                            <i class="fas fa-<%= adj.change > 0 ? 'arrow-up' : 'arrow-down' %>"></i>
+                                                            <%= adj.change > 0 ? '+' : '' %><%= adj.change.toFixed(1) %>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                
+                                <div class="log-footer">
+                                    <a href="/campaigns/<%= log.campaignId || log.entityId %>" class="btn-small">
+                                        <i class="fas fa-external-link-alt"></i> View Campaign
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
             </div>
-            <% } else { %>
-                <div class="empty-state">
-                    <p>No recent optimizations found.</p>
-                    <p>Optimizations will appear here after bid adjustments are made.</p>
-                </div>
-                <% } %>
-                    <a href="/logs" class="btn">View All Logs</a>
+        <% } else { %>
+            <div class="empty-state">
+                <p>No recent optimizations found.</p>
+                <p>Optimizations will appear here after bid adjustments are made.</p>
+            </div>
+        <% } %>
+        <a href="/logs" class="btn">View All Logs</a>
     </div>
 
     <script>
@@ -360,6 +647,32 @@
                 closeConfirmationModal();
             }
         });
+
+        // Accordion toggle function
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const content = item.querySelector('.accordion-content');
+            const toggle = header.querySelector('.accordion-toggle i');
+            
+            // Close all other accordions
+            document.querySelectorAll('.accordion-item').forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                    otherItem.querySelector('.accordion-content').style.maxHeight = null;
+                    otherItem.querySelector('.accordion-toggle i').style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            // Toggle current accordion
+            item.classList.toggle('active');
+            if (item.classList.contains('active')) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                toggle.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.maxHeight = null;
+                toggle.style.transform = 'rotate(0deg)';
+            }
+        }
 
         // Notification function
         function showNotification(message, type = 'info') {

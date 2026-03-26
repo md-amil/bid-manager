@@ -43,7 +43,7 @@ import { ClsMiddleware } from './middleware/cls.middleware';
 import { AdjustmentLogService } from './services/log.service';
 import { TargetReport, TargetReportSchema } from './schemas/reports/target-report.schema';
 import { Product, ProductSchema } from './schemas/product.schema';
-import { AdvertisedProductReport, AdvertisedProductReportSchema } from './schemas/reports/advertised-product-report.schema';
+import { AdReport, AdReportSchema } from './schemas/reports/ad-report.schema';
 import { AdGroupReport, AdGroupReportSchema } from './schemas/reports/adgroup-report.schema';
 import { ReportApiService } from './services/amazon/report-api.service';
 
@@ -81,7 +81,7 @@ import { ReportApiService } from './services/amazon/report-api.service';
       { name: User.name, schema: UserSchema },
       { name: Organization.name, schema: OrganizationSchema },
       { name: Product.name, schema: ProductSchema },
-      { name: AdvertisedProductReport.name, schema: AdvertisedProductReportSchema },
+      { name: AdReport.name, schema: AdReportSchema },
       { name: AdGroupReport.name, schema: AdGroupReportSchema },
     ]),
     ScheduleModule.forRoot(),

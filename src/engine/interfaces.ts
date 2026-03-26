@@ -1,4 +1,4 @@
-import { Campaign, CampaignDocument } from "src/schemas/campaign.schema"
+import { Campaign } from "src/schemas/campaign.schema"
 import { Keyword } from "src/schemas/keyword.schema"
 import { AdjustmentLog } from "src/schemas/log.schema"
 import { KeywordReport } from "src/schemas/reports/keyword-report.schema"
@@ -88,14 +88,24 @@ export interface TargetWithMetrics extends Target {
     metrics: TargetReport
 }
 
-export interface ICampaignBundle extends CampaignDocument {
-    matrics: CampaignReport
+export interface ICampaignDetails extends Campaign {
     keywords: keywordWithMetrics[]
     targets:TargetWithMetrics[]
-    budgetUsage: any
-    searchTerms: SearchTermDocument[]
+}
+export interface IMetrics {
+    impressions: number;
+    purchase:number;
+    clicks: number;
+    cost: number;
+    sales: number;
 }
 
+export interface ICampaignBundle extends ICampaignDetails {
+    metrics30d:IMetrics
+    metrics7d:IMetrics
+    searchTerms: SearchTermDocument[]
+    budgetUsage: any
+}
 
 export interface AutoCampaignAdjustment {
     ruleId: string;

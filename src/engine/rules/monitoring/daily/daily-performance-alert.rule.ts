@@ -41,7 +41,7 @@ export class DailyPerformanceAlertRule extends BaseRule implements ICampaignRule
       adjustments,
       reasoning:
         `Daily Summary: $${this.cost.toFixed(2)} spend, $${this.sales.toFixed(2)} sales, ` +
-        `${this.metrics.purchases7d} orders. ACOS: ${(acos * 100).toFixed(2)}%, ROI: ${roi.toFixed(2)}%. ` +
+        `${this.metrics.purchase} orders. ACOS: ${(acos * 100).toFixed(2)}%, ROI: ${roi.toFixed(2)}%. ` +
         (alerts.length > 0 ? `ALERTS: ${alerts.join('; ')}` : 'Performance normal.'),
     };
   }

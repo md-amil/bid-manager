@@ -11,7 +11,7 @@ export class ListingConversionIssuesRule extends AutoCampaignBaseRule implements
   shouldApply(): boolean {
     const impressionsOk = this.impressions >= config.minImpressions;
     const clicksOk = this.clicks >= config.minClicks;
-    const lowSales = this.metrics.purchases7d === 0 || (this.cvr) < config.minCvr;
+    const lowSales = this.metrics.purchase === 0 || (this.cvr) < config.minCvr;
     // const listingQualityPoor =
     //     metrics.rating < thresholds.minRating ||
     //     metrics.priceIndex > thresholds.maxPriceIndex ||

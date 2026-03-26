@@ -20,7 +20,7 @@ export class ThreeDayPositiveTrendRule extends BaseRule implements ICampaignRule
     if (!this.metrics) return false;
 
     // Need consistent performance
-    if (this.metrics.purchases7d < this.minOrders) return false;
+    if (this.metrics.purchase < this.minOrders) return false;
 
     // ACOS is good and improving (or stable at good level)
     return (
@@ -45,7 +45,7 @@ export class ThreeDayPositiveTrendRule extends BaseRule implements ICampaignRule
       keywords: this.keywordsIdText,
       targetings: this.targets,
       reasoning:
-        `Positive trend confirmed over 3 days: ${this.metrics.purchases7d} orders, ACOS ${(acos * 100).toFixed(2)}% (target: ${(this.acosTarget * 100).toFixed(2)}%). ` +
+        `Positive trend confirmed over 3 days: ${this.metrics.purchase} orders, ACOS ${(acos * 100).toFixed(2)}% (target: ${(this.acosTarget * 100).toFixed(2)}%). ` +
         `Performance stable. This is a sustained trend, not a spike. ` +
         `Increasing bids 15% to capture more volume while maintaining profitability.`,
     };

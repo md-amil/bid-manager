@@ -19,7 +19,7 @@ export class BidProducer {
     @InjectQueue('bidProcessor') private bidQueue: Queue,
   ) { }
 
-  async scheduleBidAdjustment(reports: { campaignId: string }[],budgetUsages?:any) {
+  async scheduleBidAdjustment(reports: { campaignId: string }[]) {
     // return this.bidQueue.add( "analyze",  { campaignId:'93618166928305',budgetUsages }, opts )
     const jobs = reports.map(({ campaignId }) => ({ name: "analyze", data: { campaignId }, opts }))
     return this.bidQueue.addBulk(jobs)

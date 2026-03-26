@@ -22,7 +22,7 @@ export class ThirtyDaySeasonalPlanningRule extends BaseRule implements ICampaign
     const acos = this.acos;
 
     // Only recommend if campaign is healthy
-    return acos <= this.acosTarget && this.metrics.purchases7d >= this.minOrders;
+    return acos <= this.acosTarget && this.metrics.purchase >= this.minOrders;
   }
 
   execute(): AdjustmentLog {

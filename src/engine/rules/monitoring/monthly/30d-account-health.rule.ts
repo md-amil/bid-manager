@@ -28,7 +28,7 @@ export class ThirtyDayAccountHealthRule extends BaseRule implements ICampaignRul
   execute(): AdjustmentLog {
     const acos = this.acos;
     const avgDailySpend = this.cost / 30;
-    const avgDailyOrders = this.metrics.purchases7d / 30;
+    const avgDailyOrders = this.metrics.purchase / 30;
     const roi = this.roi;
 
     const healthStatus = acos <= this.acosTarget ? 'HEALTHY' : 'AT RISK';
@@ -43,7 +43,7 @@ export class ThirtyDayAccountHealthRule extends BaseRule implements ICampaignRul
       adjustments,
       reasoning:
         `30-DAY SUMMARY - Campaign: ${this.campaign.name}\n` +
-        `Total Spend: $${this.cost.toFixed(2)} | Total Sales: $${this.sales.toFixed(2)} | Orders: ${this.metrics.purchases7d}\n` +
+        `Total Spend: $${this.cost.toFixed(2)} | Total Sales: $${this.sales.toFixed(2)} | Orders: ${this.metrics.purchase}\n` +
         `ACOS: ${(acos * 100).toFixed(2)}% (Target: ${(this.acosTarget * 100).toFixed(2)}%) | ROI: ${roi.toFixed(0)}%\n` +
         `Avg Daily: $${avgDailySpend.toFixed(2)} spend, ${avgDailyOrders.toFixed(1)} orders\n` +
         `Health Status: ${healthStatus} | Recommendation: ${recommendation}`,

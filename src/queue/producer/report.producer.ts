@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Job, Queue } from 'bullmq';
-import { CampaignApiService } from 'src/services/amazon/campaign-api.service';
-import { AdGroupApiService } from 'src/services/amazon/adgroup-api.service';
+
+// import { CampaignApiService } from 'src/services/amazon/campaign-api.service';
+// import { AdGroupApiService } from 'src/services/amazon/adgroup-api.service';
 // import { IAmazonAuth } from 'src/interfaces/index.type';
+
 import { ClsService } from 'nestjs-cls';
 import { ReportApiService } from 'src/services/amazon/report-api.service';
 
@@ -24,11 +26,8 @@ export class ReportProducer {
   private readonly logger = new Logger(ReportProducer.name);
   constructor(
     @InjectQueue('reportProcessor') private reportQueue: Queue,
-    private campaignApi: CampaignApiService,
-    private adGroupApi: AdGroupApiService,
     private reportApi: ReportApiService,
     private readonly cls: ClsService
-
   ) { }
 
   async generateReport() {
@@ -40,7 +39,7 @@ export class ReportProducer {
     const payload = {
       scopeId,
       startDate: yesterday,
-      endDate: yesterday,
+      endDate: today,
     }
 
     const auth = {
@@ -57,7 +56,7 @@ export class ReportProducer {
     const jobs: Job[] = [];
     for (const report of reportPromises) {
       if (report.status == 'fulfilled') {
-        this.logger.log(`Requested for report generation: ${report.value.reportId} ${report.value.configuration.reportTypeId}`);
+        this.logger.log(`Requested for report generation: ${report.value.name}`);
         const job = await this.reportQueue.add('report', { ...report.value, auth }, defaultOptions);
         jobs.push(job);
         continue;
@@ -65,10 +64,8 @@ export class ReportProducer {
       const data = report.reason.response.data
       if (data.code == PENDING_REPORT_CODE) {
         const reportId = data.detail?.split(': ')[1]
-        this.logger.log('previous report is already pending passing forward');
-        const job = await this.reportQueue.add('report',
-          { reportId, auth },
-          defaultOptions);
+        this.logger.log('Previous report is already pending passing forward');
+        const job = await this.reportQueue.add('report', { reportId, auth }, defaultOptions);
         jobs.push(job);
         continue;
       }

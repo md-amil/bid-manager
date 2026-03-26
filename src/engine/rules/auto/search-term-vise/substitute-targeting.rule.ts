@@ -9,7 +9,17 @@ export class SubstituteTargetingOptimizationRule extends BaseRule implements ICa
 
   shouldApply(): boolean {
     const substituteTerms = this.getSearchTerms(TargetingType.SUBSTITUTES);
+    console.log(substituteTerms, 'substituteTerms')
     return substituteTerms.length > 0;
+  }
+   getTarget(){
+    const targetings = this.getTargeting(TargetingType.SUBSTITUTES)
+    return targetings.map(t=>({
+      targetingId: t.targetId,
+      targetingType: t.expressionType,
+      expression: t.expression,
+      bid:t.bid
+    }))
   }
 
   execute(): AdjustmentLog {
@@ -28,6 +38,7 @@ export class SubstituteTargetingOptimizationRule extends BaseRule implements ICa
       ruleName: 'Substitute Targeting Optimization',
       campaignId: this.campaign.campaignId,
       adjustments: [adjustment],
+      targetings: this.getTarget(),
       reasoning:
         `Substitute targeting analysis: ${competitiveWins.length} competitive wins detected. ` +
         `${adjustment.action ===EAction.INCREASE_BID ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(adjustment.change!)}%.`,

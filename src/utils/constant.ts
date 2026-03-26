@@ -78,6 +78,7 @@ export const ADGROUP_MATRICS = [
     'purchasesSameSku7d',
     'purchasesSameSku14d',
     'purchasesSameSku30d',
+    'adGroupId',
     // 'unitsSoldClicks1d',
     // 'unitsSoldClicks7d',
     // 'unitsSoldClicks14d',

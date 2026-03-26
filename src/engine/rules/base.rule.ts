@@ -1,7 +1,7 @@
-import { ICampaignBundle, keywordWithMetrics, TargetingType, TargetWithMetrics } from "src/engine/interfaces";
+import { ICampaignBundle, IMetrics, keywordWithMetrics, TargetingType, TargetWithMetrics } from "src/engine/interfaces";
 import { Campaign, Type } from "src/schemas/campaign.schema";
 import { MatchType } from "src/schemas/keyword.schema";
-import { CampaignReport } from "src/schemas/reports/campaign-report";
+// import { CampaignReport } from "src/schemas/reports/campaign-report";
 import { AutoMatchType, SearchTermDocument } from "src/schemas/reports/search-term-report.schema";
 
 export const config = {
@@ -16,33 +16,47 @@ export const config = {
     expectedConversionRate: 3,
 }
 
+
+
 export default class BaseRule {
     protected searchTerms: SearchTermDocument[]
-    protected metrics: CampaignReport
+    protected metrics7d: IMetrics
+    protected metrics30d: IMetrics
     protected campaign: Campaign
     protected keywords: keywordWithMetrics[]
     protected targets: TargetWithMetrics[]
     protected budgetUsage: any
 
     constructor(bundle: ICampaignBundle) {
-        const { searchTerms, matrics, budgetUsage, keywords, targets, ...campaign } = bundle
+        const { searchTerms, budgetUsage, keywords, targets, metrics30d, metrics7d,...campaign } = bundle
         this.searchTerms = searchTerms
-        this.metrics = matrics
+        this.metrics7d = metrics7d
+        this.metrics30d = metrics30d
         this.targets = targets
         this.keywords = keywords
         this.campaign = campaign
         this.budgetUsage = budgetUsage
     }
 
+    get metrics() {
+        return this.metrics7d
+    }
+
+    get totalMetrics() {
+        return this.metrics30d
+    }
+    
+
     get isLaunchPhase(): boolean {
+        if(this.totalMetrics.cost < config.minSpend)return true
         return this.searchTerms.length == 0 && this.clicks <= config.minClicks && this.sales == 0
     }
 
     get acos(): number {
-        return this.metrics.cost && this.metrics.sales7d ? this.metrics.cost / this.metrics.sales7d : Infinity
+        return this.metrics.cost && this.metrics.sales ? this.metrics.cost / this.metrics.sales : Infinity
     }
     get roas(): number {
-        return this.metrics.sales7d && this.metrics.cost ? this.metrics.sales7d / this.metrics.cost : 0
+        return this.metrics.sales && this.metrics.cost ? this.metrics.sales / this.metrics.cost : 0
     }
     get roi(): number {
         const profit = this.sales - this.cost;
@@ -50,7 +64,7 @@ export default class BaseRule {
     }
 
     get cvr(): number {
-        return this.metrics.clicks > 0 ? (this.metrics.purchases7d / this.metrics.clicks) * 100 : 0;
+        return this.metrics.clicks > 0 ? (this.metrics.purchase / this.metrics.clicks) * 100 : 0;
     }
 
     get ctr(): number {
@@ -67,7 +81,7 @@ export default class BaseRule {
     }
 
     get budget() {
-        return this.campaign.budget.budget ?? this.metrics.campaignBudgetAmount
+        return this.campaign.budget.budget 
     }
 
     get clicks(): number {
@@ -79,7 +93,10 @@ export default class BaseRule {
     }
 
     get sales(): number {
-        return this.metrics.sales7d
+        return this.metrics.sales
+    }
+    get purchases(): number {
+        return this.metrics.purchase
     }
     get keywordsIdText(): { keywordId: string, keywordText: string }[] {
         {
@@ -104,15 +121,15 @@ export default class BaseRule {
     }
 
     minSpendThreshold() {
-        const { cost, clicks, sales7d } = this.metrics;
+        const { cost, clicks, sales } = this.metrics;
         const avgCpc = clicks > 0 ? cost / clicks : 0;
-        const cvr = clicks > 0 ? sales7d / clicks : 0;
+        const cvr = clicks > 0 ? sales / clicks : 0;
         const expectedClicksBeforeJudgement = cvr > 0 ? Math.ceil((1 / cvr) * 1.5) : config.minSpend;
         return avgCpc * expectedClicksBeforeJudgement;
     }
 
     getSearchTerms(type: MatchType | AutoMatchType | TargetingType) {
-        if(this.campaign.targetingType==Type.AUTO) return this.searchTerms.filter(term=>term.keyword == type)
+        if (this.campaign.targetingType == Type.AUTO) return this.searchTerms.filter(term => term.keyword == type)
         return this.searchTerms.filter(term => term.matchType == type)
     }
 
@@ -149,7 +166,7 @@ export default class BaseRule {
 
     calculateACOS(matric?: { cost: number, sales7d: number }): number {
         if (matric) return matric.cost && matric.sales7d ? matric.cost / matric.sales7d : Infinity;
-        return this.metrics.cost && this.metrics.sales7d ? this.metrics.cost / this.metrics.sales7d : Infinity;
+        return this.metrics.cost && this.metrics.sales ? this.metrics.cost / this.metrics.sales : Infinity;
     }
 
 

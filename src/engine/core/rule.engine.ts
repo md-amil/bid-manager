@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { AutoCampaignAdjustment, ICampaignRuleDecision, type ICampaignBundle } from "../interfaces";
+import { AutoCampaignAdjustment, ICampaignDetails, ICampaignRuleDecision, IMetrics, type ICampaignBundle } from "../interfaces";
 import { ProfitableSearchTermsRule } from "../rules/auto/profitable-searchterm.rule";
 import { NewProductLaunchRule } from "../rules/auto/launch-product.rule";
 import { LimitedImpressionsHighConversionRule } from "../rules/auto/limited-impression-high-conversion.rule";
@@ -16,37 +16,31 @@ import { HighAcosManualReductionRule } from "../rules/manual/control/high-acos-r
 import { HighSpendZeroSalesManualRule } from "../rules/manual/control/high-spend-zero-sale.rule";
 import { ListingConversionIssueManualRule } from "../rules/manual/control/listing-conversion-issue.rule";
 import { ModerateACOSWithSalesManualRule } from "../rules/manual/control/modrate-acos-with-sale.rule";
-import { AddNewKeywordsFromDiscoveryRule } from "../rules/manual/keyword-management/add-discovery-keyword.rule";
-import { BroadKeywordScalingRule } from "../rules/manual/keyword-management/broad-keyword-scaling.rule";
-import { NegativeKeywordManualRule } from "../rules/manual/keyword-management/negative-keyword.rule";
 import { Type } from "src/schemas/campaign.schema";
 import { LooseMatchOptimizationRule } from "../rules/auto/search-term-vise/loose-match.rule";
 import { CloseMatchOptimizationRule } from "../rules/auto/search-term-vise/close-match.rule";
 import { ComplementaryTargetingOptimizationRule } from "../rules/auto/search-term-vise/complementary-targeting.rule";
 import { SubstituteTargetingOptimizationRule } from "../rules/auto/search-term-vise/substitute-targeting.rule";
-import { DuplicateKeywordCleanupRule } from "../rules/manual/keyword-management/duplicate-keyword-cleanup.rule";
-import { PhraseKeywordToExactRule } from "../rules/manual/keyword-management/phrase-keyword-exact.rule";
-
 import { AdjustmentLog } from "src/schemas/log.schema";
 import { AdjustmentLogService } from "src/services/log.service";
-
+import { ReportService } from "src/services/report.service";
 
 // export const config = {
-  // targetAcos: parseFloat(process.env.TARGET_ACOS || '0.2'),
-  // minClicks: parseInt(process.env.MIN_SAMPLE_CLICKS || '20'),
-  // minSpend: parseFloat(process.env.MIN_SAMPLE_SPEND || '200'),
-  // minSales: 100,
-  // fallbackClicks: 20,
-  // minImpressions: 1000,
-  // minCvr: 0.08,
-  // budgetUtilizationThreshold: 0.85
-  // minSpendThreshold:parseFloat(process.env.MIN_THRESOLD_SPEND||)
+// targetAcos: parseFloat(process.env.TARGET_ACOS || '0.2'),
+// minClicks: parseInt(process.env.MIN_SAMPLE_CLICKS || '20'),
+// minSpend: parseFloat(process.env.MIN_SAMPLE_SPEND || '200'),
+// minSales: 100,
+// fallbackClicks: 20,
+// minImpressions: 1000,
+// minCvr: 0.08,
+// budgetUtilizationThreshold: 0.85
+// minSpendThreshold:parseFloat(process.env.MIN_THRESOLD_SPEND||)
 // }
 
 
 @Injectable()
 export default class Engine {
-  constructor(private logService: AdjustmentLogService) { }
+  constructor(private logService: AdjustmentLogService, private reportService: ReportService) { }
 
   private runRuleEngine(
     rules: ICampaignRuleDecision[],
@@ -61,11 +55,26 @@ export default class Engine {
     console.log(adjustments, "adjustment")
   }
 
+  async buildBundle(campaign: ICampaignDetails): Promise<ICampaignBundle> {
+    const reports = await this.reportService.getBidReports(campaign.campaignId);
+    const searchTerms = await this.reportService.getSearchTermReport(campaign.campaignId);
+    // const budgetUsage = await this.reportService.getBudgetUsage(campaign.campaignId);
+    return { 
+      ...campaign, 
+      ...reports, 
+      searchTerms,
+      budgetUsage: null 
+    };
+  }
 
-  async run(bundle: ICampaignBundle) {
-    if (bundle.state == 'PAUSED') return console.log("campaign is paused skipping...")
-    if (bundle.targetingType === Type.AUTO) return this.runAuto(bundle);
-    return this.runManual(bundle);
+
+
+  async run(campaign: ICampaignDetails) {
+    if (campaign.state == 'PAUSED') return console.log("campaign is paused skipping...")
+    const reports = await this.reportService.getBidReports(campaign.campaignId);
+    const bundle = await this.buildBundle(campaign);
+    if (campaign.targetingType === Type.AUTO) return this.runAuto(bundle);
+    return this.runManual(campaign, reports);
   }
 
   runAuto(bundle: ICampaignBundle) {
@@ -81,12 +90,11 @@ export default class Engine {
       LooseMatchOptimizationRule,
       SubstituteTargetingOptimizationRule
     ].map(Class => new Class(bundle))
-    console.log("running auto rules")
     this.runRuleEngine(autoCampaignRules)
   }
 
-  runManual(bundle: ICampaignBundle) {
-    return 
+  runManual(bundle: ICampaignDetails, reports: any) {
+    return
     const manuanCampaignRules = [
       //   //scaling rules
       NewProductLaunchRule,
@@ -107,19 +115,19 @@ export default class Engine {
       //    DuplicateKeywordCleanupRule,
       //    NegativeKeywordManualRule,
       //    PhraseKeywordToExactRule
-    ].map(Class => new Class(bundle))
+    ].map(Class => new Class({ ...bundle, ...reports }))
     this.runRuleEngine(manuanCampaignRules)
   }
 
 
-  threeDaysAgo(){
+  threeDaysAgo() {
 
   }
 
-  sevenDaysAgo(){
+  sevenDaysAgo() {
 
   }
-  
+
 
 }
 

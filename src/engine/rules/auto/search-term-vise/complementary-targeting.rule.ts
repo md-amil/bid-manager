@@ -9,6 +9,7 @@ export class ComplementaryTargetingOptimizationRule extends AutoCampaignBaseRule
   
   shouldApply(): boolean {
     const complementaryTerms = this.getSearchTerms(TargetingType.COMPLEMENTS);
+    // console.log(complementaryTerms, 'complementaryTerms')
     return complementaryTerms.length > 0;
   }
 

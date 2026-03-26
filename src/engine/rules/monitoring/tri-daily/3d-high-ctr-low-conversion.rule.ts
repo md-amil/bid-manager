@@ -47,7 +47,7 @@ export class ThreeDayHighCTRLowConversionRule extends BaseRule implements ICampa
       targetings: this.targets,
       reasoning:
         `Over 3 days: ${this.impressions} impressions, ${this.clicks} clicks (${ctr.toFixed(2)}% CTR - excellent!), ` +
-        `but only ${this.metrics.purchases7d} orders (${conversionRate.toFixed(2)}% conversion - poor). ` +
+        `but only ${this.metrics.purchase} orders (${conversionRate.toFixed(2)}% conversion - poor). ` +
         `Keywords and targeting are working, but product listing conversion is failing. ` +
         `Reducing bids 25% to minimize wasted spend while you improve reviews/pricing/images. ` +
         `Fix listing, then resume normal bids.`,

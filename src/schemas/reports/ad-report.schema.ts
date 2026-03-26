@@ -3,12 +3,12 @@ import { Document } from 'mongoose';
 import { Campaign } from '../campaign.schema';
 import { Ad } from '../ad.schema';
 
-export type AdvertisedProductReportDocument = AdvertisedProductReport & Document;
+export type AdReportDocument = AdReport & Document;
 
 @Schema({
-  collection: 'advertised_product_reports',
+  collection: 'ad_reports',
 })
-export class AdvertisedProductReport {
+export class AdReport {
   @Prop({ required: true, index: true })
   date: string;
 
@@ -135,5 +135,5 @@ export class AdvertisedProductReport {
 
 }
 
-export const AdvertisedProductReportSchema =
-  SchemaFactory.createForClass(AdvertisedProductReport);
+export const AdReportSchema =
+  SchemaFactory.createForClass(AdReport);

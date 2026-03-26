@@ -1,22 +1,18 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Job } from "bullmq";
-import   Engine  from "src/engine/core/rule.engine";
+import Engine from "src/engine/core/rule.engine";
 import { CampaignService } from "src/services/campaign.service";
 
 @Processor('bidProcessor')
 export class BidProcessor extends WorkerHost {
-
     constructor(
         private readonly engine: Engine,
         private readonly campaignService: CampaignService,
-    ) {
-        super();
-    }
+    ) { super() }
 
     async process(job: Job): Promise<any> {
         const bundle = await this.campaignService.findCampaignBundle(job.data.campaignId)
-        const searchTerms = await this.campaignService.getSearchTermReport(job.data.campaignId)
-        await this.engine.run({...bundle, searchTerms})
+        await this.engine.run(bundle)
     }
 
     @OnWorkerEvent('active')
@@ -30,6 +26,7 @@ export class BidProcessor extends WorkerHost {
     onError(error: any) {
         console.error('Worker error:', error);
     }
+    
     @OnWorkerEvent('completed')
     onComplete(job: Job) {
         // console.log(

@@ -26,7 +26,7 @@ export class FourteenDayExpansionReadinessRule extends BaseRule implements ICamp
     return (
       budgetUtilization >= this.budgetUtilizationThreshold &&
       acos <= this.acosTarget &&
-      this.metrics.purchases7d >= this.minOrders
+      this.metrics.purchase >= this.minOrders
     );
   }
 
@@ -46,7 +46,7 @@ export class FourteenDayExpansionReadinessRule extends BaseRule implements ICamp
       targetings: this.targets,
       reasoning:
         `Campaign is at full budget capacity (using ${(budgetUtilization * 100).toFixed(0)}% of budget) ` +
-        `with healthy ACOS (${(this.acos * 100).toFixed(2)}%) and ${this.metrics.purchases7d} orders. ` +
+        `with healthy ACOS (${(this.acos * 100).toFixed(2)}%) and ${this.metrics.purchase} orders. ` +
         `This indicates market saturation at current targeting. You're ready to expand: Increase budget 25%, increase bids 15%, ` +
         `and add new keywords/ASINs to fuel growth.`,
     };
