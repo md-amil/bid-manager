@@ -139,6 +139,9 @@ export class AdjustmentLog  {
   })
   campaignId: string;
 
+  @Prop({ index: true })
+  scopeId?: string;
+
   @Prop({ type: [Adjustment], default: [] })
   adjustments: Adjustment[];
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Request, Req } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, Request, Req } from '@nestjs/common';
 import {  InjectModel } from '@nestjs/mongoose';
 import {  Model } from 'mongoose';
 import { Campaign, CampaignDocument, Type } from '../schemas/campaign.schema';
@@ -43,7 +43,7 @@ export class CampaignController {
 
   @Post('report-sync')
   async reportSync() {
-    const reportJob = await this.reportProducer.generateReport();
+    const reportJob = await this.reportProducer.generateReport(30);
     return { message: 'Report sync initiated',jobIds: reportJob?.map(j=>j.id).join(',') };
   }
 
@@ -64,6 +64,23 @@ export class CampaignController {
     return { message: 'Bid adjustment scheduled' };
   }
 
+  @Post(':id/schedule-adjustment')
+  async scheduleCampaignAdjustment(@Param('id') id: string, @Request() req: any) {
+    const scopeId = req.session.selectedProfile?.profileId;
+    const campaign = await this.campaignModel.findOne({ campaignId: id, scopeId }).exec();
+    
+    if (!campaign) {
+      return { success: false, message: 'Campaign not found' };
+    }
+    
+    if (campaign.state !== 'ENABLED') {
+      return { success: false, message: 'Campaign must be enabled to schedule adjustment' };
+    }
+    
+    await this.bidProducer.scheduleBidAdjustment([campaign]);
+    return { success: true, message: `Adjustment scheduled for campaign ${campaign.name}` };
+  }
+
   @Get(':id')
   async getCampaign(@Param('id') id: string) {
 
@@ -71,23 +88,44 @@ export class CampaignController {
   }
 
   @Get(':id/logs')
-  async getCampaignLogs(@Param('id') id: string) {
+  async getCampaignLogs(@Param('id') id: string, @Req() req: any) {
+    const scopeId = req.session.selectedProfile?.profileId;
     return await this.bidLogModel
-      .find({ campaignId: id })
+      .find({ campaignId: id, scopeId })
       .sort({ createdAt: -1 })
       .limit(50)
       .exec();
   }
 
   @Get('logs/recent')
-  async getRecentLogs() {
+  async getRecentLogs(@Req() req: any) {
+    const scopeId = req.session.selectedProfile?.profileId;
     return await this.bidLogModel
-      .find()
+      .find({ scopeId })
       .sort({ createdAt: -1 })
       .limit(100)
       .exec();
   }
 
+  @Delete(':id/logs')
+  async clearCampaignLogs(@Param('id') id: string, @Req() req: any) {
+    const scopeId = req.session.selectedProfile?.profileId;
+    
+    if (!scopeId) {
+      return { success: false, message: 'No profile selected' };
+    }
+    
+    try {
+      const result = await this.bidLogModel.deleteMany({ campaignId: id, scopeId }).exec();
+      return { 
+        success: true, 
+        message: `Cleared ${result.deletedCount} optimization logs`,
+        deletedCount: result.deletedCount 
+      };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  }
 
   @Get('decide-budget')
   async calculateBudget() {

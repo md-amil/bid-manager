@@ -23,7 +23,17 @@ export class AdjustmentLogService {
     return logEntry.save();
   }
 
-  getLogsByCampaign(campaignId: string) {
-    return this.logModel.find({ campaignId }).sort({ date: -1 }).exec();
+  getLogsByCampaign(campaignId: string, scopeId: string) {
+    return this.logModel.find({ campaignId, scopeId }).sort({ createdAt: -1 }).exec();
+  }
+
+  getLogsByScope(scopeId: string) {
+    return this.logModel.find({ scopeId }).sort({ createdAt: -1 }).exec();
+  }
+
+  async deleteLogsByCampaign(campaignId: string, scopeId: string) {
+    const result = await this.logModel.deleteMany({ campaignId, scopeId }).exec();
+    this.logger.log(`Deleted ${result.deletedCount} logs for campaign ${campaignId}`);
+    return result;
   }
 }

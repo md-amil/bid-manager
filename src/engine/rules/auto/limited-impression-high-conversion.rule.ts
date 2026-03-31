@@ -12,25 +12,24 @@ export class LimitedImpressionsHighConversionRule extends AutoCampaignBaseRule i
   }
 
   shouldApply(): boolean {
-    const { impressions, clicks, sales } = this.metrics
+    const { impressions, clicks, sales, cost } = this.metrics
     if (clicks == 0) return false
     const convRate = sales / clicks
-    return convRate > 0.05 && impressions < 500 && this.utilization < config.budgetUtilizationThreshold;
+    const budgetNotFullyUtilized = this.utilization < config.budgetUtilizationThreshold;
+    return convRate > 0.05 && impressions < 500 && budgetNotFullyUtilized;
   }
 
   execute(): AdjustmentLog {
-    // const targetings = [
-    //   { targetingType: TargetingType.CLOSE_MATCH, change: 25 },
-    //   { targetingType: TargetingType.LOOSE_MATCH, change: 25 },
-    // ]
     const targetings = this.getTargeting([
       TargetingType.CLOSE_MATCH,
       TargetingType.LOOSE_MATCH,
+      TargetingType.SUBSTITUTES,
+      TargetingType.COMPLEMENTS,
     ])
 
     return {
       ruleId: 'RULE_003',
-      ruleName: 'Increase Bids for Limited Impressions',
+      ruleName: 'Good Conversion Rate with Limited Impressions',
       campaignId: this.campaign.campaignId,
       adjustments: [{
         action: EAction.INCREASE_BID,
@@ -39,8 +38,8 @@ export class LimitedImpressionsHighConversionRule extends AutoCampaignBaseRule i
       }],
       targetings: targetings,
       reasoning:
-        `Campaign converting well but has limited impression volume and unused budget. ` +
-        `Increasing bids by 25% to unlock more inventory and maximize sales potential.`,
+        `Auto campaign converting well but has low impression volume and budget not fully utilized. ` +
+        `Increasing bids by 25% to unlock more inventory.`,
     };
   }
 }

@@ -27,6 +27,8 @@ export class BudgetWastageManualRule  extends AutoCampaignBaseRule implements IC
   shouldApply(): boolean {
     if (this.campaign.targetingType !== Type.MANUAL) return false;
     if(!this.metrics) return false;
+    if(this.isLaunchPhase) return false
+
     const acos = this.acos
     const highSpend = this.cost >= this.minSpendThreshold()
     const highAcos = acos >= config.targetAcos * 2; // Significantly above target

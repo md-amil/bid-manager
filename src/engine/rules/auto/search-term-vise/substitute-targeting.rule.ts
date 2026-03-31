@@ -3,14 +3,25 @@ import BaseRule, { config } from "../../base.rule";
 import { Adjustment, AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 
 export class SubstituteTargetingOptimizationRule extends BaseRule implements ICampaignRuleDecision {
+  private competitiveWins: any[];
+  private poorPerformers: any[];
+
   constructor(bundle: ICampaignBundle) {
     super(bundle)
+    const substituteTerms = this.getSearchTerms(TargetingType.SUBSTITUTES);
+    // Increase 25% when: Sales coming from competitor listings AND Price and reviews are competitive
+    this.competitiveWins = substituteTerms.filter(st =>
+      st.sales7d > 0 && this.calculateACOS(st) <= config.targetAcos
+    );
+    // Decrease 50% when: High clicks, low sales, high ACOS OR Weak competitive positioning
+    this.poorPerformers = substituteTerms.filter(st =>
+      (st.clicks > config.minClicks && st.sales7d === 0) ||
+      (st.sales7d > 0 && this.calculateACOS(st) > config.targetAcos)
+    );
   }
 
   shouldApply(): boolean {
-    const substituteTerms = this.getSearchTerms(TargetingType.SUBSTITUTES);
-    console.log(substituteTerms, 'substituteTerms')
-    return substituteTerms.length > 0;
+    return (this.competitiveWins.length > 0 || this.poorPerformers.length > 0);
   }
    getTarget(){
     const targetings = this.getTargeting(TargetingType.SUBSTITUTES)
@@ -23,51 +34,33 @@ export class SubstituteTargetingOptimizationRule extends BaseRule implements ICa
   }
 
   execute(): AdjustmentLog {
-    const substituteTerms = this.getSearchTerms(TargetingType.SUBSTITUTES);
-    const competitiveWins = substituteTerms.filter(
-      st => this.calculateACOS(st) <= config.targetAcos
-    );
-    const poor = substituteTerms.filter(
-      st => st.clicks > config.minClicks && st.sales7d === 0
-    );
+    let action: EAction;
+    let change: number;
 
-    const adjustment = this.getAdjustment(competitiveWins, poor)
+    // Increase 25% when: Sales coming from competitor listings AND Price and reviews are competitive
+    if (this.competitiveWins.length > 0) {
+      action = EAction.INCREASE_BID;
+      change = 25;
+    }
+    // Decrease 50% when: High clicks, low sales, high ACOS OR Weak competitive positioning
+    else {
+      action = EAction.DECREASE_BID;
+      change = -50;
+    }
 
     return {
       ruleId: 'RULE_008',
       ruleName: 'Substitute Targeting Optimization',
       campaignId: this.campaign.campaignId,
-      adjustments: [adjustment],
+      adjustments: [{
+        action,
+        target: ETarget.TARGETING,
+        change
+      }],
       targetings: this.getTarget(),
       reasoning:
-        `Substitute targeting analysis: ${competitiveWins.length} competitive wins detected. ` +
-        `${adjustment.action ===EAction.INCREASE_BID ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(adjustment.change!)}%.`,
+        `Substitutes (Best for: Competitor ASIN targeting): ${this.competitiveWins.length} competitive wins detected. ` +
+        `${action === EAction.INCREASE_BID ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(change)}%.`,
     };
-  }
-
-  private getAdjustment(rich, poor): Adjustment {
-    if (rich.length > 0) {
-      return {
-        action: EAction.INCREASE_BID,
-        target: ETarget.TARGETING,
-        change: 25
-      }
-    }
-    return {
-      action: EAction.DECREASE_BID,
-      target: ETarget.TARGETING,
-      change: -50
-    }
-
-    // let action: 'INCREASE' | 'DECREASE' | 'CONTROL' = 'CONTROL';
-    // let change = 0;
-
-    // if (rich.length > 0) {
-    //   action = 'INCREASE';
-    //   change = 25;
-    // } else if (poor.length > 0) {
-    //   action = 'DECREASE';
-    //   change = -50;
-    // }
   }
 }

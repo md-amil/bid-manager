@@ -7,31 +7,36 @@ import { SearchTermDocument } from "src/schemas/reports/search-term-report.schem
 export class CloseMatchOptimizationRule extends BaseRule implements ICampaignRuleDecision {
   private goodTerms: SearchTermDocument[];
   private poorTerms: SearchTermDocument[];
+
   constructor(bundle: ICampaignBundle) {
     super(bundle)
     const closeMatchTerms = this.getSearchTerms(TargetingType.CLOSE_MATCH);
-    this.goodTerms = closeMatchTerms.filter(st => this.calculateACOS(st) <= config.targetAcos);
-    this.poorTerms = closeMatchTerms.filter(st => st.cost >= config.minSpend && st.sales7d === 0);
+    // Increase 20% when: Converting search terms found AND ACOS is acceptable
+    this.goodTerms = closeMatchTerms.filter(st => st.sales7d > 0 && this.calculateACOS(st) <= config.targetAcos);
+    // Decrease 50% when: Spending 300+ with no sales OR ACOS is not acceptable
+    this.poorTerms = closeMatchTerms.filter(st =>
+      (st.cost >= config.minSpend && st.sales7d === 0) ||
+      (st.sales7d > 0 && this.calculateACOS(st) > config.targetAcos)
+    );
   }
 
   shouldApply(): boolean {
-    const closeMatchTerms = this.getSearchTerms(TargetingType.CLOSE_MATCH)
-    return (this.goodTerms.length > 0 || this.poorTerms.length > 0)
+    return (this.goodTerms.length > 0 || this.poorTerms.length > 0);
   }
 
 
   execute(): AdjustmentLog {
-    const closeMatchTerms = this.getSearchTerms(TargetingType.CLOSE_MATCH);
-    const convertingTerms = closeMatchTerms.filter(st => this.calculateACOS(st) <= config.targetAcos);
-    const poorPerformers = closeMatchTerms.filter(st => st.cost >= config.minSpend && st.sales7d === 0);
-    let action: EAction = EAction.INCREASE_BID;
-    let change = 0;
+    let action: EAction;
+    let change: number;
 
-    if (convertingTerms.length > 0 && convertingTerms > poorPerformers) {
-      action = EAction.INCREASE_BID
+    // Increase 20% when: Converting search terms found AND ACOS is acceptable
+    if (this.goodTerms.length > 0) {
+      action = EAction.INCREASE_BID;
       change = 20;
-    } else if (poorPerformers.length > 0 && convertingTerms < poorPerformers) {
-      action = EAction.INCREASE_BID
+    }
+    // Decrease 50% when: Spending 300+ with no sales OR ACOS is not acceptable
+    else {
+      action = EAction.DECREASE_BID;
       change = -50;
     }
 
@@ -50,8 +55,8 @@ export class CloseMatchOptimizationRule extends BaseRule implements ICampaignRul
       ],
       targetings,
       reasoning:
-        `Close Match targeting analysis: ${convertingTerms.length} converting terms, ` +
-        `${poorPerformers.length} poor performers. ${action === EAction.INCREASE_BID ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(change)}%.`,
+        `Close Match (Best for: High-intent discovery): ${this.goodTerms.length} converting terms with acceptable ACOS. ` +
+        `${action === EAction.INCREASE_BID ? 'Increasing' : 'Decreasing'} bids by ${Math.abs(change)}%.`,
     };
   }
 }

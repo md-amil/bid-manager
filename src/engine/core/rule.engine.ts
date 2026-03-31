@@ -24,6 +24,7 @@ import { SubstituteTargetingOptimizationRule } from "../rules/auto/search-term-v
 import { AdjustmentLog } from "src/schemas/log.schema";
 import { AdjustmentLogService } from "src/services/log.service";
 import { ReportService } from "src/services/report.service";
+import { CampaignService } from "src/services/campaign.service";
 
 // export const config = {
 // targetAcos: parseFloat(process.env.TARGET_ACOS || '0.2'),
@@ -40,15 +41,18 @@ import { ReportService } from "src/services/report.service";
 
 @Injectable()
 export default class Engine {
-  constructor(private logService: AdjustmentLogService, private reportService: ReportService) { }
+  constructor(private logService: AdjustmentLogService, private reportService: ReportService, private campaignService: CampaignService) { }
 
   private runRuleEngine(
     rules: ICampaignRuleDecision[],
+    scopeId: string
   ) {
     const adjustments: AdjustmentLog[] = []
     for (const rule of rules) {
       if (rule.shouldApply()) {
-        adjustments.push(rule.execute() as AdjustmentLog);
+        const log = rule.execute() as AdjustmentLog;
+        log.scopeId = scopeId;
+        adjustments.push(log);
       }
     }
     this.logService.saveLogs(adjustments)
@@ -59,22 +63,22 @@ export default class Engine {
     const reports = await this.reportService.getBidReports(campaign.campaignId);
     const searchTerms = await this.reportService.getSearchTermReport(campaign.campaignId);
     // const budgetUsage = await this.reportService.getBudgetUsage(campaign.campaignId);
-    return { 
-      ...campaign, 
-      ...reports, 
+    return {
+      ...campaign,
+      ...reports,
       searchTerms,
-      budgetUsage: null 
+      budgetUsage: null
     };
   }
 
 
 
-  async run(campaign: ICampaignDetails) {
-    if (campaign.state == 'PAUSED') return console.log("campaign is paused skipping...")
-    const reports = await this.reportService.getBidReports(campaign.campaignId);
+  async run(campaignId: string) {
+    const campaign = await this.campaignService.findCampaignBundle(campaignId)
+    if (campaign.state == 'PAUSED') return console.log(`campaign ${campaignId} is paused skipping...`)
     const bundle = await this.buildBundle(campaign);
     if (campaign.targetingType === Type.AUTO) return this.runAuto(bundle);
-    return this.runManual(campaign, reports);
+    return this.runManual(bundle);
   }
 
   runAuto(bundle: ICampaignBundle) {
@@ -90,14 +94,13 @@ export default class Engine {
       LooseMatchOptimizationRule,
       SubstituteTargetingOptimizationRule
     ].map(Class => new Class(bundle))
-    this.runRuleEngine(autoCampaignRules)
+    this.runRuleEngine(autoCampaignRules, bundle.scopeId)
   }
 
-  runManual(bundle: ICampaignDetails, reports: any) {
-    return
+  runManual(bundle: ICampaignBundle) {
     const manuanCampaignRules = [
       //   //scaling rules
-      NewProductLaunchRule,
+      // NewProductLaunchRule,
       BudgetExhaustionManualCampaignRule,
       CompetitorASINTargetingConvertingRule,
       LowImpressionsHighConversionManualRule,
@@ -115,8 +118,8 @@ export default class Engine {
       //    DuplicateKeywordCleanupRule,
       //    NegativeKeywordManualRule,
       //    PhraseKeywordToExactRule
-    ].map(Class => new Class({ ...bundle, ...reports }))
-    this.runRuleEngine(manuanCampaignRules)
+    ].map(Class => new Class(bundle))
+    this.runRuleEngine(manuanCampaignRules, bundle.scopeId)
   }
 
 

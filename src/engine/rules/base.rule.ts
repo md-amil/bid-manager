@@ -14,6 +14,7 @@ export const config = {
     minCvr: 8,
     budgetUtilizationThreshold: 0.85,
     expectedConversionRate: 3,
+    searchWindow:7,
 }
 
 
@@ -77,7 +78,8 @@ export default class BaseRule {
     }
 
     get utilization(): number {
-        return this.campaign.budget.budget > 0 ? this.metrics.cost / this.campaign.budget.budget : 0;
+        if(this.campaign.budget.budget<=0) return 0
+        return this.metrics.cost / this.campaign.budget.budget
     }
 
     get budget() {
@@ -100,8 +102,11 @@ export default class BaseRule {
     }
     get keywordsIdText(): { keywordId: string, keywordText: string }[] {
         {
+            console.log(this.keywords)
             return this.keywords?.map((keyword) => ({
                 keywordId: keyword.keywordId,
+                bid:keyword.bid,
+                matchType:keyword.matchType,
                 keywordText: keyword.keywordText,
             })) || []
         }
@@ -146,6 +151,13 @@ export default class BaseRule {
     getLowPerformingSearchTerms() {
         return this.searchTerms.filter(st => st.clicks >= config.minClicks && st.cost >= config.minSpend && st.sales7d === 0)
         // return this.searchTerms.filter((term) => term.sales7d <= minSales && this.calculateACOS(term) >= config.targetAcos);
+    }
+
+    // Search terms with 20+ clicks OR 200+ spend and zero sales - for negative keyword rules
+    getNegativeWorthySearchTerms() {
+        return this.searchTerms.filter(st =>
+            (st.clicks >= 20 || st.cost >= 200) && st.sales7d === 0
+        );
     }
 
     // getAcos(matric?: { spend: number, sales7d: number }) {

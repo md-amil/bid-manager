@@ -1068,6 +1068,21 @@ tr:hover {
     font-size: 0.9rem;
 }
 
+.btn-schedule {
+    background: #10b981;
+    margin-left: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-schedule:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
 /* Log Stats */
 .log-stats {
     display: flex;

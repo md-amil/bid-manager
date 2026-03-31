@@ -73,6 +73,14 @@
                         <%= campaign.state || 'N/A' %>
                     </span>
                 </div>
+                <% if (campaign.state === 'ENABLED') { %>
+                <div class="info-divider"></div>
+                <div class="info-item">
+                    <button type="button" onclick="adjustCampaignBid('<%= campaign.campaignId %>', '<%= campaign.name %>')" class="btn-adjust-bid" id="adjustBidBtn">
+                        ⚡ Adjust Bid
+                    </button>
+                </div>
+                <% } %>
             </div>
 
             <!-- Campaign Performance Metrics -->
@@ -248,7 +256,14 @@
             </div>
 
             <div class="section">
-                <h3>Optimization History</h3>
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0;">Optimization History</h3>
+                    <% if (logs && logs.length > 0) { %>
+                        <button type="button" onclick="clearOptimizationLogs()" class="btn-clear-logs" id="clearLogsBtn">
+                            🗑️ Clear Logs
+                        </button>
+                    <% } %>
+                </div>
                 <% if (logs && logs.length > 0) { %>
                     <div class="accordion-container">
                         <% logs.forEach((log, index) => { %>
@@ -1506,6 +1521,53 @@
         justify-content: flex-end;
     }
 }
+
+.btn-clear-logs {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-clear-logs:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.btn-clear-logs:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-adjust-bid {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    white-space: nowrap;
+}
+
+.btn-adjust-bid:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.btn-adjust-bid:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 </style>
 
 <script>
@@ -1531,6 +1593,68 @@ document.addEventListener('DOMContentLoaded', function() {
         firstItem.classList.add('active');
     }
 });
+
+async function adjustCampaignBid(campaignId, campaignName) {
+    if (!confirm(`Schedule bid adjustment for "${campaignName}"? This will analyze campaign performance and apply optimization rules.`)) {
+        return;
+    }
+    
+    const adjustBtn = document.getElementById('adjustBidBtn');
+    const originalText = adjustBtn.innerHTML;
+    adjustBtn.innerHTML = '⏳ Scheduling...';
+    adjustBtn.disabled = true;
+    
+    try {
+        const response = await fetch(`/api/campaigns/${campaignId}/schedule-adjustment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(result.message);
+        } else {
+            alert('Failed: ' + result.message);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        adjustBtn.innerHTML = originalText;
+        adjustBtn.disabled = false;
+    }
+}
+
+async function clearOptimizationLogs() {
+    if (!confirm('Are you sure you want to clear all optimization logs for this campaign?')) {
+        return;
+    }
+    
+    const clearBtn = document.getElementById('clearLogsBtn');
+    const originalText = clearBtn.innerHTML;
+    clearBtn.innerHTML = '⏳ Clearing...';
+    clearBtn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/campaigns/<%= campaignId %>/logs', { 
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(result.message);
+            location.reload();
+        } else {
+            alert('Failed to clear logs: ' + result.message);
+            clearBtn.innerHTML = originalText;
+            clearBtn.disabled = false;
+        }
+    } catch (error) {
+        alert('Error clearing logs: ' + error.message);
+        clearBtn.innerHTML = originalText;
+        clearBtn.disabled = false;
+    }
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,259 @@
+<%- include('partials/header', { currentPage: 'settings', selectedProfile, profiles, title: 'Settings' }) %>
+
+<div class="page-header">
+    <h2>Settings</h2>
+    <div class="actions">
+        <button onclick="initializeSettings()" class="btn">Initialize Defaults</button>
+    </div>
+</div>
+
+<div class="settings-container">
+    <% 
+    const categories = { general: 'General', thresholds: 'Thresholds', targeting: 'Targeting' };
+    const groupedSettings = settings.reduce((acc, setting) => {
+        if (!acc[setting.category]) acc[setting.category] = [];
+        acc[setting.category].push(setting);
+        return acc;
+    }, {});
+    %>
+
+    <% Object.keys(categories).forEach(category => { %>
+        <% if (groupedSettings[category] && groupedSettings[category].length > 0) { %>
+            <div class="settings-section">
+                <h3 class="section-title"><%= categories[category] %></h3>
+                <div class="settings-grid">
+                    <% groupedSettings[category].forEach(setting => { %>
+                        <div class="setting-card" data-key="<%= setting.key %>">
+                            <div class="setting-info">
+                                <label class="setting-label"><%= setting.label %></label>
+                                <p class="setting-description"><%= setting.description %></p>
+                            </div>
+                            <div class="setting-control">
+                                <input 
+                                    type="number" 
+                                    class="setting-input" 
+                                    value="<%= setting.value %>"
+                                    min="<%= setting.min %>"
+                                    max="<%= setting.max %>"
+                                    step="<%= setting.step %>"
+                                    data-key="<%= setting.key %>"
+                                    data-type="<%= setting.type %>"
+                                >
+                                <span class="setting-unit">
+                                    <% if (setting.type === 'percent') { %>%
+                                    <% } else if (setting.type === 'currency') { %>₹
+                                    <% } %>
+                                </span>
+                                <button onclick="saveSetting('<%= setting.key %>')" class="btn-save">Save</button>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        <% } %>
+    <% }); %>
+</div>
+
+<style>
+    .settings-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+
+    .settings-section {
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111d33;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 1rem;
+    }
+
+    .setting-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .setting-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .setting-info {
+        margin-bottom: 0.75rem;
+    }
+
+    .setting-label {
+        display: block;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+    }
+
+    .setting-description {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .setting-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .setting-input {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+    }
+
+    .setting-input:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .setting-unit {
+        color: #64748b;
+        font-weight: 500;
+        min-width: 20px;
+    }
+
+    .btn-save {
+        padding: 0.5rem 1rem;
+        background: #0ea5e9;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .btn-save:hover {
+        background: #0284c7;
+    }
+
+    .btn-save.saving {
+        background: #6b7280;
+        cursor: not-allowed;
+    }
+
+    .btn-save.saved {
+        background: #3b82f6;
+    }
+
+    @media (max-width: 768px) {
+        .settings-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    async function saveSetting(key) {
+        const input = document.querySelector(`input[data-key="${key}"]`);
+        const saveBtn = input.parentElement.querySelector('.btn-save');
+        const value = parseFloat(input.value);
+
+        if (isNaN(value)) {
+            showNotification('Please enter a valid number', 'error');
+            return;
+        }
+
+        saveBtn.classList.add('saving');
+        saveBtn.textContent = 'Saving...';
+
+        try {
+            const response = await fetch(`/api/settings/${key}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ value }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                saveBtn.classList.remove('saving');
+                saveBtn.classList.add('saved');
+                saveBtn.textContent = 'Saved!';
+                showNotification('Setting saved successfully', 'success');
+                
+                setTimeout(() => {
+                    saveBtn.classList.remove('saved');
+                    saveBtn.textContent = 'Save';
+                }, 2000);
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            saveBtn.classList.remove('saving');
+            saveBtn.textContent = 'Save';
+            showNotification('Error saving setting: ' + error.message, 'error');
+        }
+    }
+
+    async function initializeSettings() {
+        if (!confirm('This will initialize default settings if they don\'t exist. Continue?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/settings/init', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification('Settings initialized successfully', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            showNotification('Error initializing settings: ' + error.message, 'error');
+        }
+    }
+
+    function showNotification(message, type = 'info') {
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+</script>
+
+<%- include('partials/footer') %>

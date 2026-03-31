@@ -42,7 +42,7 @@ export class AmazonSyncProcessor extends WorkerHost {
 
     @OnWorkerEvent('failed')
     onFailed(job: Job, error) {
-        console.log(error, 'Job failed with error');
+        console.log(error.response?.data, 'Job failed with error');
     }
 }
 

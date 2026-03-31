@@ -30,10 +30,10 @@ export class ReportProducer {
     private readonly cls: ClsService
   ) { }
 
-  async generateReport() {
+  async generateReport(days:number) {
     const scopeId = this.cls.get('scopeId');
     const accessToken = this.cls.get('accessToken');
-    const yesterday = new Date(Date.now() - 1 * 86400000).toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
     const today = new Date().toISOString().split('T')[0];
     this.logger.log('Generating report ' + yesterday + ' to ' + today);
     const payload = {

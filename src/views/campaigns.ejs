@@ -188,7 +188,12 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="/campaigns/<%= campaign.campaignId %>" class="btn-small">View</a>
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <a href="/campaigns/<%= campaign.campaignId %>" class="btn-small">View</a>
+                                    <% if (campaign.state === 'ENABLED') { %>
+                                        <button onclick="scheduleAdjustment('<%= campaign.campaignId %>', '<%= campaign.name %>')" class="btn-small btn-schedule" title="Schedule Adjustment">⚡</button>
+                                    <% } %>
+                                </div>
                             </td>
                         </tr>
                     <% }); %>
@@ -302,6 +307,30 @@
                     // Restore button
                     adjustBtn.innerHTML = originalText;
                     adjustBtn.disabled = false;
+                }
+            }
+        );
+    }
+
+    async function scheduleAdjustment(campaignId, campaignName) {
+        showConfirmationModal(
+            'Schedule Adjustment', 
+            `Schedule bid adjustment for "${campaignName}"? This will analyze campaign performance and apply optimization rules.`,
+            async () => {
+                try {
+                    const response = await fetch(`/api/campaigns/${campaignId}/schedule-adjustment`, { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification(result.message, 'success');
+                    } else {
+                        showNotification(result.message, 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error scheduling adjustment: ' + error.message, 'error');
                 }
             }
         );

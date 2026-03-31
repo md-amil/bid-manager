@@ -9,6 +9,7 @@ import { CampaignController } from './controllers/campaign.controller';
 import { ViewController } from './controllers/view.controller';
 import { ProfileController } from './controllers/profile.controller';
 import { AuthController } from './controllers/auth.controller';
+import { SettingController } from './controllers/setting.controller';
 import { Campaign, CampaignSchema } from './schemas/campaign.schema';
 import { AdjustmentLog, AdjustmentLogSchema } from './schemas/log.schema';
 import { CampaignReport, CampaignReportSchema, } from './schemas/reports/campaign-report';
@@ -27,7 +28,7 @@ import { SyncProducer } from './queue/producer/sync.producer';
 import { ReportProducer } from './queue/producer/report.producer';
 import { ReportService } from './services/report.service';
 import { BidProducer } from './queue/producer/bid.producer';
-import { OptimizationLog, OptimizationLogSchema } from './schemas/optimization.schema';
+// import { OptimizationLog, OptimizationLogSchema } from './schemas/optimization.schema';
 import { CampaignApiService } from './services/amazon/campaign-api.service';
 import { Keyword, KeywordSchema } from './schemas/keyword.schema';
 import { Target, TargetSchema } from './schemas/target.schema';
@@ -46,6 +47,8 @@ import { Product, ProductSchema } from './schemas/product.schema';
 import { AdReport, AdReportSchema } from './schemas/reports/ad-report.schema';
 import { AdGroupReport, AdGroupReportSchema } from './schemas/reports/adgroup-report.schema';
 import { ReportApiService } from './services/amazon/report-api.service';
+import { Setting, SettingSchema } from './schemas/setting.schema';
+import { SettingService } from './services/setting.service';
 
 @Module({
   imports: [
@@ -66,7 +69,7 @@ import { ReportApiService } from './services/amazon/report-api.service';
     }),
     MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/bid-manager'),
     MongooseModule.forFeature([
-      { name: OptimizationLog.name, schema: OptimizationLogSchema },
+      // { name: OptimizationLog.name, schema: OptimizationLogSchema },
       { name: Campaign.name, schema: CampaignSchema },
       { name: AdjustmentLog.name, schema: AdjustmentLogSchema },
       { name: CampaignReport.name, schema: CampaignReportSchema },
@@ -83,6 +86,7 @@ import { ReportApiService } from './services/amazon/report-api.service';
       { name: Product.name, schema: ProductSchema },
       { name: AdReport.name, schema: AdReportSchema },
       { name: AdGroupReport.name, schema: AdGroupReportSchema },
+      { name: Setting.name, schema: SettingSchema },
     ]),
     ScheduleModule.forRoot(),
     ClsModule.forRoot({
@@ -92,7 +96,7 @@ import { ReportApiService } from './services/amazon/report-api.service';
       },
     }),
   ],
-  controllers: [AppController, CampaignController, ViewController, ProfileController, AuthController],
+  controllers: [AppController, CampaignController, ViewController, ProfileController, AuthController, SettingController],
   providers: [
     AdjustmentLogService,
     CampaignApiService,
@@ -109,6 +113,7 @@ import { ReportApiService } from './services/amazon/report-api.service';
     CampaignService, SyncProducer,
     ReportProducer, BidProducer,
     ReportService,
+    SettingService,
   ],
 })
 export class AppModule implements NestModule {

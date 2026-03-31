@@ -234,6 +234,55 @@ export class AuthService {
   }
 
   /**
+   * Sync profiles from Amazon API with database
+   * Removes profiles from DB that don't exist in API
+   */
+  async syncProfiles(organizationId: string, accessToken: string): Promise<{ added: number; removed: number; total: number }> {
+    try {
+      // Fetch profiles from Amazon API using session access token
+      const apiProfiles = await this.authApi.getProfiles(accessToken);
+      const apiProfileIds = apiProfiles.map(p => p.profileId.toString());
+
+      // Get existing profiles from DB for this organization
+      const dbProfiles = await this.profileModel.find({ organizationId }).exec();
+      const dbProfileIds = dbProfiles.map(p => p.profileId);
+
+      // Find profiles to remove (exist in DB but not in API)
+      const profilesToRemove = dbProfiles.filter(p => !apiProfileIds.includes(p.profileId));
+      
+      // Remove stale profiles
+      if (profilesToRemove.length > 0) {
+        const removeIds = profilesToRemove.map(p => p.profileId);
+        await this.profileModel.deleteMany({ profileId: { $in: removeIds }, organizationId }).exec();
+        this.logger.log(`Removed ${profilesToRemove.length} stale profiles`);
+      }
+
+      // Upsert profiles from API
+      const operations = apiProfiles.map((profile) => ({
+        updateOne: {
+          filter: { profileId: profile.profileId },
+          update: { $set: { ...profile, organizationId } },
+          upsert: true,
+        },
+      }));
+
+      if (operations.length > 0) {
+        await this.profileModel.bulkWrite(operations);
+      }
+
+      const added = apiProfiles.filter(p => !dbProfileIds.includes(p.profileId.toString())).length;
+      const removed = profilesToRemove.length;
+
+      this.logger.log(`Profile sync completed: ${added} added, ${removed} removed, ${apiProfiles.length} total`);
+      
+      return { added, removed, total: apiProfiles.length };
+    } catch (error) {
+      this.logger.error('Failed to sync profiles', error.response?.data || error.message);
+      throw new Error('Failed to sync profiles with Amazon');
+    }
+  }
+
+  /**
    * Refresh access token using refresh token
    */
   // async refreshAccessToken(refreshToken: string): Promise<TokenResponse> {

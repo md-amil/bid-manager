@@ -4,11 +4,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Campaign, CampaignDocument } from '../schemas/campaign.schema';
 // import { BidAdjustmentLog, BidAdjustmentLogDocument } from '../schemas/bid-adjustment-log.schema';
-import { OptimizationLog, OptimizationLogDocument } from '../schemas/optimization.schema';
+// import { OptimizationLog, OptimizationLogDocument } from '../schemas/optimization.schema';
 import { CampaignReport, ReportDocument } from '../schemas/reports/campaign-report';
 import { CampaignService } from 'src/services/campaign.service';
 import { ReportService } from 'src/services/report.service';
 import { AuthService } from 'src/services/auth.service';
+import { SettingService } from 'src/services/setting.service';
 import { SyncProducer } from 'src/queue/producer/sync.producer';
 import { AdjustmentLog, LogDocument } from 'src/schemas/log.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
@@ -18,12 +19,13 @@ export class ViewController {
   constructor(
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     @InjectModel(AdjustmentLog.name) private bidLogModel: Model<LogDocument>,
-    @InjectModel(OptimizationLog.name) private optimizationLogModel: Model<OptimizationLogDocument>,
+    // @InjectModel(OptimizationLog.name) private optimizationLogModel: Model<OptimizationLogDocument>,
     @InjectModel(CampaignReport.name) private reportModel: Model<ReportDocument>,
     @InjectModel(Product.name) private productModel: Model<ProductDocument>,
     private campaignService: CampaignService,
     private reportService: ReportService,
     private authService: AuthService,
+    private settingService: SettingService,
     private readonly syncProducer: SyncProducer
   ) { }
 
@@ -50,7 +52,7 @@ export class ViewController {
     const campaigns = allCampaigns.filter(campaign =>
       campaign.state?.toLowerCase() === 'enabled'
     );
-    const recentLogs = await this.bidLogModel.find().sort({ createdAt: -1 }).limit(10).exec();
+    const recentLogs = await this.bidLogModel.find({ scopeId: selectedProfile.profileId }).sort({ createdAt: -1 }).limit(10).exec();
     const report = await this.campaignService.getLatestReportSum(allCampaigns.map(c => c.campaignId)) ?? {}
 
     const stats = {
@@ -112,7 +114,7 @@ export class ViewController {
     const campaignIds = campaigns.map(c => c.campaignId);
     const latestReports = await this.reportService.getLatestCampaignReports(campaignIds);
     const reportMap = new Map(latestReports.map(r => [r.campaignId, r]));
-    console.log(latestReports)
+    // console.log(latestReports)
     // Attach metrics to each campaign
     const campaignsWithMetrics = campaigns.map(campaign => {
       const report = reportMap.get(campaign.campaignId);
@@ -355,44 +357,56 @@ export class ViewController {
     if (!session.selectedProfile) {
       return res.redirect('/select-profile');
     }
+    return res.render('logs', {
+      title: 'Logs',
+      logs: [],
+      campaignMap: new Map(),
+      successCount: 0,
+      failedCount: 0,
+      filterType: '',
+      filterEntityType: '',
+      filterStatus: '',
+      selectedProfile: session.selectedProfile,
+      profiles: session.profiles || [],
+    });
     const filter: any = {};
     if (type) filter.type = type;
     if (entityType) filter.entityType = entityType;
     if (status) filter.status = status;
 
-    const logs = await this.optimizationLogModel
-      .find(filter)
-      .sort({ createdAt: -1 })
-      .limit(200)
-      .exec();
+    // const logs = await this.optimizationLogModel
+    //   .find(filter)
+    //   .sort({ createdAt: -1 })
+    //   .limit(200)
+    //   .exec();
 
-    const campaignIds = [...new Set(
-      logs
-        .filter(log => log.entityType === 'CAMPAIGN')
-        .map(log => log.entityId)
-    )];
+    // const campaignIds = [...new Set(
+    //   logs
+    //     .filter(log => log.entityType === 'CAMPAIGN')
+    //     .map(log => log.entityId)
+    // )];
 
-    const campaigns = await this.campaignModel
-      .find({ campaignId: { $in: campaignIds } })
-      .exec();
-    const campaignMap = new Map(
-      campaigns.map(c => [c.campaignId, c])
-    );
+    // const campaigns = await this.campaignModel
+    //   .find({ campaignId: { $in: campaignIds } })
+    //   .exec();
+    // const campaignMap = new Map(
+    //   campaigns.map(c => [c.campaignId, c])
+    // );
 
-    const successCount = logs.filter(l => l.status === 'success').length;
-    const failedCount = logs.filter(l => l.status === 'failed').length;
+    // const successCount = logs.filter(l => l.status === 'success').length;
+    // const failedCount = logs.filter(l => l.status === 'failed').length;
 
-    return res.render('logs', {
-      logs,
-      campaignMap,
-      successCount,
-      failedCount,
-      filterType: type || '',
-      filterEntityType: entityType || '',
-      filterStatus: status || '',
-      selectedProfile: session.selectedProfile,
-      profiles: session.profiles || [],
-    });
+    // return res.render('logs', {
+    //   logs,
+    //   campaignMap,
+    //   successCount,
+    //   failedCount,
+    //   filterType: type || '',
+    //   filterEntityType: entityType || '',
+    //   filterStatus: status || '',
+    //   selectedProfile: session.selectedProfile,
+    //   profiles: session.profiles || [],
+    // });
   }
 
   @Get('select-profile')
@@ -441,5 +455,29 @@ export class ViewController {
       if (err) return console.log(err)
       return res.redirect('/');
     })
+  }
+
+  @Get('settings')
+  async getSettings(
+    @Session() session: Record<string, any>,
+    @Res() res: Response,
+  ) {
+    if (!session.userId && !session.authenticated) {
+      return res.redirect('/auth/login');
+    }
+
+    if (session.userId && !session.authenticated) {
+      return res.redirect('/auth/connect-amazon');
+    }
+
+    const profiles = await this.authService.getProfiles(session.organizationId);
+    const settings = await this.settingService.getAllSettings(session.organizationId);
+
+    return res.render('settings', {
+      settings,
+      profiles,
+      selectedProfile: session.selectedProfile,
+      title: 'Settings',
+    });
   }
 }

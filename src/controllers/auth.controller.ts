@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Redirect, Render, Session, Logger, Res, Body } from '@nestjs/common';
+import { Controller, Get, Post, Query, Redirect, Render, Session, Logger, Res, Body, Req } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { InjectModel } from '@nestjs/mongoose';
@@ -317,5 +317,30 @@ export class AuthController {
       authenticated: !!session.authenticated,
       // hasProfiles: !!(session.profiles && session.profiles.length > 0),
     };
+  }
+
+  /**
+   * Sync profiles with Amazon API
+   */
+  @Post('sync-profiles')
+  async syncProfiles(@Req() req: any) {
+    const organizationId = req.session.organizationId;
+    const accessToken = req.session.accessToken;
+    
+    if (!organizationId) {
+      return { success: false, message: 'Organization not found' };
+    }
+    
+    if (!accessToken) {
+      return { success: false, message: 'Not authenticated with Amazon' };
+    }
+    
+    try {
+      const result = await this.authService.syncProfiles(organizationId, accessToken);
+      return { success: true, ...result };
+    } catch (error) {
+      this.logger.error('Profile sync failed', error);
+      return { success: false, message: error.message };
+    }
   }
 }

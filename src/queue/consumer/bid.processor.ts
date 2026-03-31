@@ -11,8 +11,7 @@ export class BidProcessor extends WorkerHost {
     ) { super() }
 
     async process(job: Job): Promise<any> {
-        const bundle = await this.campaignService.findCampaignBundle(job.data.campaignId)
-        await this.engine.run(bundle)
+        await this.engine.run(job.data.campaignId)
     }
 
     @OnWorkerEvent('active')

@@ -11,6 +11,7 @@ import { AdReport } from 'src/schemas/reports/ad-report.schema';
 import { AdGroupReport } from 'src/schemas/reports/adgroup-report.schema';
 import { AmazonMapper } from './amazon/amazon.mapper';
 import { IMetrics } from 'src/engine/interfaces';
+import { buildQueryWindow } from 'src/utils/query';
 
 @Injectable()
 export class ReportService {
@@ -358,16 +359,16 @@ export class ReportService {
 
 
   async getBidReports(campaignId: string): Promise<{ metrics30d: IMetrics; metrics7d: IMetrics }> {
-    const now = new Date();
-    const last7Days = new Date();
-    last7Days.setDate(now.getDate() - 7);
-    const last30days = new Date();
-    last30days.setDate(now.getDate() - 30);
+    // const now = new Date();
+    // const last7Days = new Date();
+    // last7Days.setDate(now.getDate() - 7);
+    // const last30days = new Date();
+    // last30days.setDate(now.getDate() - 30);
 
-    const formatDate = (date: Date) => date.toISOString().split('T')[0];
-    const nowStr = formatDate(now);
-    const last7DaysStr = formatDate(last7Days);
-    const last30daysStr = formatDate(last30days);
+    // const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    // const nowStr = formatDate(now);
+    // const last7DaysStr = formatDate(last7Days);
+    // const last30daysStr = formatDate(last30days);
 
     const result = await this.campReport.aggregate([
       {
@@ -380,7 +381,7 @@ export class ReportService {
           last30d: [
             {
               $match: {
-                date: { $gte: last30daysStr, $lte: nowStr }
+                date: buildQueryWindow(30)
               }
             },
             {
@@ -397,7 +398,7 @@ export class ReportService {
           last7d: [
             {
               $match: {
-                date: { $gte: last7DaysStr, $lte: nowStr }
+                date: buildQueryWindow(7)
               }
             },
             {
@@ -424,74 +425,82 @@ export class ReportService {
   async getSearchTermReport(campaignId: string) {
     const response = await this.searchReport.aggregate([
       {
-        $match: { campaignId },
-      },
-      {
-        $sort: { date: -1 },
+        $match: {
+          campaignId,
+          date: buildQueryWindow(7)
+        },
       },
       {
         $group: {
-          _id: '$campaignId',
-          latestDate: { $first: '$date' },
-          docs: { $push: '$$ROOT' },
+          _id: '$searchTerm',
+          keyword: { $first: '$keyword' },
+          keywordId: { $first: '$keywordId' },
+          searchTerm: { $first: '$searchTerm' },
+          campaignId: { $first: '$campaignId' },
+          adGroupId: { $first: '$adGroupId' },
+          cost: { $sum: '$cost' },
+          clicks: { $sum: '$clicks' },
+          impressions: { $sum: '$impressions' },
+          sales7d: { $sum: '$sales7d' },
+          purchases7d: { $sum: '$purchases7d' },
         },
       },
       {
         $project: {
           _id: 0,
-          latestDate: 1,
-          searchTerms: {
-            $filter: {
-              input: '$docs',
-              as: 'doc',
-              cond: { $eq: ['$$doc.date', '$latestDate'] },
-            },
-          },
+          keyword: 1,
+          keywordId: 1,
+          searchTerm: 1,
+          campaignId: 1,
+          adGroupId: 1,
+          cost: 1,
+          clicks: 1,
+          impressions: 1,
+          sales7d: 1,
+          purchases7d: 1,
         },
       },
     ]);
-    return response[0]?.searchTerms || [];
+    return response || [];
   }
 
-
-  async getCampaignTotalCost(campaignId: string, startDate?: string, endDate?: string) {
-    const matchStage: any = { campaignId };
-    // Add date filtering if dates are provided
-    if (startDate || endDate) {
-      matchStage.date = {};
-      if (startDate) {
-        matchStage.date.$gte = startDate;
-      }
-      if (endDate) {
-        matchStage.date.$lte = endDate;
-      }
-    }
-
-    const result = await this.campReport.aggregate([
-      {
-        $match: matchStage
-      },
-      {
-        $group: {
-          _id: '$campaignId',
-          totalCost: { $sum: '$cost' },
-          totalSales: { $sum: '$sales1d' },
-          totalSales7d: { $sum: '$sales7d' },
-          totalSales14d: { $sum: '$sales14d' },
-          totalImpressions: { $sum: '$impressions' },
-          totalClicks: { $sum: '$clicks' }
-        }
-      }
-    ]);
-    return result[0] || {
-      totalCost: 0,
-      totalSales: 0,
-      totalSales7d: 0,
-      totalSales14d: 0,
-      totalImpressions: 0,
-      totalClicks: 0
-    };
-  }
+  // async getCampaignTotalCost(campaignId: string, startDate?: string, endDate?: string) {
+  //   const matchStage: any = { campaignId };
+  //   // Add date filtering if dates are provided
+  //   if (startDate || endDate) {
+  //     matchStage.date = {};
+  //     if (startDate) {
+  //       matchStage.date.$gte = startDate;
+  //     }
+  //     if (endDate) {
+  //       matchStage.date.$lte = endDate;
+  //     }
+  //   }
+  //   const result = await this.campReport.aggregate([
+  //     {
+  //       $match: matchStage
+  //     },
+  //     {
+  //       $group: {
+  //         _id: '$campaignId',
+  //         totalCost: { $sum: '$cost' },
+  //         totalSales: { $sum: '$sales1d' },
+  //         totalSales7d: { $sum: '$sales7d' },
+  //         totalSales14d: { $sum: '$sales14d' },
+  //         totalImpressions: { $sum: '$impressions' },
+  //         totalClicks: { $sum: '$clicks' }
+  //       }
+  //     }
+  //   ]);
+  //   return result[0] || {
+  //     totalCost: 0,
+  //     totalSales: 0,
+  //     totalSales7d: 0,
+  //     totalSales14d: 0,
+  //     totalImpressions: 0,
+  //     totalClicks: 0
+  //   };
+  // }
 
 }
 

@@ -34,7 +34,8 @@ export class ProfitableSearchTermsRule extends BaseRule implements ICampaignRule
       adjustments:[
         {
           action: EAction.INCREASE_BUDGET,
-          change:this.campaign.budget.budget * 0.25
+          change: 25,
+          target: ETarget.CAMPAIGN
         },
         {
           action : EAction.MOVE_TO_MANUAL,
@@ -45,7 +46,7 @@ export class ProfitableSearchTermsRule extends BaseRule implements ICampaignRule
       reasoning:
         `Auto campaign is generating consistent profitable sales. ` +
         `ACOS is within target. Found ${highPerformingTerms.length} high-performing search terms. ` +
-        `Recommend increasing budget by 25% and moving winning terms to manual campaigns.`,
+        `Increasing budget by 25%, keeping bids same, and moving winning terms to manual exact/phrase campaigns.`,
     };
   }
 }

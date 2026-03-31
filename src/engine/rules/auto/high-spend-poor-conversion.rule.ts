@@ -12,10 +12,11 @@ export class HighSpendPoorConversionRule extends AutoCampaignBaseRule implements
   }
 
   shouldApply(): boolean {
-    const moreClick = this.metrics.clicks > config.minClicks
-    const moreSpend = this.metrics.cost > this.minSpendThreshold()
-    const lowAcos = this.acos > config.targetAcos
-    return moreClick && moreSpend && lowAcos;
+    const highClicks = this.metrics.clicks > config.minClicks;
+    const highSpend = this.metrics.cost > config.minSpend;
+    const lowOrZeroSales = this.metrics.sales === 0 || this.acos > config.targetAcos;
+    const risingACOS = this.acos > config.targetAcos;
+    return highClicks && highSpend && lowOrZeroSales;
   }
   getCampaign(){
     return {
@@ -37,7 +38,6 @@ export class HighSpendPoorConversionRule extends AutoCampaignBaseRule implements
   }
 
   execute(): AdjustmentLog {
-
     return {
       ruleId: 'RULE_004',
       ruleName: 'High Spend with Poor Conversion',
@@ -48,16 +48,16 @@ export class HighSpendPoorConversionRule extends AutoCampaignBaseRule implements
           change: -25,
           target: ETarget.CAMPAIGN
         },
-        {
-          action: EAction.DECREASE_BID,
-          change: -25,
-          target: ETarget.TARGETING
-        }
+        // {
+        //   action: EAction.DECREASE_BID,
+        //   change: -25,
+        //   target: ETarget.TARGETING
+        // }
       ],
-      targetings:this.getTarget(),
+      // targetings: this.getTarget(),
       campaign: this.getCampaign(),
       reasoning:
-        `High clicks with low/zero sales and rising ACOS detected. ` +
+        `High clicks with low or zero sales and rising ACOS detected. ` +
         `Lowering bids and budget by 25% and recommending immediate search term review.`,
     };
   }

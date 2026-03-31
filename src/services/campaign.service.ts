@@ -5,6 +5,7 @@ import { Campaign, CampaignDocument } from 'src/schemas/campaign.schema';
 import { AdGroup, AdGroupDocument } from 'src/schemas/ad-group.schema';
 import { CampaignReport, ReportDocument } from 'src/schemas/reports/campaign-report';
 import { SearchTermDocument, SearchTermReport } from 'src/schemas/reports/search-term-report.schema';
+import { ICampaignDetails } from 'src/engine/interfaces';
 
 @Injectable()
 export class CampaignService {
@@ -34,7 +35,7 @@ export class CampaignService {
   // }
 
  
-  async findCampaignBundle(campaignId: string) {
+  async findCampaignBundle(campaignId: string): Promise<ICampaignDetails> {
 
     const keywordQuery: PipelineStage = {
       $lookup: {
