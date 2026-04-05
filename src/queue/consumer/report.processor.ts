@@ -92,13 +92,13 @@ export class ReportProcessor extends WorkerHost {
     }
     @OnWorkerEvent('completed')
     onComplete(job: Job, result: any) {
-        console.log(`completed job ${job.id} of type ${job.data.reportTypeId} with reportId ${job.data.reportId}`);
+        console.log(`completed job ${job.id} of type ${job.data.name} with reportId ${job.data.reportId}`);
         // if (job.name == 'generateReport') return this.reportProducer.extractReport(result)
         // this.bidProducer.scheduleBidAdjustment()
     }
     @OnWorkerEvent('failed')
     onFailed(job: Job, error) {
-        console.log(error, 'Job failed with error');
+        console.log(job.data.name,error, 'Job failed with error');
     }
 }
 

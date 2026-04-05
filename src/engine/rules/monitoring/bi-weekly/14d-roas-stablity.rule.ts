@@ -38,9 +38,16 @@ export class FourteenDayRoasStabilityRule extends BaseRule implements ICampaignR
       ruleId: 'FOURTEEN_DAY_003',
       ruleName: '14-Day ROAS Stability - Scaling Approved',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+      
       adjustments,
       keywords: this.keywordsIdText,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `ROAS sustained at ${roas.toFixed(2)}x - well above ${this.minRoas}x minimum. ` +
         `For every $1 spent on ads, you're making $${roas.toFixed(2)} in sales. ` +

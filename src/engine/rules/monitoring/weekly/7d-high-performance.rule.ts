@@ -49,6 +49,8 @@ export class SevenDayHighPerformerRule extends BaseRule implements ICampaignRule
       ruleId: 'SEVEN_DAY_004',
       ruleName: '7-Day High Performer Scaling',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+      
       adjustments,
       keywords: winners.slice(0, 10).map(w => ({
         keywordText: w.searchTerm,

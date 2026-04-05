@@ -40,6 +40,7 @@ export class ThirtyDayBudgetReallocationRule extends BaseRule implements ICampai
       ruleId: 'THIRTY_DAY_003',
       ruleName: '30-Day Budget Misallocation - Reallocation Recommendation',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       reasoning:
         `This campaign's 30-day ACOS is ${(acos * 100).toFixed(2)}% (above healthy ${(this.poorPerformerAcosThreshold * 100).toFixed(2)}% threshold). ` +

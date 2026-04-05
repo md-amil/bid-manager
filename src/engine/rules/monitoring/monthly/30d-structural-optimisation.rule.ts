@@ -27,6 +27,7 @@ export class ThirtyDayStructuralOptimizationRule extends BaseRule implements ICa
       ruleId: 'THIRTY_DAY_004',
       ruleName: '30-Day Structural Optimization Strategy',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       reasoning:
         `After 30 days, you have enough data for structural decisions. ` +

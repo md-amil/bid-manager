@@ -38,6 +38,7 @@ export class DailyPerformanceAlertRule extends BaseRule implements ICampaignRule
       ruleId: 'DAILY_005',
       ruleName: 'Daily Performance Summary - End of Day Report',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       reasoning:
         `Daily Summary: $${this.cost.toFixed(2)} spend, $${this.sales.toFixed(2)} sales, ` +

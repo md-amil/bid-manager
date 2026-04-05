@@ -95,21 +95,21 @@
                         <span class="filter-tag">
                             <i class="fas fa-search"></i>
                             "<%= filterName %>"
-                            <button onclick="clearFilter('name')" class="remove-filter">×</button>
+                            <button type="button" onclick="clearFilter('name')" class="remove-filter">×</button>
                         </span>
                     <% } %>
                     <% if (filterStatus) { %>
                         <span class="filter-tag">
                             <i class="fas fa-toggle-on"></i>
                             <%= filterStatus %>
-                            <button onclick="clearFilter('status')" class="remove-filter">×</button>
+                            <button type="button" onclick="clearFilter('status')" class="remove-filter">×</button>
                         </span>
                     <% } %>
                     <% if (filterTargeting) { %>
                         <span class="filter-tag">
                             <i class="fas fa-bullseye"></i>
                             <%= filterTargeting %>
-                            <button onclick="clearFilter('targeting')" class="remove-filter">×</button>
+                            <button type="button" onclick="clearFilter('targeting')" class="remove-filter">×</button>
                         </span>
                     <% } %>
                 </div>
@@ -129,9 +129,9 @@
                         <th>Impr</th>
                         <th>Clicks</th>
                         <th>Cost</th>
-                        <th>Sales 7d</th>
-                        <th>Sales 14d</th>
+                        <th>Sales</th>
                         <th>ACOS</th>
+                        <th>ROAS</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -168,19 +168,19 @@
                                 <%= campaign.metrics ? '₹' + campaign.metrics.cost.toLocaleString() : '-' %>
                             </td>
                             <td class="metric-cell sales">
-                                <%= campaign.metrics ? '₹' + campaign.metrics.sales7d.toLocaleString() : '-' %>
-                            </td>
-                            <td class="metric-cell sales">
-                                <%= campaign.metrics ? '₹' + campaign.metrics.sales14d.toLocaleString() : '-' %>
+                                <%= campaign.metrics ? '₹' + campaign.metrics.sales.toLocaleString() : '-' %>
                             </td>
                             <td class="metric-cell acos">
-                                <% if (campaign.metrics && campaign.metrics.acos14d > 0) { %>
-                                    <span class="acos-badge <%= campaign.metrics.acos14d < 20 ? 'good' : campaign.metrics.acos14d < 40 ? 'medium' : 'bad' %>">
-                                        <%= campaign.metrics.acos14d %>
+                                <% if (campaign.metrics && campaign.metrics.acos > 0) { %>
+                                    <span class="acos-badge <%= parseFloat(campaign.metrics.acos) < 20 ? 'good' : parseFloat(campaign.metrics.acos) < 40 ? 'medium' : 'bad' %>">
+                                        <%= campaign.metrics.acos %>%
                                     </span>
                                 <% } else { %>
                                     -
                                 <% } %>
+                            </td>
+                            <td class="metric-cell roas">
+                                <%= campaign.metrics ? campaign.metrics.roas : '-' %>
                             </td>
                             <td>
                                 <span class="status-badge <%= campaign.state.toLowerCase() %>">
@@ -212,11 +212,13 @@
     document.getElementById('campaignFilters').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(window.location.search);
         
         for (let [key, value] of formData.entries()) {
             if (value) {
-                params.append(key, value);
+                params.set(key, value);
+            } else {
+                params.delete(key);
             }
         }
         
@@ -318,7 +320,7 @@
             `Schedule bid adjustment for "${campaignName}"? This will analyze campaign performance and apply optimization rules.`,
             async () => {
                 try {
-                    const response = await fetch(`/api/campaigns/${campaignId}/schedule-adjustment`, { 
+                    const response = await fetch(`/api/campaigns/${campaignId}/optimize`, { 
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' }
                     });
@@ -368,8 +370,6 @@
         // Add to document
         document.body.appendChild(overlay);
         document.body.appendChild(modal);
-        
-        // Store the confirm callback
         window.confirmationCallback = onConfirm;
     }
     
@@ -426,5 +426,13 @@
         }, 5000);
     }
 </script>
+
+<style>
+/* ROAS cell styling */
+.metric-cell.roas {
+    color: #059669;
+    font-weight: 600;
+}
+</style>
 
 <%- include('partials/footer') %>

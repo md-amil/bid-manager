@@ -42,6 +42,7 @@ export class HighSpendPoorConversionRule extends AutoCampaignBaseRule implements
       ruleId: 'RULE_004',
       ruleName: 'High Spend with Poor Conversion',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [
         {
           action: EAction.DECREASE_BUDGET,

@@ -46,6 +46,8 @@ export class ThirtyDaySeasonalPlanningRule extends BaseRule implements ICampaign
       ruleId: 'THIRTY_DAY_005',
       ruleName: '30-Day Seasonal Planning - Growth Preparation',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+        
       adjustments,
       reasoning:
         `30-day profitable performance confirmed (ACOS ${(this.acos * 100).toFixed(2)}%). ` +

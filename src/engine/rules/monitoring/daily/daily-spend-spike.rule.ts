@@ -46,8 +46,14 @@ export class DailySpendSpikeRule extends BaseRule implements ICampaignRuleDecisi
       ruleId: 'DAILY_002',
       ruleName: 'Daily Spend Spike - Anomaly Detection',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `Unusual spend spike detected: +${spendIncrease.toFixed(0)}% above average. ` +
         (acosWorsened

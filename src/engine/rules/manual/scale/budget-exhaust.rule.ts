@@ -13,7 +13,6 @@ export class BudgetExhaustionManualCampaignRule extends AutoCampaignBaseRule imp
     super(bundle);
   }
   shouldApply(): boolean {
-    // console.log(`Evaluating BudgetExhaustionManualCampaignRule for campaign ${this.campaign.campaignId} - Targeting Type: ${this.campaign.targetingType}`);
     if (this.campaign.targetingType == Type.AUTO) return false;
     // const { matrics, budget } = campaign
     // const { impressions, clicks, sales7d, spend } = matrics
@@ -22,7 +21,6 @@ export class BudgetExhaustionManualCampaignRule extends AutoCampaignBaseRule imp
     //   ? spend / sales7d
     //   : Infinity;
     const acos = this.calculateACOS();
-
     return budgetUtilized && acos <= config.targetAcos 
   }
 
@@ -33,6 +31,7 @@ export class BudgetExhaustionManualCampaignRule extends AutoCampaignBaseRule imp
       ruleId: 'MANUAL_SCALE_002',
       ruleName: 'Increase Budget - Exhaustion Early',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments:[
         {
           action:EAction.INCREASE_BUDGET,

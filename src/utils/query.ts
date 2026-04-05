@@ -1,4 +1,4 @@
-export function buildQueryWindow(win:number) {
+export function buildQueryWindow(win:number=0) {
     const formatDate = (date: Date) => date.toISOString().split('T')[0];
     const now = new Date();
     const window = new Date();

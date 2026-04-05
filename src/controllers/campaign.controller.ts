@@ -1,38 +1,47 @@
 import { Controller, Get, Post, Delete, Body, Param, Request, Req } from '@nestjs/common';
-import {  InjectModel } from '@nestjs/mongoose';
-import {  Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Campaign, CampaignDocument, Type } from '../schemas/campaign.schema';
 import { AdjustmentLog, LogDocument } from '../schemas/log.schema';
-// import { AmazonApiService } from 'src/services/amazon/amazon-api.service';
-// import { SyncProducer } from 'src/queue/producer/sync.producer';
 import { ReportProducer } from 'src/queue/producer/report.producer';
-// import { BidService } from 'src/services/amazon/bid.service';
-// import { ReportDocument } from 'src/schemas/reports/report.schema';
 import { CampaignApiService } from 'src/services/amazon/campaign-api.service';
 import { BidProducer } from 'src/queue/producer/bid.producer';
 import { CampaignService } from 'src/services/campaign.service';
 import { SyncProducer } from 'src/queue/producer/sync.producer';
+import { DataService } from 'src/services/data.service';
+import { buildQueryWindow } from 'src/utils/query';
 
 
 @Controller('api/campaigns')
 export class CampaignController {
   constructor(
-    // private campaignService: CampaignService,
     private campaignApi: CampaignApiService,
     private readonly syncProducer: SyncProducer,
     private readonly reportProducer: ReportProducer,
     private readonly bidProducer: BidProducer,
     private readonly campaignService: CampaignService,
-    // private readonly bidService: BidService,
+    private readonly dataService:DataService,
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     @InjectModel(AdjustmentLog.name) private bidLogModel: Model<LogDocument>,
   ) { }
 
+  @Get('test')
+  async getCampaignTypes() {
+    return this.dataService.getSearchTerm({ },buildQueryWindow(30))
+    return this.dataService.getTargeting({ },buildQueryWindow(30))
+    return this.dataService.getKeywords({ },buildQueryWindow(30))
+    return this.dataService.getAds({ },buildQueryWindow(30))
+    return this.dataService.getCampaigns({ },buildQueryWindow(30))
+    return this.dataService.getAdgroup({  },buildQueryWindow(30))
+  }
+
   @Get()
   async getAllCampaigns(@Req() request: any) {
     const scopeId = request.session.selectedProfile?.profileId
-    return this.campaignModel.find({ scopeId }).exec();
-    // return await this.campaignApi.getCampaigns();
+    if(scopeId) {
+      return this.campaignModel.find({ scopeId }).exec();
+    }
+    return this.campaignModel.find({ state:'ENABLED' }).exec();
   }
 
   @Post()
@@ -43,47 +52,45 @@ export class CampaignController {
 
   @Post('report-sync')
   async reportSync() {
-    const reportJob = await this.reportProducer.generateReport(30);
-    return { message: 'Report sync initiated',jobIds: reportJob?.map(j=>j.id).join(',') };
+    const reportJob = await this.reportProducer.generateReport(1);
+    return { message: 'Report sync initiated', jobIds: reportJob?.map(j => j.id).join(',') };
   }
 
   @Post('sync')
   async campaignSync() {
-   const job  =  await this.syncProducer.syncCampaignData()
-    return { message: 'Campaign sync initiated', job:job.id};
+    const job = await this.syncProducer.syncCampaignData()
+    return { message: 'Campaign sync initiated', job: job.id };
   }
 
   @Post('adjust-bids')
   async adjustBids(@Request() req: any) {
     const scopeId = req.session.selectedProfile?.profileId
     const accessToken = req.session?.accessToken;
-    const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c=>c.state === "ENABLED"&& c.campaignId=='235882805467163')
+    const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c => c.state === "ENABLED" && c.campaignId == '235882805467163')
     // const budgetUsages = await this.campaignApi.getBudgetUses(['340981085273491'], {scopeId,accessToken})
     // console.log(campaigns.length, "campaign length", budgetUsages.length)
     await this.bidProducer.scheduleBidAdjustment(campaigns);
     return { message: 'Bid adjustment scheduled' };
   }
 
-  @Post(':id/schedule-adjustment')
+  @Post(':id/optimize')
   async scheduleCampaignAdjustment(@Param('id') id: string, @Request() req: any) {
-    const scopeId = req.session.selectedProfile?.profileId;
-    const campaign = await this.campaignModel.findOne({ campaignId: id, scopeId }).exec();
-    
+    // const scopeId = req.session.selectedProfile?.profileId;
+    const campaign = await this.campaignModel.findOne({ campaignId: id }).exec();
     if (!campaign) {
       return { success: false, message: 'Campaign not found' };
     }
-    
+
     if (campaign.state !== 'ENABLED') {
       return { success: false, message: 'Campaign must be enabled to schedule adjustment' };
     }
-    
+
     await this.bidProducer.scheduleBidAdjustment([campaign]);
     return { success: true, message: `Adjustment scheduled for campaign ${campaign.name}` };
   }
 
   @Get(':id')
   async getCampaign(@Param('id') id: string) {
-
     return await this.campaignModel.findOne({ campaignId: id }).exec();
   }
 
@@ -110,17 +117,17 @@ export class CampaignController {
   @Delete(':id/logs')
   async clearCampaignLogs(@Param('id') id: string, @Req() req: any) {
     const scopeId = req.session.selectedProfile?.profileId;
-    
+
     if (!scopeId) {
       return { success: false, message: 'No profile selected' };
     }
-    
+
     try {
       const result = await this.bidLogModel.deleteMany({ campaignId: id, scopeId }).exec();
-      return { 
-        success: true, 
+      return {
+        success: true,
         message: `Cleared ${result.deletedCount} optimization logs`,
-        deletedCount: result.deletedCount 
+        deletedCount: result.deletedCount
       };
     } catch (error) {
       return { success: false, message: error.message };

@@ -8,6 +8,7 @@ import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
  * Indicators: Good sales, low impressions, budget not fully utilized, ACOS acceptable
  * Action: Increase bids 15%, Keep budget same
  */
+
 export class LowImpressionsHighConversionManualRule extends BaseRule implements ICampaignRuleDecision {
   constructor(bundle: ICampaignBundle) {
     super(bundle);
@@ -31,6 +32,7 @@ export class LowImpressionsHighConversionManualRule extends BaseRule implements 
       ruleId: 'MANUAL_SCALE_003',
       ruleName: 'Increase Bids - Low Impressions, High Conversion',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments:[
         {
           action:EAction.INCREASE_BID,

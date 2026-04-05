@@ -17,6 +17,7 @@ export class TargetReport {
     @Prop() clicks: number;
     @Prop() cost: number;
 
+    @Prop() sales1d: number;
     @Prop() sales7d: number;
     @Prop() sales14d: number;
 

@@ -44,6 +44,7 @@ export class BudgetWastageManualRule  extends AutoCampaignBaseRule implements IC
       ruleId: 'MANUAL_CONTROL_004',
       ruleName: 'Reduce Budget - Wastage Without Returns',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments:[
         {
           action:EAction.DECREASE_BUDGET,

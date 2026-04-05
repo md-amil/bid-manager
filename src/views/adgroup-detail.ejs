@@ -22,10 +22,13 @@
                 <span class="info-value"><%= adGroup.name %></span>
             </div>
         </div>
+
         <!-- Tab Navigation -->
         <div class="tab-navigation">
             <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=ads" class="tab <%= selectedTab === 'ads' ? 'active' : '' %>">Ads</a>
+            <% if (campaign && campaign.targetingType === 'MANUAL') { %>
             <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=keywords" class="tab <%= selectedTab === 'keywords' ? 'active' : '' %>">Keywords</a>
+            <% } %>
             <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=targeting" class="tab <%= selectedTab === 'targeting' ? 'active' : '' %>">Targeting</a>
             <a href="/campaigns/<%= campaignId %>/adgroups/<%= adGroup.adGroupId %>?tab=searchterms" class="tab <%= selectedTab === 'searchterms' ? 'active' : '' %>">Search Terms</a>
         </div>
@@ -171,7 +174,7 @@
                                 <th>Impressions</th>
                                 <th>Clicks</th>
                                 <th>Spend</th>
-                                <th>Sales (7d)</th>
+                                <th>Sales</th>
                                 <th>ACOS</th>
                                 <th>State</th>
                                 <th>Actions</th>
@@ -211,11 +214,11 @@
                                         <span class="metric-val">$<%= report ? (report.cost || report.spend || 0).toFixed(2) : '0.00' %></span>
                                     </td>
                                     <td>
-                                        <span class="metric-val sales-glow">$<%= report ? (report.sales7d || 0).toFixed(2) : '0.00' %></span>
+                                        <span class="metric-val sales-glow">$<%= report ? (report.sales1d || 0).toFixed(2) : '0.00' %></span>
                                     </td>
                                     <td>
-                                        <% if (report && report.sales7d > 0) { %>
-                                            <% const acos = ((report.cost || report.spend || 0) / report.sales7d * 100).toFixed(1); %>
+                                        <% if (report && report.sales1d > 0) { %>
+                                            <% const acos = ((report.cost || report.spend || 0) / report.sales1d * 100).toFixed(1); %>
                                             <span class="acos-badge <%= acos < 25 ? 'low' : (acos < 50 ? 'medium' : 'high') %>">
                                                 <%= acos %>%
                                             </span>
@@ -281,6 +284,24 @@
                             <option value="negative">Negative Targets</option>
                         </select>
                     </div>
+                    <div class="filter-group">
+                        <label for="targetStateFilter">
+                            <i class="fas fa-toggle-on"></i>
+                            State
+                        </label>
+                        <select id="targetStateFilter" class="filter-select" onchange="filterTargets()">
+                            <option value="all">All States</option>
+                            <option value="enabled">Enabled</option>
+                            <option value="paused">Paused</option>
+                        </select>
+                    </div>
+                    <div class="filter-group search-group">
+                        <label for="targetSearchFilter">
+                            <i class="fas fa-search"></i>
+                            Search
+                        </label>
+                        <input type="text" id="targetSearchFilter" class="filter-input" placeholder="Search targets..." onkeyup="filterTargets()">
+                    </div>
                     <div class="targeting-stats">
                         <span id="targetCount" class="count-badge">Total: <%= targets.length %></span>
                         <span id="positiveTargetCount" class="count-badge positive">Positive: <span class="count">0</span></span>
@@ -305,14 +326,15 @@
                             <tr>
                                 <th>Target</th>
                                 <th>Type</th>
+                                <th>Targeting</th>
                                 <th>State</th>
                                 <th>Bid</th>
                                 <th>Impr</th>
                                 <th>Clicks</th>
                                 <th>Cost</th>
-                                <th>Sales 7d</th>
-                                <th>Sales 14d</th>
+                                <th>Sales</th>
                                 <th>ACOS</th>
+                                <th>ROAS</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -322,7 +344,8 @@
                             %>
                                 <tr class="target-row" 
                                     data-type="<%= target.type === 1 ? 'positive' : 'negative' %>"
-                                    data-expression-type="<%= target.expressionType ? target.expressionType.toLowerCase() : 'unknown' %>">
+                                    data-expression-type="<%= target.expressionType ? target.expressionType.toLowerCase() : 'unknown' %>"
+                                    data-state="<%= target.state.toLowerCase() %>">
                                     <td>
                                         <div class="target-combined">
                                             <div class="target-id-top" title="<%= target.targetId %>"><%= target.targetId %></div>
@@ -345,6 +368,15 @@
                                         <span class="type-badge <%= target.type === 1 ? 'positive' : 'negative' %>">
                                             <%= target.type === 1 ? 'Positive' : 'Negative' %>
                                         </span>
+                                    </td>
+                                    <td>
+                                        <% if (report && report.targeting) { %>
+                                            <span class="targeting-badge <%= report.targeting.toLowerCase() %>">
+                                                <%= report.targeting %>
+                                            </span>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
                                     </td>
                                     <td>
                                         <span class="status-badge <%= target.state.toLowerCase() %>">
@@ -370,17 +402,25 @@
                                         <%= report ? '₹' + report.cost.toLocaleString() : '-' %>
                                     </td>
                                     <td class="metric-cell sales">
-                                        <%= report ? '₹' + report.sales7d.toLocaleString() : '-' %>
-                                    </td>
-                                    <td class="metric-cell sales">
-                                        <%= report ? '₹' + report.sales14d.toLocaleString() : '-' %>
+                                        <%= report ? '₹' + (report.sales1d || 0).toLocaleString() : '-' %>
                                     </td>
                                     <td class="metric-cell acos">
-                                        <% if (report && report.sales14d > 0) { 
-                                            const acos = (report.cost / report.sales14d * 100).toFixed(2);
+                                        <% if (report && report.sales1d > 0) { 
+                                            const acos = (report.cost / report.sales1d * 100).toFixed(2);
                                         %>
                                             <span class="acos-badge <%= acos < 20 ? 'good' : acos < 40 ? 'medium' : 'bad' %>">
                                                 <%= acos %>
+                                            </span>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="metric-cell roas">
+                                        <% if (report && report.cost > 0) { 
+                                            const roas = (report.sales1d / report.cost).toFixed(2);
+                                        %>
+                                            <span class="roas-badge <%= roas >= 3 ? 'good' : roas >= 1 ? 'medium' : 'bad' %>">
+                                                <%= roas %>x
                                             </span>
                                         <% } else { %>
                                             <span class="text-muted">-</span>
@@ -435,8 +475,7 @@
                                 <th>Impr</th>
                                 <th>Clicks</th>
                                 <th>Cost</th>
-                                <th>Sales 7d</th>
-                                <th>Sales 14d</th>
+                                <th>Sales</th>
                                 <th>ACOS</th>
                             </tr>
                         </thead>
@@ -468,13 +507,10 @@
                                         ₹<%= term.cost ? term.cost.toLocaleString() : '0' %>
                                     </td>
                                     <td class="metric-cell sales">
-                                        ₹<%= term.sales7d ? term.sales7d.toLocaleString() : '0' %>
-                                    </td>
-                                    <td class="metric-cell sales">
-                                        ₹<%= term.sales14d ? term.sales14d.toLocaleString() : '0' %>
+                                        ₹<%= term.sales1d ? term.sales1d.toLocaleString() : '0' %>
                                     </td>
                                     <td class="metric-cell acos">
-                                        <% const acos = term.sales14d > 0 ? (term.cost / term.sales14d * 100).toFixed(2) : '0.00'; %>
+                                        <% const acos = term.sales1d > 0 ? (term.cost / term.sales1d * 100).toFixed(2) : '0.00'; %>
                                         <% if (acos > 0) { %>
                                             <span class="acos-badge <%= acos < 20 ? 'good' : acos < 40 ? 'medium' : 'bad' %>">
                                                 <%= acos %>
@@ -833,6 +869,74 @@
             color: #94a3b8;
             font-family: monospace;
         }
+        
+        /* Targeting Filters */
+        .targeting-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        
+        .targeting-filters .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        
+        .targeting-filters .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        
+        .targeting-filters .filter-select,
+        .targeting-filters .filter-input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            min-width: 140px;
+        }
+        
+        .targeting-filters .filter-input {
+            min-width: 180px;
+        }
+        
+        .targeting-filters .filter-select:focus,
+        .targeting-filters .filter-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .targeting-stats {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+        
+        .count-badge {
+            padding: 0.35rem 0.75rem;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .count-badge.positive {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .count-badge.negative {
+            background: #fee2e2;
+            color: #991b1b;
+        }
         .metric-val {
             font-family: 'JetBrains Mono', 'Fira Code', monospace;
             font-weight: 600;
@@ -851,6 +955,31 @@
         .acos-badge.low { background: #dcfce7; color: #166534; }
         .acos-badge.medium { background: #fef9c3; color: #854d0e; }
         .acos-badge.high { background: #fee2e2; color: #991b1b; }
+
+        .roas-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .roas-badge.good { background: #dcfce7; color: #166534; }
+        .roas-badge.medium { background: #fef9c3; color: #854d0e; }
+        .roas-badge.bad { background: #fee2e2; color: #991b1b; }
+
+        .targeting-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        .targeting-badge.substitutes { background: #fce7f3; color: #be185d; }
+        .targeting-badge.complements { background: #dbeafe; color: #1e40af; }
+        .targeting-badge.close-match { background: #dcfce7; color: #166534; }
+        .targeting-badge.loose-match { background: #fef3c7; color: #92400e; }
         
         .action-buttons {
             display: flex;
@@ -974,40 +1103,42 @@
     }
     
     function filterTargets() {
-        const filterValue = document.getElementById('targetTypeFilter').value;
+        const typeFilter = document.getElementById('targetTypeFilter').value;
+        const stateFilter = document.getElementById('targetStateFilter').value;
+        const searchFilter = document.getElementById('targetSearchFilter').value.toLowerCase();
         const rows = document.querySelectorAll('.target-row');
         let visibleCount = 0;
         let positiveCount = 0;
         let negativeCount = 0;
-        // let autoCount = 0;
-        // let manualCount = 0;
         
         // Count all targets first
         rows.forEach(row => {
             const type = row.getAttribute('data-type');
-            const expressionType = row.getAttribute('data-expression-type');
-            
             if (type === 'positive') positiveCount++;
             if (type === 'negative') negativeCount++;
-            // if (expressionType === 'auto') autoCount++;
-            // if (expressionType === 'manual') manualCount++;
         });
         
         // Filter rows
         rows.forEach(row => {
             const type = row.getAttribute('data-type');
-            let show = false;
+            const state = row.getAttribute('data-state');
+            const targetText = row.textContent.toLowerCase();
             
-            switch(filterValue) {
-                case 'all':
-                    show = true;
-                    break;
-                case 'positive':
-                    show = type === 'positive';
-                    break;
-                case 'negative':
-                    show = type === 'negative';
-                    break;
+            let show = true;
+            
+            // Type filter
+            if (typeFilter !== 'all' && type !== typeFilter) {
+                show = false;
+            }
+            
+            // State filter
+            if (stateFilter !== 'all' && state !== stateFilter) {
+                show = false;
+            }
+            
+            // Search filter
+            if (searchFilter && !targetText.includes(searchFilter)) {
+                show = false;
             }
             
             if (show) {
@@ -1019,11 +1150,9 @@
         });
         
         // Update counts
-        document.getElementById('targetCount').textContent = `Total: ${visibleCount}`;
+        document.getElementById('targetCount').textContent = `Showing: ${visibleCount}`;
         document.querySelector('#positiveTargetCount .count').textContent = positiveCount;
         document.querySelector('#negativeTargetCount .count').textContent = negativeCount;
-        // document.getElementById('autoCount').textContent = autoCount;
-        // document.getElementById('manualCount').textContent = manualCount;
     }
     
     function filterKeywords() {

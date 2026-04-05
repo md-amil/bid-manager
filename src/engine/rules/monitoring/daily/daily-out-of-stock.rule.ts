@@ -15,11 +15,9 @@ export class DailyASINOutOfStockRule extends BaseRule implements ICampaignRuleDe
 
   shouldApply(): boolean {
     if (!this.metrics) return false;
-    
     // In real implementation, would check inventory system
     // For now, check if campaign has high traffic but zero sales
     const expectedSalesWindow = this.clicks > 50; // Enough traffic to expect sales
-
     // Simple heuristic: high traffic, zero sales for extended period
     const zeroSalesLongTime = this.sales === 0 && expectedSalesWindow;
     return zeroSalesLongTime;
@@ -34,6 +32,7 @@ export class DailyASINOutOfStockRule extends BaseRule implements ICampaignRuleDe
       ruleId: 'DAILY_003',
       ruleName: 'ASIN Out of Stock - Emergency Pause',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       reasoning:
         `ASIN potentially out of stock: ${this.clicks} clicks with zero sales. ` +

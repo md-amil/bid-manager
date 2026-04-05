@@ -5,7 +5,7 @@ import { NewProductLaunchRule } from "../rules/auto/launch-product.rule";
 import { LimitedImpressionsHighConversionRule } from "../rules/auto/limited-impression-high-conversion.rule";
 import { HighSpendPoorConversionRule } from "../rules/auto/high-spend-poor-conversion.rule";
 import { ListingConversionIssuesRule } from "../rules/auto/listing-issue.rule";
-import { NegativeKeywordRule } from "../rules/auto/negative-keyword.rule";
+import { NegativeKeywordRule } from "../rules/auto/search-term-vise/negative-keyword.rule";
 import { BudgetExhaustionManualCampaignRule } from "../rules/manual/scale/budget-exhaust.rule";
 import { CompetitorASINTargetingConvertingRule } from "../rules/manual/scale/competitor-asin-target-converting.rule";
 import { LowImpressionsHighConversionManualRule } from "../rules/manual/scale/low-impression-high-conversion.rule";
@@ -25,6 +25,9 @@ import { AdjustmentLog } from "src/schemas/log.schema";
 import { AdjustmentLogService } from "src/services/log.service";
 import { ReportService } from "src/services/report.service";
 import { CampaignService } from "src/services/campaign.service";
+import { DataService } from "src/services/data.service";
+import { buildQueryWindow } from "src/utils/query";
+import { LowImpressionRule } from "../rules/auto/search-term-vise/low-impression.rule";
 
 // export const config = {
 // targetAcos: parseFloat(process.env.TARGET_ACOS || '0.2'),
@@ -41,7 +44,7 @@ import { CampaignService } from "src/services/campaign.service";
 
 @Injectable()
 export default class Engine {
-  constructor(private logService: AdjustmentLogService, private reportService: ReportService, private campaignService: CampaignService) { }
+  constructor(private logService: AdjustmentLogService, private reportService: ReportService, private campaignService: CampaignService, private dataService: DataService) { }
 
   private runRuleEngine(
     rules: ICampaignRuleDecision[],
@@ -55,17 +58,19 @@ export default class Engine {
         adjustments.push(log);
       }
     }
+
     this.logService.saveLogs(adjustments)
-    console.log(adjustments, "adjustment")
+    console.dir({adjustments}, {depth: null})
   }
 
   async buildBundle(campaign: ICampaignDetails): Promise<ICampaignBundle> {
     const reports = await this.reportService.getBidReports(campaign.campaignId);
     const searchTerms = await this.reportService.getSearchTermReport(campaign.campaignId);
-    // const budgetUsage = await this.reportService.getBudgetUsage(campaign.campaignId);
+    const targetings = await this.dataService.getTargeting({ campaignId: campaign.campaignId }, buildQueryWindow(6))
     return {
       ...campaign,
       ...reports,
+      targetings,
       searchTerms,
       budgetUsage: null
     };
@@ -88,11 +93,12 @@ export default class Engine {
       LimitedImpressionsHighConversionRule,
       HighSpendPoorConversionRule,
       ListingConversionIssuesRule,
+      LowImpressionRule,
       NegativeKeywordRule,
       CloseMatchOptimizationRule,
       ComplementaryTargetingOptimizationRule,
       LooseMatchOptimizationRule,
-      SubstituteTargetingOptimizationRule
+      SubstituteTargetingOptimizationRule,
     ].map(Class => new Class(bundle))
     this.runRuleEngine(autoCampaignRules, bundle.scopeId)
   }

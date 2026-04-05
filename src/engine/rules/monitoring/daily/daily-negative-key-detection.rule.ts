@@ -38,6 +38,8 @@ export class DailyNegativeKeywordDetectionRule extends BaseRule implements ICamp
       ruleId: 'DAILY_004',
       ruleName: 'Daily Negative Keywords - Quality Control',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+      
       adjustments,
       searchTerms: badTerms.map(st => ({
         searchTerm: st.searchTerm,

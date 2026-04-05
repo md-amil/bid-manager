@@ -22,10 +22,11 @@ export class HighSpendZeroSalesManualRule extends BaseRule implements ICampaignR
 
   execute(): AdjustmentLog {
     const zeroSalesTerms = this.searchTerms.filter(st => st.clicks >= config.minClicks && st.cost >= config.minSpend && st.sales7d === 0)
-    return {
+      return {
       ruleId: 'MANUAL_CONTROL_002',
       ruleName: 'High Spend Zero Sales - Emergency Reduction',
       campaignId:this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments:[
         {
           action: EAction.DECREASE_BID,

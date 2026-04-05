@@ -34,16 +34,16 @@ export class AdGroupReport {
   @Prop()
   cost: number;
 
-//   @Prop()
-//   spend: number;
 
   @Prop()
   costPerClick: number;
 
   @Prop()
   clickThroughRate: number;
+  
+  @Prop()
+  sales1d: number;
 
-  // Sales Metrics (7d and 14d are most important)
   @Prop()
   sales7d: number;
 
@@ -57,6 +57,9 @@ export class AdGroupReport {
   attributedSalesSameSku14d: number;
 
   // Purchase Metrics
+  @Prop()
+  purchases1d: number;
+
   @Prop()
   purchases7d: number;
 

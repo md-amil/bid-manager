@@ -42,8 +42,15 @@ export class FourteenDayExpansionReadinessRule extends BaseRule implements ICamp
       ruleId: 'FOURTEEN_DAY_005',
       ruleName: '14-Day Expansion Readiness - Growth Signal',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+      
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `Campaign is at full budget capacity (using ${(budgetUtilization * 100).toFixed(0)}% of budget) ` +
         `with healthy ACOS (${(this.acos * 100).toFixed(2)}%) and ${this.metrics.purchase} orders. ` +

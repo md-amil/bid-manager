@@ -28,6 +28,7 @@ export class ProfitableManualCampaignScalingRule extends AutoCampaignBaseRule im
       ruleId: 'MANUAL_SCALE_001',
       ruleName: 'Scale Profitable Manual Campaign',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [
         {
           action:EAction.INCREASE_BUDGET,

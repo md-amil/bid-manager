@@ -49,6 +49,7 @@ export class PhraseKeywordToExactRule extends BaseRule implements ICampaignRuleD
       ruleId: 'KEYWORD_MGMT_003',
       ruleName: 'Create Exact Match from Phrase Keyword',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [
         {
           action: EAction.INCREASE_BUDGET,

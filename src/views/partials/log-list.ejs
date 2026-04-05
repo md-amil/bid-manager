@@ -1,0 +1,371 @@
+<% 
+// Grouped Log List Component
+// Usage: include('partials/log-list', { logs: logs, campaignMap: campaignMap, limit: 5 })
+// Parameters:
+//   - logs: array of log objects
+//   - campaignMap: Map of campaignId to campaign object (optional)
+//   - limit: maximum number of GROUPS to display (optional, default: show all)
+%>
+
+<% 
+// Group logs by campaign ID and date
+function groupLogsByCampaignAndDate(logs) {
+    const grouped = new Map();
+    logs.forEach(log => {
+        const campaignId = log.campaignId || 'unknown';
+        const date = new Date(log.createdAt).toLocaleDateString();
+        const key = `${campaignId}_${date}`;
+        if (!grouped.has(key)) {
+            grouped.set(key, {
+                campaignId,
+                date,
+                dateObj: new Date(log.createdAt),
+                logs: [],
+                totalAdjustments: 0,
+            });
+        }
+        const group = grouped.get(key);
+        group.logs.push(log);
+        group.totalAdjustments += log.adjustments?.length || 0;
+    });
+    return Array.from(grouped.values())
+        .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
+}
+
+const groupedLogs = typeof limit !== 'undefined' ? groupLogsByCampaignAndDate(logs).slice(0, limit) : groupLogsByCampaignAndDate(logs);
+%>
+
+<% if (groupedLogs && groupedLogs.length > 0) { %>
+    <div class="grouped-logs-container">
+        <% groupedLogs.forEach((group, groupIndex) => { 
+            const campaign = group.campaignId && campaignMap && campaignMap.has(group.campaignId) ? campaignMap.get(group.campaignId) : null;
+        %>
+            <div class="campaign-date-group">
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <div class="group-summary">
+                        <div class="group-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="date-label"><%= group.date %></span>
+                        </div>
+                        <div class="group-campaign">
+                            <% if (campaign) { %>
+                                <a href="/campaigns/<%= group.campaignId %>" class="campaign-link">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <%= campaign.name %>
+                                </a>
+                                <span class="campaign-id">ID: <%= group.campaignId %></span>
+                            <% } else { %>
+                                <span class="text-muted">
+                                    <i class="fas fa-bullhorn"></i>
+                                    Campaign: <%= group.campaignId %>
+                                </span>
+                            <% } %>
+                        </div>
+                        <div class="group-stats">
+                            <span class="stat-badge">
+                                <i class="fas fa-list"></i>
+                                <%= group.logs.length %> <%= group.logs.length === 1 ? 'Rule' : 'Rules' %>
+                            </span>
+                            <span class="stat-badge">
+                                <i class="fas fa-sliders-h"></i>
+                                <%= group.totalAdjustments %> <%= group.totalAdjustments === 1 ? 'Adjustment' : 'Adjustments' %>
+                            </span>
+                        </div>
+                        <div class="group-actions-preview">
+                            <% 
+                                // Get unique actions from all logs in this group
+                                const allActions = new Set();
+                                group.logs.forEach(log => {
+                                    if (log.adjustments) {
+                                        log.adjustments.forEach(adj => allActions.add(adj.action));
+                                    }
+                                });
+                                const actionArray = Array.from(allActions).slice(0, 3);
+                            %>
+                            <% actionArray.forEach(action => { %>
+                                <span class="action-badge-mini <%= action.toLowerCase().replace(/_/g, '-') %>">
+                                    <%= action.replace(/_/g, ' ') %>
+                                </span>
+                            <% }); %>
+                            <% if (allActions.size > 3) { %>
+                                <span class="more-actions">+<%= allActions.size - 3 %> more</span>
+                            <% } %>
+                        </div>
+                        <div class="group-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="group-content">
+                    <div class="group-inner">
+                        <% group.logs.forEach((log, logIndex) => { %>
+                            <div class="log-entry">
+                                <div class="log-entry-header" onclick="toggleLogEntry(this)">
+                                    <div class="log-time">
+                                        <i class="fas fa-clock"></i>
+                                        <%= new Date(log.createdAt).toLocaleTimeString() %>
+                                    </div>
+                                    <div class="log-rule">
+                                        <span class="rule-name"><%= log.ruleName || 'Rule' %></span>
+                                        <span class="rule-id">ID: <%= log.ruleId || 'N/A' %></span>
+                                    </div>
+                                    <div class="log-adjustment-types">
+                                        <% if (log.adjustments && log.adjustments.length > 0) { %>
+                                            <% 
+                                                // Group adjustments by action and sum up changes
+                                                const actionMap = new Map();
+                                                log.adjustments.forEach(adj => {
+                                                    if (!actionMap.has(adj.action)) {
+                                                        actionMap.set(adj.action, { count: 0, totalChange: 0 });
+                                                    }
+                                                    const data = actionMap.get(adj.action);
+                                                    data.count++;
+                                                    if (adj.change !== undefined && adj.change !== null) {
+                                                        data.totalChange += adj.change;
+                                                    }
+                                                });
+                                                
+                                                const actionEntries = Array.from(actionMap.entries()).slice(0, 2);
+                                                actionEntries.forEach(([action, data]) => { 
+                                                    const avgChange = data.count > 0 ? data.totalChange / data.count : 0;
+                                            %>
+                                                <div class="adjustment-type-with-change">
+                                                    <span class="action-badge-mini <%= action.toLowerCase().replace(/_/g, '-') %>">
+                                                        <%= action.replace(/_/g, ' ') %>
+                                                    </span>
+                                                    <% if (avgChange !== 0) { %>
+                                                        <span class="change-indicator <%= avgChange > 0 ? 'positive' : 'negative' %>">
+                                                            <%= avgChange > 0 ? '+' : '' %><%= avgChange.toFixed(1) %>
+                                                        </span>
+                                                    <% } %>
+                                                </div>
+                                            <% }); %>
+                                            <% if (actionMap.size > 2) { %>
+                                                <span class="more-actions">+<%= actionMap.size - 2 %></span>
+                                            <% } %>
+                                        <% } else { %>
+                                            <span class="no-adjustment">No adjustments</span>
+                                        <% } %>
+                                    </div>
+                                    <div class="log-toggle">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                                <div class="log-entry-content">
+                                    <div class="log-entry-inner">
+                                        <% if (log.reasoning) { %>
+                                            <div class="reasoning-box">
+                                                <i class="fas fa-lightbulb"></i>
+                                                <span><%= log.reasoning %></span>
+                                            </div>
+                                        <% } %>
+                                        
+                                        <% if (log.adjustments && log.adjustments.length > 0) { %>
+                                            <div class="adjustments-list">
+                                                <% log.adjustments.forEach((adj, adjIndex) => { 
+                                                    let entities = [];
+                                                    let entityType = 'unknown';
+                                                    let isCampaignAdjustment = false;
+                                                    
+                                                    const campaignActions = ['INCREASE_BUDGET', 'DECREASE_BUDGET', 'PAUSE_CAMPAIGN', 'RESUME_CAMPAIGN'];
+                                                    if (campaignActions.includes(adj.action) || adj.target === 'other' || !adj.target) {
+                                                        isCampaignAdjustment = true;
+                                                        entityType = 'campaign';
+                                                    } else if (adj.target === 'targetings' && log.targetings && log.targetings.length > 0) {
+                                                        entities = log.targetings;
+                                                        entityType = 'target';
+                                                    } else if (adj.target === 'keywords' && log.keywords && log.keywords.length > 0) {
+                                                        entities = log.keywords;
+                                                        entityType = 'keyword';
+                                                    } else if (adj.target === 'searchTerms' && log.searchTerms && log.searchTerms.length > 0) {
+                                                        entities = log.searchTerms;
+                                                        entityType = 'search-term';
+                                                    }
+                                                %>
+                                                    <div class="adjustments-table-section">
+                                                        <div class="adjustment-header-row">
+                                                            <h4>
+                                                                <i class="fas fa-<%= isCampaignAdjustment ? 'bullhorn' : 'table' %>"></i> 
+                                                                <% if (isCampaignAdjustment) { %>
+                                                                    Campaign Adjustment
+                                                                <% } else { %>
+                                                                    <%= adj.target ? adj.target.charAt(0).toUpperCase() + adj.target.slice(1).replace(/s$/, '') : 'Entity' %> Adjustment
+                                                                <% } %>
+                                                            </h4>
+                                                        </div>
+                                                        
+                                                        <% if (isCampaignAdjustment) { %>
+                                                            <div class="campaign-adjustment-card">
+                                                                <div class="campaign-info-grid">
+                                                                    <div class="info-item">
+                                                                        <span class="info-label"><i class="fas fa-tag"></i> Campaign</span>
+                                                                        <span class="info-value"><%= campaign ? campaign.name : 'N/A' %></span>
+                                                                    </div>
+                                                                    <div class="info-item">
+                                                                        <span class="info-label"><i class="fas fa-hashtag"></i> Campaign ID</span>
+                                                                        <span class="info-value monospace"><%= log.campaignId || 'N/A' %></span>
+                                                                    </div>
+                                                                    <% if (adj.action === 'INCREASE_BUDGET' || adj.action === 'DECREASE_BUDGET') { 
+                                                                        const currentBudget = campaign && campaign.budget ? parseFloat(campaign.budget.budget) || 0 : 0;
+                                                                        const newBudget = adj.change ? currentBudget * (1 + adj.change / 100) : currentBudget;
+                                                                    %>
+                                                                        <div class="info-item">
+                                                                            <span class="info-label"><i class="fas fa-wallet"></i> Current Budget</span>
+                                                                            <span class="info-value budget-value"><%= currentBudget.toLocaleString('en-US', { style: 'currency', currency: 'INR' }) %></span>
+                                                                        </div>
+                                                                        <div class="info-item">
+                                                                            <span class="info-label"><i class="fas fa-wallet"></i> New Budget</span>
+                                                                            <span class="info-value budget-value <%= newBudget > currentBudget ? 'increase' : 'decrease' %>">
+                                                                                <%= newBudget.toLocaleString('en-US', { style: 'currency', currency: 'INR' }) %>
+                                                                            </span>
+                                                                        </div>
+                                                                    <% } %>
+                                                                    <% if (campaign) { %>
+                                                                        <!-- <div class="info-item">
+                                                                            <span class="info-label"><i class="fas fa-info-circle"></i> Campaign State</span>
+                                                                            <span class="info-value">
+                                                                                <span class="status-badge <%= campaign.state ? campaign.state.toLowerCase() : '' %>">
+                                                                                    <%= campaign.state || 'N/A' %>
+                                                                                </span>
+                                                                            </span>
+                                                                        </div> -->
+                                                                        <div class="info-item">
+                                                                            <span class="info-label"><i class="fas fa-crosshairs"></i> Targeting Type</span>
+                                                                            <span class="info-value"><%= campaign.targetingType || 'N/A' %></span>
+                                                                        </div>
+                                                                    <% } %>
+                                                                </div>
+                                                                <% if (adj.action === 'PAUSE_CAMPAIGN') { %>
+                                                                    <div class="action-note warning">
+                                                                        <i class="fas fa-pause-circle"></i>
+                                                                        Campaign will be paused due to poor performance or budget constraints.
+                                                                    </div>
+                                                                <% } else if (adj.action === 'RESUME_CAMPAIGN') { %>
+                                                                    <div class="action-note success">
+                                                                        <i class="fas fa-play-circle"></i>
+                                                                        Campaign will be resumed as performance has improved.
+                                                                    </div>
+                                                                <% } %>
+                                                            </div>
+                                                        <% } else if (entities.length > 0) { %>
+                                                            <div class="table-responsive">
+                                                                <table class="adjustments-detail-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <% if (entityType === 'target') { %>
+                                                                                <th>Target ID</th>
+                                                                                <th>Type</th>
+                                                                                <th>Expression</th>
+                                                                                <th>Current Bid</th>
+                                                                                <th>New Bid</th>
+                                                                            <% } else if (entityType === 'keyword') { %>
+                                                                                <th>Keyword</th>
+                                                                                <th>Match Type</th>
+                                                                                <th>Current Bid</th>
+                                                                                <th>New Bid</th>
+                                                                            <% } else if (entityType === 'search-term') { %>
+                                                                                <th>Search Term</th>
+                                                                                <th>Impressions</th>
+                                                                                <th>Clicks</th>
+                                                                                <th>Cost</th>
+                                                                                <th>Sales</th>
+                                                                            <% } %>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <% entities.forEach(entity => { %>
+                                                                            <tr>
+                                                                                <% if (entityType === 'target') { 
+                                                                                    const currentBid = entity.bid || 0;
+                                                                                    const newBid = adj.change ? currentBid * (1 + adj.change / 100) : currentBid;
+                                                                                    
+                                                                                    let exprType = '';
+                                                                                    if (entity.expression && Array.isArray(entity.expression) && entity.expression.length > 0) {
+                                                                                        exprType = entity.expression[0].type || '';
+                                                                                    } else if (entity.resolvedExpression && Array.isArray(entity.resolvedExpression) && entity.resolvedExpression.length > 0) {
+                                                                                        exprType = entity.resolvedExpression[0].type || '';
+                                                                                    }
+                                                                                    
+                                                                                    const TARGETING_MAP = {
+                                                                                        'QUERY_HIGH_REL_MATCHES': 'close-match',
+                                                                                        'QUERY_BROAD_REL_MATCHES': 'loose-match',
+                                                                                        'ASIN_ACCESSORY_RELATED': 'complements',
+                                                                                        'ASIN_SUBSTITUTE_RELATED': 'substitutes'
+                                                                                    };
+                                                                                    const mappedType = TARGETING_MAP[entity.expression] || entity.expression;
+                                                                                %>
+                                                                                    <td class="target-id"><%= entity.targetId || 'N/A' %></td>
+                                                                                    <td class="target-type">
+                                                                                        <span class="type-badge"><%= mappedType %></span>
+                                                                                    </td>
+                                                                                    <td class="target-expression">
+                                                                                        <% if (entity.expression && Array.isArray(entity.expression) && entity.expression.length > 0) { %>
+                                                                                            <% entity.expression.forEach((expr, i) => { %>
+                                                                                                <span class="expr-item"><%= expr.type %>: <%= expr.value %></span><% if (i < entity.expression.length - 1) { %>, <% } %>
+                                                                                            <% }); %>
+                                                                                        <% } else if (entity.expression && typeof entity.expression === 'string') { %>
+                                                                                            <span class="expr-item"><%= entity.expression %></span>
+                                                                                        <% } else if (entity.resolvedExpression && Array.isArray(entity.resolvedExpression) && entity.resolvedExpression.length > 0) { %>
+                                                                                            <% entity.resolvedExpression.forEach((expr, i) => { %>
+                                                                                                <span class="expr-item"><%= expr.type %>: <%= expr.value %></span><% if (i < entity.resolvedExpression.length - 1) { %>, <% } %>
+                                                                                            <% }); %>
+                                                                                        <% } else { %>
+                                                                                            <span class="text-muted">-</span>
+                                                                                        <% } %>
+                                                                                    </td>
+                                                                                    <td class="bid-value current">$<%= currentBid.toFixed(2) %></td>
+                                                                                    <td class="bid-value new">
+                                                                                        <span class="<%= newBid > currentBid ? 'increase' : newBid < currentBid ? 'decrease' : '' %>">
+                                                                                            $<%= newBid.toFixed(2) %>
+                                                                                        </span>
+                                                                                    </td>
+                                                                                <% } else if (entityType === 'keyword') {
+                                                                                    const currentBid = parseFloat(entity.bid) || 0;
+                                                                                    const newBid = adj.change ? currentBid * (1 + adj.change / 100) : currentBid;
+                                                                                %>
+                                                                                    <td class="keyword-text"><%= entity.keywordText || 'N/A' %></td>
+                                                                                    <td>
+                                                                                        <span class="match-type-badge <%= entity.matchType ? entity.matchType.toLowerCase() : '' %>">
+                                                                                            <%= entity.matchType || '-' %>
+                                                                                        </span>
+                                                                                    </td>
+                                                                                    <td class="bid-value current">$<%= currentBid.toFixed(2) %></td>
+                                                                                    <td class="bid-value new">
+                                                                                        <span class="<%= newBid > currentBid ? 'increase' : newBid < currentBid ? 'decrease' : '' %>">
+                                                                                            $<%= newBid.toFixed(2) %>
+                                                                                        </span>
+                                                                                    </td>
+                                                                                <% } else if (entityType === 'search-term') { %>
+                                                                                    <td class="search-term-text">"<%= entity.searchTerm || entity.term || 'N/A' %>"</td>
+                                                                                    <td><%= entity.impressions || 0 %></td>
+                                                                                    <td><%= entity.clicks || 0 %></td>
+                                                                                    <td class="cost-value">$<%= (entity.cost || 0).toFixed(2) %></td>
+                                                                                    <td class="sales-value">$<%= (entity.sales || entity.sales7d || 0).toFixed(2) %></td>
+                                                                                <% } %>
+                                                                            </tr>
+                                                                        <% }); %>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        <% } else { %>
+                                                            <p class="no-entities">No <%= adj.target || 'entities' %> affected by this adjustment.</p>
+                                                        <% } %>
+                                                    </div>
+                                                <% }); %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+<% } else { %>
+    <div class="empty-state">
+        <p>No optimization logs found.</p>
+        <p>Logs will appear here after optimization runs.</p>
+    </div>
+<% } %>

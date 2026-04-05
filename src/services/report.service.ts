@@ -12,6 +12,10 @@ import { AdGroupReport } from 'src/schemas/reports/adgroup-report.schema';
 import { AmazonMapper } from './amazon/amazon.mapper';
 import { IMetrics } from 'src/engine/interfaces';
 import { buildQueryWindow } from 'src/utils/query';
+import { IDateFilter } from 'src/interfaces/report.type';
+
+
+
 
 @Injectable()
 export class ReportService {
@@ -36,14 +40,14 @@ export class ReportService {
           return this.saveAdGroupReport(payload);
         case 'ad':
           return this.saveAdvertisedProductReport(payload);
-        case 'keywords':
+        case 'keyword':
           return this.saveKeywordReport(payload);
         case 'targeting':
           return this.saveTargetingReport(payload);
         case 'searchTerm':
           return this.saveSearchTermReport(payload);
         default:
-          this.logger.warn(`Unknown report type: ${meta.configuration.reportTypeId}`);
+          this.logger.warn(`Unknown report type: ${meta.configuration.reportTypeId}, name: ${meta.name}`);
           return;
       }
     }
@@ -181,6 +185,32 @@ export class ReportService {
     ]);
   }
 
+  async getKeywordReportsByDateRange(keywordIds: string[], date: IDateFilter) {
+    return this.keyReport.aggregate([
+      {
+        $match: {
+          keywordId: { $in: keywordIds },
+          date
+        }
+      },
+      {
+        $group: {
+          _id: '$keywordId',
+          keywordId: { $first: '$keywordId' },
+          impressions: { $sum: '$impressions' },
+          clicks: { $sum: '$clicks' },
+          cost: { $sum: '$cost' },
+          sales1d: { $sum: '$sales1d' },
+          sales7d: { $sum: '$sales7d' },
+          sales14d: { $sum: '$sales14d' },
+          purchases1d: { $sum: '$purchases1d' },
+          purchases7d: { $sum: '$purchases7d' },
+          purchases14d: { $sum: '$purchases14d' },
+        }
+      }
+    ]);
+  }
+
   async getLatestCampaignReports(campaignIds: string[]) {
     return this.campReport.aggregate([
       {
@@ -197,6 +227,45 @@ export class ReportService {
       },
       {
         $replaceRoot: { newRoot: '$latestReport' }
+      }
+    ]);
+  }
+
+  async getCampaignReportsByDateRange(campaignIds: string[], startDate: string, endDate: string) {
+    return this.campReport.aggregate([
+      {
+        $match: {
+          campaignId: { $in: campaignIds },
+          date: { $gte: startDate, $lte: endDate }
+        }
+      },
+      {
+        $group: {
+          _id: '$campaignId',
+          impressions: { $sum: '$impressions' },
+          clicks: { $sum: '$clicks' },
+          cost: { $sum: '$cost' },
+          sales1d: { $sum: '$sales1d' },
+          sales7d: { $sum: '$sales7d' },
+          sales14d: { $sum: '$sales14d' },
+          purchases1d: { $sum: '$purchases1d' },
+          purchases7d: { $sum: '$purchases7d' },
+          purchases14d: { $sum: '$purchases14d' },
+        }
+      },
+      {
+        $project: {
+          campaignId: '$_id',
+          impressions: 1,
+          clicks: 1,
+          cost: 1,
+          sales1d: 1,
+          sales7d: 1,
+          sales14d: 1,
+          purchases1d: 1,
+          purchases7d: 1,
+          purchases14d: 1,
+        }
       }
     ]);
   }
@@ -221,6 +290,70 @@ export class ReportService {
     ]);
   }
 
+  async getAdGroupReportsByDateRange(adGroupIds: string[], date) {
+    return this.adGroupReport.aggregate([
+      {
+        $match: {
+          adGroupId: { $in: adGroupIds },
+          date
+        }
+      },
+      {
+        $group: {
+          _id: '$adGroupId',
+          adGroupId: { $first: '$adGroupId' },
+          impressions: { $sum: '$impressions' },
+          clicks: { $sum: '$clicks' },
+          cost: { $sum: '$cost' },
+          sales1d: { $sum: '$sales1d' },
+          sales7d: { $sum: '$sales7d' },
+          sales14d: { $sum: '$sales14d' },
+          purchases1d: { $sum: '$purchases1d' },
+          purchases7d: { $sum: '$purchases7d' },
+          purchases14d: { $sum: '$purchases14d' }
+        }
+      }
+    ]);
+  }
+
+  async getCampaignReportAggregated(campaignId: string,date:IDateFilter) {
+    const result = await this.campReport.aggregate([
+      {
+        $match: {
+          campaignId: campaignId,
+          date: date
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          impressions: { $sum: '$impressions' },
+          clicks: { $sum: '$clicks' },
+          cost: { $sum: '$cost' },
+          sales1d: { $sum: '$sales1d' },
+          purchases1d: { $sum: '$purchases1d' }
+        }
+      }
+    ]);
+    
+    if (result.length === 0) {
+      return null;
+    }
+    
+    const data = result[0];
+    return {
+      impressions: data.impressions || 0,
+      clicks: data.clicks || 0,
+      cost: data.cost || 0,
+      sales1d: data.sales1d || 0,
+      purchases1d: data.purchases1d || 0,
+      costPerClick: data.clicks > 0 ? data.cost / data.clicks : 0,
+      clickThroughRate: data.impressions > 0 ? (data.clicks / data.impressions) * 100 : 0,
+      roas: data.cost > 0 ? data.sales1d / data.cost : 0,
+      acos: data.sales1d > 0 ? (data.cost / data.sales1d) * 100 : 0,
+    };
+  }
+
   async getSearchTermsByAdGroup(adGroupId: string) {
     return this.searchReport.aggregate([
       {
@@ -238,6 +371,37 @@ export class ReportService {
           sales14d: { $sum: '$sales14d' },
           purchase: { $sum: '$purchases7d' },
           purchase14d: { $sum: '$purchases14d' },
+          keyword: { $first: '$keyword' },
+          matchType: { $first: '$matchType' },
+          searchTerm: { $first: '$searchTerm' }
+        }
+      },
+      {
+        $sort: { cost: -1 }
+      }
+    ]);
+  }
+
+  async getSearchTermsByAdGroupAndDateRange(adGroupId: string, startDate: string, endDate: string) {
+    return this.searchReport.aggregate([
+      {
+        $match: {
+          adGroupId: adGroupId,
+          date: { $gte: startDate, $lte: endDate }
+        }
+      },
+      {
+        $group: {
+          _id: '$searchTerm',
+          impressions: { $sum: '$impressions' },
+          clicks: { $sum: '$clicks' },
+          cost: { $sum: '$cost' },
+          sales1d: { $sum: '$sales1d' },
+          sales7d: { $sum: '$sales7d' },
+          sales14d: { $sum: '$sales14d' },
+          purchases1d: { $sum: '$purchases1d' },
+          purchases7d: { $sum: '$purchases7d' },
+          purchases14d: { $sum: '$purchases14d' },
           keyword: { $first: '$keyword' },
           matchType: { $first: '$matchType' },
           searchTerm: { $first: '$searchTerm' }
@@ -317,6 +481,42 @@ export class ReportService {
     ]);
   }
 
+  async getTargetingReportsByTargetIdsAndDateRange(targetIds: string[], date: IDateFilter) {
+    if (!targetIds || targetIds.length === 0) {
+      return [];
+    }
+
+    return this.targetReport.aggregate([
+      {
+        $match: {
+          targetId: { $in: targetIds },
+          date
+        }
+      },
+      {
+        $group: {
+          _id: '$targetId',
+          targetId: { $first: '$targetId' },
+          impressions: { $sum: '$impressions' },
+          clicks: { $sum: '$clicks' },
+          cost: { $sum: '$cost' },
+          sales1d: { $sum: '$sales1d' },
+          sales7d: { $sum: '$sales7d' },
+          sales14d: { $sum: '$sales14d' },
+          purchases1d: { $sum: '$purchases1d' },
+          purchases7d: { $sum: '$purchases7d' },
+          purchases14d: { $sum: '$purchases14d' },
+          keyword: { $first: '$keyword' },
+          matchType: { $first: '$matchType' },
+          targeting: { $first: '$targeting' }
+        }
+      },
+      {
+        $sort: { cost: -1 }
+      }
+    ]);
+  }
+
   //   async getCampaignTotalCost(campaignId: string, startDate?: string, endDate?: string) {
   //   const matchStage: any = { campaignId };
 
@@ -359,17 +559,6 @@ export class ReportService {
 
 
   async getBidReports(campaignId: string): Promise<{ metrics30d: IMetrics; metrics7d: IMetrics }> {
-    // const now = new Date();
-    // const last7Days = new Date();
-    // last7Days.setDate(now.getDate() - 7);
-    // const last30days = new Date();
-    // last30days.setDate(now.getDate() - 30);
-
-    // const formatDate = (date: Date) => date.toISOString().split('T')[0];
-    // const nowStr = formatDate(now);
-    // const last7DaysStr = formatDate(last7Days);
-    // const last30daysStr = formatDate(last30days);
-
     const result = await this.campReport.aggregate([
       {
         $match: {
@@ -422,6 +611,7 @@ export class ReportService {
       metrics7d: data.last7d[0] || { totalCost: 0, totalSales: 0, totalImpressions: 0, totalClicks: 0 }
     };
   }
+  
   async getSearchTermReport(campaignId: string) {
     const response = await this.searchReport.aggregate([
       {

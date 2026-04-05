@@ -41,10 +41,11 @@ export class AddNewKeywordsFromDiscoveryRule extends BaseRule implements ICampai
 
    // adding new keyword from broad match
 
-    return {
+      return {
       ruleId: 'KEYWORD_MGMT_001',
       ruleName: 'Add High-Performing Keywords from Discovery',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [
         {
           action: EAction.ADD_EXACT,

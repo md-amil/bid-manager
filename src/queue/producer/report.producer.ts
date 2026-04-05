@@ -8,6 +8,8 @@ import { Job, Queue } from 'bullmq';
 
 import { ClsService } from 'nestjs-cls';
 import { ReportApiService } from 'src/services/amazon/report-api.service';
+import { Profile } from 'src/schemas/profile.schema';
+import { buildQueryWindow } from 'src/utils/query';
 
 const defaultOptions = {
   delay: 1000 * 60,
@@ -30,11 +32,10 @@ export class ReportProducer {
     private readonly cls: ClsService
   ) { }
 
-  async generateReport(days:number) {
+  async generateReport(days: number) {
     const scopeId = this.cls.get('scopeId');
     const accessToken = this.cls.get('accessToken');
-    const yesterday = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
-    const today = new Date().toISOString().split('T')[0];
+    const { $gte: yesterday, $lte: today } = buildQueryWindow(days);
     this.logger.log('Generating report ' + yesterday + ' to ' + today);
     const payload = {
       scopeId,
@@ -47,11 +48,14 @@ export class ReportProducer {
       accessToken,
     }
 
+    return this.generate(auth, payload);
+  }
 
+  async generate(auth: { scopeId: string; accessToken: string }, payload: any) {
     const reportPromises = await Promise.allSettled([
-      'generateCampaign','generateAdGroup','generateAd',
-      'generateKeyword','generateSearchTerm','generateTargeting'
-    ].map(fn=>this.reportApi[fn](auth, payload)))
+      'generateCampaign', 'generateAdGroup', 'generateAd',
+      'generateKeyword', 'generateSearchTerm', 'generateTargeting'
+    ].map(fn => this.reportApi[fn](auth, payload)))
 
     const jobs: Job[] = [];
     for (const report of reportPromises) {
@@ -71,6 +75,29 @@ export class ReportProducer {
       }
       this.logger.error('Error generating report', report.reason.response.data);
       return jobs;
+    }
+  }
+
+  async generateOrganizationReport(profiles: Profile[], accessToken: string, days = 0) {
+    const yesterday = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
+    for (const profile of profiles) {
+      try {
+        this.logger.log(`Generating report for scope ${profile.profileId} from ${yesterday} to ${today}`);
+        const auth = {
+          scopeId: profile.profileId,
+          accessToken,
+        };
+        const payload = {
+          scopeId: auth.scopeId,
+          startDate: yesterday,
+          endDate: today,
+        }
+        this.generate(auth,payload)
+        this.logger.log(`Reports generated successfully for profile: ${profile.profileId}`);
+      } catch (profileError) {
+        this.logger.error(`Error generating reports for profile ${profile.profileId}:`, profileError.message);
+      }
     }
   }
 }

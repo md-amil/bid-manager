@@ -42,8 +42,15 @@ export class DailyBudgetExhaustionRule extends BaseRule implements ICampaignRule
       ruleId: 'DAILY_001',
       ruleName: 'Daily Budget Exhaustion - Real-Time Control',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+      
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `Campaign exhausted ${(this.utilization * 100).toFixed(0)}% of daily budget before evening. ` +
         (isProfitable

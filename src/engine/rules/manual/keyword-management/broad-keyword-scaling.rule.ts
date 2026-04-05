@@ -50,10 +50,11 @@ export class BroadKeywordScalingRule extends BaseRule implements ICampaignRuleDe
     const exactKeyword = this.keywords.filter(k=>k.matchType = MatchType.EXACT)
     const converting = this.term.filter((st)=>this.isConvertable(st))
 
-    return {
+        return {
       ruleId: 'KEYWORD_MGMT_002',
       ruleName: 'Scale Broad Keywords with Exact/Phrase Variants',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments:[
         {
           action:EAction.ADD_PHRASE,

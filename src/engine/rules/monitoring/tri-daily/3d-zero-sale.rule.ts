@@ -42,8 +42,14 @@ export class ThreeDayZeroSalesRule extends BaseRule implements ICampaignRuleDeci
       ruleId: 'THREE_DAY_001',
       ruleName: '3-Day Zero Sales Confirmation',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       searchTerms: zeroSaleTerms.slice(0, 10).map(st => ({
         searchTerm: st.searchTerm,
         clicks: st.clicks,

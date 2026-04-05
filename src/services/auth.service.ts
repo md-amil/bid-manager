@@ -127,10 +127,10 @@ export class AuthService {
   }
 
 
-  async getOrganization(user: any) {
-    const organization = await this.organizationModel.findOne({ ownerId: user._id }).exec();
-    if (!organization)
-      throw new Error('Organization not found');
+  async getOrganization(user?: any) {
+    let query = user._id?{ ownerId: user._id }:{}
+    const organization = await this.organizationModel.findOne(query).exec();
+    if (!organization) throw new Error('Organization not found');
     return organization;
   }
 
@@ -217,6 +217,8 @@ export class AuthService {
    * Get Amazon Advertising profiles using access token
    */
 
+
+
   async getProfiles(organizationId?: string) {
     try {
       const query: any = {};
@@ -225,8 +227,6 @@ export class AuthService {
       }
       const profiles = await this.profileModel.find(query);
       return profiles
-      // if (profiles.length) return profiles;
-      // return await this.syncService.syncProfile(this.clientId) as any;
     } catch (error) {
       this.logger.error('Failed to get profiles', error.response?.data || error.message);
       throw new Error('Failed to fetch  profiles');
@@ -275,7 +275,7 @@ export class AuthService {
 
       this.logger.log(`Profile sync completed: ${added} added, ${removed} removed, ${apiProfiles.length} total`);
       
-      return { added, removed, total: apiProfiles.length };
+      return { added, removed, total: apiProfiles.length};
     } catch (error) {
       this.logger.error('Failed to sync profiles', error.response?.data || error.message);
       throw new Error('Failed to sync profiles with Amazon');

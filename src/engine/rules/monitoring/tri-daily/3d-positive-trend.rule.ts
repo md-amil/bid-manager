@@ -41,9 +41,15 @@ export class ThreeDayPositiveTrendRule extends BaseRule implements ICampaignRule
       ruleId: 'THREE_DAY_004',
       ruleName: '3-Day Positive Trend - Scaling Opportunity',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       keywords: this.keywordsIdText,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `Positive trend confirmed over 3 days: ${this.metrics.purchase} orders, ACOS ${(acos * 100).toFixed(2)}% (target: ${(this.acosTarget * 100).toFixed(2)}%). ` +
         `Performance stable. This is a sustained trend, not a spike. ` +

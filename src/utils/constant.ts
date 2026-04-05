@@ -252,3 +252,11 @@ export const ADVERTISED_PRODUCT_METRICS = [
     "roasClicks7d",
     "roasClicks14d"
 ]
+
+
+export const TARGETING_MAP={
+    'QUERY_HIGH_REL_MATCHES':'close-match',
+    'QUERY_BROAD_REL_MATCHES':'loose-match',
+    'ASIN_ACCESSORY_RELATED':'complements',
+    'ASIN_SUBSTITUTE_RELATED':'substitutes'
+}

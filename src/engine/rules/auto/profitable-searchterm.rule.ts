@@ -31,6 +31,7 @@ export class ProfitableSearchTermsRule extends BaseRule implements ICampaignRule
       ruleId: 'RULE_001',
       ruleName: 'Profitable Search Terms Found',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments:[
         {
           action: EAction.INCREASE_BUDGET,

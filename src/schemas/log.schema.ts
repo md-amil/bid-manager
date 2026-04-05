@@ -4,6 +4,7 @@ import { Campaign } from './campaign.schema';
 
 
 export enum EAction {
+  NA='NA',
   SUGGESTED='SUGGESTED',
 
   INCREASE_BID = 'INCREASE_BID',
@@ -124,6 +125,26 @@ export class Adjustment {
   change?: number;
 }
 
+
+@Schema({ _id: false })
+export class LogTargeting {
+  @Prop({ required: true })
+  targetId: string;
+
+  // @Prop({ required: true })
+  // expressionType: string;
+
+  @Prop({ required: true })
+  targetingType: string;
+
+  @Prop({ required: true })
+  expression: string;
+
+  @Prop({ required: true })
+  bid: number;
+}
+
+
 @Schema({ timestamps: true })
 export class AdjustmentLog  {
 
@@ -133,11 +154,17 @@ export class AdjustmentLog  {
   @Prop({ required: true })
   ruleName: string;
 
+
+
   @Prop({
     ref: Campaign.name,
     index: true,
   })
   campaignId: string;
+
+  @Prop({ required: true })
+  campaignName: string;
+  
 
   @Prop({ index: true })
   scopeId?: string;
@@ -146,7 +173,7 @@ export class AdjustmentLog  {
   adjustments: Adjustment[];
 
   @Prop({ type: MongooseSchema.Types.Mixed })
-  targetings?: any[];
+  targetings?: LogTargeting[];
 
   @Prop({ type: MongooseSchema.Types.Mixed })
   campaign?:any

@@ -38,6 +38,7 @@ export class SevenDayClickThresholdRule extends BaseRule implements ICampaignRul
       ruleId: 'SEVEN_DAY_002',
       ruleName: '7-Day Click Threshold - Keyword Elimination',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       searchTerms: nonConvertingTerms.map(st => ({
         searchTerm: st.searchTerm,

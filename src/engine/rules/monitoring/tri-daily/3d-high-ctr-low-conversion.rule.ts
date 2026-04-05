@@ -43,8 +43,14 @@ export class ThreeDayHighCTRLowConversionRule extends BaseRule implements ICampa
       ruleId: 'THREE_DAY_002',
       ruleName: '3-Day High CTR, Low Conversion - Listing Issue',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `Over 3 days: ${this.impressions} impressions, ${this.clicks} clicks (${ctr.toFixed(2)}% CTR - excellent!), ` +
         `but only ${this.metrics.purchase} orders (${conversionRate.toFixed(2)}% conversion - poor). ` +

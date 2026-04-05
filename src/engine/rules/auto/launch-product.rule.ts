@@ -1,6 +1,6 @@
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 import { ICampaignBundle, ICampaignRuleDecision, TargetingType } from "../../interfaces";
-import BaseRule, { config } from "../base.rule";
+import BaseRule, { config, TargetType } from "../base.rule";
 
 export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecision {
   constructor(bundle: ICampaignBundle) {
@@ -8,11 +8,7 @@ export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecis
   }
 
   shouldApply(): boolean {
-    // increaase bid if budget not utilized
     return this.isLaunchPhase
-    // console.log(`cost ${this.cost} and clicks ${this.clicks}, term length ${this.searchTerms.length} sales ${this.sales}`)
-    // if (this.cost < config.minSpend) return true
-    // return this.searchTerms.length == 0 && this.clicks <= config.minClicks && this.sales == 0
   }
 
   getAdjustment() {
@@ -30,20 +26,26 @@ export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecis
 
   execute(): AdjustmentLog {
     const allTargetingTypes = [
-      TargetingType.CLOSE_MATCH,
-      TargetingType.LOOSE_MATCH,
-      TargetingType.SUBSTITUTES,
-      TargetingType.COMPLEMENTS
+      TargetType.CLOSE_MATCH,
+      TargetType.LOOSE_MATCH,
+      TargetType.SUBSTITUTES,
+      TargetType.COMPLEMENTS
     ];
     const targetings = this.getTargeting(allTargetingTypes);
-
+    console.log({targetings})
 
     return {
       ruleId: 'RULE_002',
       ruleName: 'New Product Launch Phase',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [this.getAdjustment()],
-      targetings,
+      targetings: targetings.map(t => ({
+        targetId: t.targetId,
+        targetingType:t.metrics?.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `New ASIN with no keyword data and no ranking history detected. ` +
         `Running auto campaign with suggested bids using all four auto targeting types ` +

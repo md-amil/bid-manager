@@ -1,3 +1,28 @@
+<%
+// Helper function to build URL with date filter
+const buildUrl = (path) => {
+    const df = typeof dateFilter !== 'undefined' ? dateFilter : null;
+    if (!df || df.period === 'today') return path;
+    const qs = typeof dateFilterQueryString !== 'undefined' ? dateFilterQueryString : '';
+    return path + (path.includes('?') ? '&' : '?') + qs;
+};
+
+// Helper function to get date filter label
+const getDateFilterLabel = (period, startDate, endDate) => {
+    const labels = {
+        'today': 'Today',
+        'yesterday': 'Yesterday',
+        'last7days': 'Last 7 days',
+        'thisWeek': 'This week',
+        'lastWeek': 'Last week',
+        'last30days': 'Last 30 days',
+        'thisMonth': 'This month',
+        'lastMonth': 'Last month',
+        'custom': `${startDate || ''} to ${endDate || ''}`
+    };
+    return labels[period] || 'Today';
+};
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +30,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>Amazon Bid Manager</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .logo {
             font-size: 1.3rem;
@@ -13,6 +39,180 @@
 
         .logout-link {
             color: #fed7d7 !important;
+        }
+
+        /* Universal Date Filter Styles */
+        .universal-date-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        .date-filter-btn-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .date-filter-btn-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .date-filter-btn-nav i {
+            font-size: 0.8rem;
+        }
+
+        .date-filter-dropdown {
+            position: fixed;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            z-index: 10000;
+            width: 400px;
+            display: none;
+            transform: translateY(5px);
+            animation: dropdownFadeIn 0.2s ease;
+        }
+
+        .date-filter-dropdown.show {
+            display: block;
+        }
+
+        @keyframes dropdownFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(5px); }
+        }
+
+        .date-filter-content {
+            display: flex;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .date-presets-nav {
+            flex: 1;
+            border-right: 1px solid #e5e7eb;
+            padding-right: 1rem;
+        }
+
+        .date-custom-nav {
+            flex: 1;
+            padding-left: 1rem;
+        }
+
+        .preset-title-nav {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .preset-btn-nav {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-bottom: 0.25rem;
+        }
+
+        .preset-btn-nav:hover {
+            background: #f3f4f6;
+        }
+
+        .preset-btn-nav.active {
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-weight: 500;
+        }
+
+        .custom-date-inputs-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .date-input-group-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .date-input-group-nav label {
+            font-size: 0.7rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .date-input-group-nav input {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .date-input-group-nav input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .date-separator-nav {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .date-filter-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-top: 1px solid #e5e7eb;
+            background: #f9fafb;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .date-filter-footer .btn-cancel {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .date-filter-footer .btn-apply {
+            padding: 0.5rem 1.25rem;
+            background: #1f2937;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -55,15 +255,129 @@
             </div>
                 
             <div class="nav-right">
+                <% if (typeof selectedProfile !== 'undefined' && selectedProfile) { %>
+                <!-- Universal Date Filter -->
+                <div class="universal-date-filter">
+                    <button type="button" class="date-filter-btn-nav" onclick="toggleUniversalDateDropdown(event)">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="universalDateLabel">
+                            <%= getDateFilterLabel(dateFilter?.period || 'today', dateFilter?.startDate, dateFilter?.endDate) %>
+                        </span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="date-filter-dropdown" id="universalDateDropdown">
+                        <div class="date-filter-content">
+                            <div class="date-presets-nav">
+                                <div class="preset-title-nav">Quick Select</div>
+                                <button type="button" class="preset-btn-nav <%= (dateFilter?.period || 'today') === 'today' ? 'active' : '' %>" onclick="selectUniversalPeriod('today')">Today</button>
+                                <button type="button" class="preset-btn-nav <%= dateFilter?.period === 'yesterday' ? 'active' : '' %>" onclick="selectUniversalPeriod('yesterday')">Yesterday</button>
+                                <button type="button" class="preset-btn-nav <%= dateFilter?.period === 'last7days' ? 'active' : '' %>" onclick="selectUniversalPeriod('last7days')">Last 7 days</button>
+                                <button type="button" class="preset-btn-nav <%= dateFilter?.period === 'thisWeek' ? 'active' : '' %>" onclick="selectUniversalPeriod('thisWeek')">This week</button>
+                                <button type="button" class="preset-btn-nav <%= dateFilter?.period === 'lastWeek' ? 'active' : '' %>" onclick="selectUniversalPeriod('lastWeek')">Last week</button>
+                                <button type="button" class="preset-btn-nav <%= dateFilter?.period === 'last30days' ? 'active' : '' %>" onclick="selectUniversalPeriod('last30days')">Last 30 days</button>
+                                <button type="button" class="preset-btn-nav <%= dateFilter?.period === 'thisMonth' ? 'active' : '' %>" onclick="selectUniversalPeriod('thisMonth')">This month</button>
+                                <button type="button" class="preset-btn-nav <%= dateFilter?.period === 'lastMonth' ? 'active' : '' %>" onclick="selectUniversalPeriod('lastMonth')">Last month</button>
+                            </div>
+                            <div class="date-custom-nav">
+                                <div class="preset-title-nav">Custom Range</div>
+                                <div class="custom-date-inputs-nav">
+                                    <div class="date-input-group-nav">
+                                        <label>Start Date</label>
+                                        <input type="date" id="universalStartDate" value="<%= dateFilter?.startDate || '' %>" onchange="updateUniversalCustomRange()">
+                                    </div>
+                                    <div class="date-separator-nav">to</div>
+                                    <div class="date-input-group-nav">
+                                        <label>End Date</label>
+                                        <input type="date" id="universalEndDate" value="<%= dateFilter?.endDate || '' %>" onchange="updateUniversalCustomRange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="date-filter-footer">
+                            <button type="button" class="btn-cancel" onclick="closeUniversalDateDropdown()">Cancel</button>
+                            <button type="button" class="btn-apply" onclick="applyUniversalDateFilter()">Apply</button>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
                 <ul class="nav-links">
-                    <li><a href="/" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Dashboard</a></li>
-                    <li><a href="/campaigns" class="<%= currentPage === 'campaigns' ? 'active' : '' %>">Campaigns</a></li>
-                    <li><a href="/logs" class="<%= currentPage === 'logs' ? 'active' : '' %>">Logs</a></li>
-                    <li><a href="/settings" class="<%= currentPage === 'settings' ? 'active' : '' %>">Settings</a></li>
+                    <li><a href="<%= buildUrl('/') %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Dashboard</a></li>
+                    <li><a href="<%= buildUrl('/campaigns') %>" class="<%= currentPage === 'campaigns' ? 'active' : '' %>">Campaigns</a></li>
+                    <li><a href="<%= buildUrl('/logs') %>" class="<%= currentPage === 'logs' ? 'active' : '' %>">Logs</a></li>
+                    <li><a href="<%= buildUrl('/settings') %>" class="<%= currentPage === 'settings' ? 'active' : '' %>">Settings</a></li>
                 </ul>
                 <a href="/auth/logout" class="logout-btn">Logout</a>
             </div>
         </div>
     </nav>
+
+    <% if (typeof selectedProfile !== 'undefined' && selectedProfile) { %>
+    <script>
+        // Universal Date Filter Functions
+        let selectedUniversalPeriod = '<%= dateFilter?.period || "today" %>';
+
+        function toggleUniversalDateDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('universalDateDropdown');
+            const btn = document.querySelector('.date-filter-btn-nav');
+            const rect = btn.getBoundingClientRect();
+            
+            dropdown.style.top = `${rect.bottom + 8}px`;
+            dropdown.style.left = `${rect.left}px`;
+            
+            dropdown.classList.toggle('show');
+        }
+
+        function closeUniversalDateDropdown() {
+            const dropdown = document.getElementById('universalDateDropdown');
+            dropdown.classList.remove('show');
+        }
+
+        function selectUniversalPeriod(period) {
+            selectedUniversalPeriod = period;
+            document.querySelectorAll('.preset-btn-nav').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (period !== 'custom') {
+                applyUniversalDateFilter();
+            }
+        }
+
+        function updateUniversalCustomRange() {
+            selectedUniversalPeriod = 'custom';
+            document.querySelectorAll('.preset-btn-nav').forEach(btn => btn.classList.remove('active'));
+        }
+
+        function applyUniversalDateFilter() {
+            const params = new URLSearchParams(window.location.search);
+            
+            if (selectedUniversalPeriod === 'custom') {
+                const startDate = document.getElementById('universalStartDate').value;
+                const endDate = document.getElementById('universalEndDate').value;
+                if (startDate && endDate) {
+                    params.set('period', 'custom');
+                    params.set('startDate', startDate);
+                    params.set('endDate', endDate);
+                }
+            } else {
+                params.set('period', selectedUniversalPeriod);
+                params.delete('startDate');
+                params.delete('endDate');
+            }
+            
+            window.location.search = params.toString();
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('universalDateDropdown');
+            const btn = document.querySelector('.date-filter-btn-nav');
+            if (dropdown && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+    <% } %>
     
     <main class="container">

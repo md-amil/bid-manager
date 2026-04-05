@@ -19,12 +19,8 @@ export class FourteenDayProfitabilityRule extends BaseRule implements ICampaignR
 
   shouldApply(): boolean {
     if (!this.metrics) return false;
-
     if (this.sales === 0 || this.metrics.purchase < this.minOrders) return false;
-
     const acos = this.acos;
-
-    // Check if ACOS is good
     return acos <= this.acosTarget;
   }
 
@@ -43,9 +39,15 @@ export class FourteenDayProfitabilityRule extends BaseRule implements ICampaignR
       ruleId: 'FOURTEEN_DAY_001',
       ruleName: '14-Day Profitability Confirmation - Aggressive Scaling',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       keywords: this.keywordsIdText,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `14-day profitability CONFIRMED: ${(acos * 100).toFixed(2)}% ACOS with ${this.metrics.purchase} orders. ` +
         `Consistent daily performance (avg ${avgDailyOrders.toFixed(1)} orders, avg $${avgDailySpend.toFixed(2)}/day). ` +

@@ -37,6 +37,8 @@ export class ThirtyDayCampaignOverlapRule extends BaseRule implements ICampaignR
       ruleId: 'THIRTY_DAY_002',
       ruleName: '30-Day Campaign Overlap Detection',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+      
       adjustments,
       reasoning:
         `Campaign Structure Review: Potential overlap detected with broad/phrase match targeting. ` +

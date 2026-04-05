@@ -40,6 +40,7 @@ export class ThirtyDayAccountHealthRule extends BaseRule implements ICampaignRul
       ruleId: 'THIRTY_DAY_001',
       ruleName: '30-Day Account Health Review - Strategic Assessment',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       reasoning:
         `30-DAY SUMMARY - Campaign: ${this.campaign.name}\n` +

@@ -1,6 +1,6 @@
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
-import { ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
-import AutoCampaignBaseRule, { config } from "../base.rule";
+import { ICampaignBundle, ICampaignRuleDecision } from "../../../interfaces";
+import AutoCampaignBaseRule, { config } from "../../base.rule";
 
 // RULE for Negative Keywords
 export class NegativeKeywordRule extends AutoCampaignBaseRule implements ICampaignRuleDecision {
@@ -23,6 +23,7 @@ export class NegativeKeywordRule extends AutoCampaignBaseRule implements ICampai
       ruleId: 'RULE_010',
       ruleName: 'Add Negative Keywords',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [
         {
           action: EAction.ADD_NEGATIVE,

@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { TARGETING_MAP } from "src/utils/constant";
 
 export class AmazonMapper {
   static campaign(c: any, scopeId: string) {
@@ -41,9 +42,10 @@ export class AmazonMapper {
     };
   }
   static target(a: any,  scopeId: string,type:-1|1 = 1) {
-    return {
+    const target =  {
       type,
       scopeId,
+      targeting:TARGETING_MAP[a.expression[0].type],
       ...a
     };
   }

@@ -17,9 +17,7 @@ export class HighAcosManualReductionRule extends BaseRule implements ICampaignRu
   shouldApply(): boolean {
     if (this.campaign.targetingType !== Type.MANUAL) return false;
     if (!this.metrics) return false;
-    console.log("launch phase",this.isLaunchPhase)
     if(this.isLaunchPhase) return false;
-    // console.log(`Evaluating High ACOS Rule: ACOS=${(this.acos).toFixed(2)}%, ROAS=${this.roas.toFixed(2)}x, Target ACOS=${(config.targetAcos * 100).toFixed(2)}%, Min ROAS=${config.minRoas}x`);
     return this.acos > config.targetAcos && this.roas < config.minRoas;
   }
 
@@ -28,6 +26,7 @@ export class HighAcosManualReductionRule extends BaseRule implements ICampaignRu
       ruleId: 'MANUAL_CONTROL_001',
       ruleName: 'Reduce Bids - High ACOS',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [
         {
           action: EAction.DECREASE_BID,

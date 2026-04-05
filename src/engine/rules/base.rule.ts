@@ -1,7 +1,7 @@
 import { ICampaignBundle, IMetrics, keywordWithMetrics, TargetingType, TargetWithMetrics } from "src/engine/interfaces";
+import { Targeting } from "src/interfaces/report.type";
 import { Campaign, Type } from "src/schemas/campaign.schema";
 import { MatchType } from "src/schemas/keyword.schema";
-// import { CampaignReport } from "src/schemas/reports/campaign-report";
 import { AutoMatchType, SearchTermDocument } from "src/schemas/reports/search-term-report.schema";
 
 export const config = {
@@ -17,6 +17,13 @@ export const config = {
     searchWindow:7,
 }
 
+export enum TargetType {
+    CLOSE_MATCH = 'QUERY_HIGH_REL_MATCHES',
+    LOOSE_MATCH = 'QUERY_BROAD_REL_MATCHES',
+    COMPLEMENTS = 'ASIN_ACCESSORY_RELATED',
+    SUBSTITUTES = 'ASIN_SUBSTITUTE_RELATED',
+}
+
 
 
 export default class BaseRule {
@@ -25,15 +32,15 @@ export default class BaseRule {
     protected metrics30d: IMetrics
     protected campaign: Campaign
     protected keywords: keywordWithMetrics[]
-    protected targets: TargetWithMetrics[]
+    protected targets: Targeting[]
     protected budgetUsage: any
 
     constructor(bundle: ICampaignBundle) {
-        const { searchTerms, budgetUsage, keywords, targets, metrics30d, metrics7d,...campaign } = bundle
+        const { searchTerms, budgetUsage, keywords, targetings, metrics30d, metrics7d,...campaign } = bundle
         this.searchTerms = searchTerms
         this.metrics7d = metrics7d
         this.metrics30d = metrics30d
-        this.targets = targets
+        this.targets = targetings
         this.keywords = keywords
         this.campaign = campaign
         this.budgetUsage = budgetUsage
@@ -102,7 +109,6 @@ export default class BaseRule {
     }
     get keywordsIdText(): { keywordId: string, keywordText: string }[] {
         {
-            console.log(this.keywords)
             return this.keywords?.map((keyword) => ({
                 keywordId: keyword.keywordId,
                 bid:keyword.bid,
@@ -138,10 +144,11 @@ export default class BaseRule {
         return this.searchTerms.filter(term => term.matchType == type)
     }
 
-    getTargeting(type?: TargetingType | TargetingType[]) {
+    getTargeting(type?: TargetType | TargetType[]) {
+        console.dir(this.targets, { depth: null })
         if (!type?.length) return this.targets
-        if (Array.isArray(type)) return this.targets.filter(t => type.includes(t.metrics.targeting as TargetingType))
-        return this.targets.filter(t => t.metrics.targeting == type)
+        if (Array.isArray(type)) return this.targets.filter(t => type.includes(t.expression[0].type as TargetType))
+        return this.targets.filter(t => t.expression[0].type == type)
     }
 
     getProfitableTerms(minSales: number = config.minSales) {
@@ -153,7 +160,13 @@ export default class BaseRule {
         // return this.searchTerms.filter((term) => term.sales7d <= minSales && this.calculateACOS(term) >= config.targetAcos);
     }
 
+    getLowImpressionTarget(){
+        const target =  this.targets.filter(target => (target.metrics?.impressions ?? 0) <= config.minImpressions)
+        return target
+    }
+
     // Search terms with 20+ clicks OR 200+ spend and zero sales - for negative keyword rules
+
     getNegativeWorthySearchTerms() {
         return this.searchTerms.filter(st =>
             (st.clicks >= 20 || st.cost >= 200) && st.sales7d === 0

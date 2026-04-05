@@ -6,6 +6,7 @@ import { CampaignReport, } from "src/schemas/reports/campaign-report"
 import { SearchTermDocument, SearchTermReport } from "src/schemas/reports/search-term-report.schema"
 import { Target } from "src/schemas/target.schema"
 import { TargetReport } from "src/schemas/reports/target-report.schema"
+import { Targeting } from "src/interfaces/report.type"
 
 
 export enum TargetingType {
@@ -90,7 +91,7 @@ export interface TargetWithMetrics extends Target {
 
 export interface ICampaignDetails extends Campaign {
     keywords: keywordWithMetrics[]
-    targets:TargetWithMetrics[]
+    targetings:Targeting[]
 }
 export interface IMetrics {
     impressions: number;

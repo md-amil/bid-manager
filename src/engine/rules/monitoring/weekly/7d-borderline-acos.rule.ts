@@ -35,8 +35,14 @@ export class SevenDayBorderlineAcosRule extends BaseRule implements ICampaignRul
       ruleId: 'SEVEN_DAY_003',
       ruleName: '7-Day Borderline ACOS - Early Intervention',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `ACOS ${(acos * 100).toFixed(2)}% is borderline (${(this.acosLowerBound * 100).toFixed(2)}-${(this.acosUpperBound * 100).toFixed(2)}% range). ` +
         `Not yet critical, but trending toward unprofitability. Making small bid reduction (-15%) to stabilize. ` +

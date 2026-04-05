@@ -30,6 +30,8 @@ export class CompetitorASINTargetingConvertingRule extends BaseRule implements I
       ruleId: 'MANUAL_SCALE_005',
       ruleName: 'Scale Competitor ASIN Targeting',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+      
       adjustments:[
         {
           action: EAction.INCREASE_BID,

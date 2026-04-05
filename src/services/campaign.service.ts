@@ -36,7 +36,6 @@ export class CampaignService {
 
  
   async findCampaignBundle(campaignId: string): Promise<ICampaignDetails> {
-
     const keywordQuery: PipelineStage = {
       $lookup: {
         from: 'keywords',

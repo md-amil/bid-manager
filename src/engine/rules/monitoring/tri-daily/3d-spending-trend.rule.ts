@@ -43,8 +43,14 @@ export class ThreeDaySpendingTrendRule extends BaseRule implements ICampaignRule
       ruleId: 'THREE_DAY_003',
       ruleName: '3-Day Efficiency Degradation - Trend Alert',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `Cost per sale degrading: ${increase.toFixed(0)}% increase over 3 days. ` +
         `Current cost per sale: $${currentCps.toFixed(2)} vs average: $${avgCps.toFixed(2)}. ` +

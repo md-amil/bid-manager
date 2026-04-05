@@ -48,9 +48,16 @@ export class SevenDayHighAcosReductionRule extends BaseRule implements ICampaign
       ruleId: 'SEVEN_DAY_001',
       ruleName: '7-Day High ACOS - Primary Optimization',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       searchTerms: underperformingTerms.map(st => ({
+        
         searchTerm: st.searchTerm,
         spend: st.cost,
         sales7d: st.sales7d

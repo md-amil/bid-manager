@@ -1,7 +1,7 @@
 // import { AutoCampaign, AutoCampaignAdjustment, AutoTargetingType, IAutoCampaignRuleDecision } from "files (2)/auto-campaign-rules";
 import { Adjustment, AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 import { AutoCampaignAdjustment, TargetingType, ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
-import AutoCampaignBaseRule, { config } from "../base.rule";
+import AutoCampaignBaseRule, { config, TargetType } from "../base.rule";
 import { Action } from "rxjs/internal/scheduler/Action";
 
 // RULE 3: Good Conversion Rate with Limited Impressions
@@ -21,22 +21,28 @@ export class LimitedImpressionsHighConversionRule extends AutoCampaignBaseRule i
 
   execute(): AdjustmentLog {
     const targetings = this.getTargeting([
-      TargetingType.CLOSE_MATCH,
-      TargetingType.LOOSE_MATCH,
-      TargetingType.SUBSTITUTES,
-      TargetingType.COMPLEMENTS,
+      TargetType.CLOSE_MATCH,
+      TargetType.LOOSE_MATCH,
+      TargetType.SUBSTITUTES,
+      TargetType.COMPLEMENTS,
     ])
 
     return {
       ruleId: 'RULE_003',
       ruleName: 'Good Conversion Rate with Limited Impressions',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [{
         action: EAction.INCREASE_BID,
         target: ETarget.TARGETING,
         change: 25
       }],
-      targetings: targetings,
+      targetings: targetings.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `Auto campaign converting well but has low impression volume and budget not fully utilized. ` +
         `Increasing bids by 25% to unlock more inventory.`,

@@ -36,6 +36,7 @@ export class ListingConversionIssueManualRule extends BaseRule implements ICampa
     return {
       ruleId: 'MANUAL_CONTROL_005',
       ruleName: 'Reduce Bids - Listing Conversion Issue',
+      campaignName: this.campaign.name,
       campaignId: this.campaign.campaignId,
       adjustments: [
         // {

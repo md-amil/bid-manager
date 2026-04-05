@@ -26,10 +26,11 @@ export class ModerateACOSWithSalesManualRule extends BaseRule implements ICampai
 
   execute(): AdjustmentLog {
 
-    return {
+      return {
       ruleId: 'MANUAL_CONTROL_003',
       ruleName: 'Moderate ACOS Reduction - Gradual Approach',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments: [
         {
           action: EAction.DECREASE_BID,

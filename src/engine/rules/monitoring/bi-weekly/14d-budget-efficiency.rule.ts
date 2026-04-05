@@ -41,8 +41,14 @@ export class FourteenDayBudgetEfficiencyRule extends BaseRule implements ICampai
       ruleId: 'FOURTEEN_DAY_004',
       ruleName: '14-Day Budget Under-Utilization - Bid Increase',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         `Budget under-utilized: Using only ${budgetUtilization.toFixed(0)}% of available budget ($${avgDailySpend.toFixed(2)}/day vs $${this.budget.toFixed(2)}/day). ` +
         `ACOS is healthy and profitable. Increasing bids 20% to capture more volume and spend the full budget efficiently.`,

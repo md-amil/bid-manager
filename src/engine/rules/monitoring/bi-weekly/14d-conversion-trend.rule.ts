@@ -45,8 +45,14 @@ export class FourteenDayConversionTrendRule extends BaseRule implements ICampaig
       ruleId: 'FOURTEEN_DAY_002',
       ruleName: '14-Day Conversion Rate Trend',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets,
+      targetings: this.targets.map(t => ({
+        targetId: t.targetId,
+        targetingType: t.metrics.targeting,
+        expression: t.expression[0].type || '',
+        bid: t.bid
+      })),
       reasoning:
         isImproving
           ? `Conversion rate IMPROVING: ${currentCvr.toFixed(2)}% (current) vs ${avgCvr.toFixed(2)}% (historical avg). ` +

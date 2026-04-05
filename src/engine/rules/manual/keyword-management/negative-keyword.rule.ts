@@ -52,6 +52,8 @@ export class NegativeKeywordManualRule extends BaseRule implements ICampaignRule
       ruleId: 'KEYWORD_MGMT_005',
       ruleName: 'Add Negative Keywords',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
+      
       adjustments: [
         {
           action: EAction.ADD_NEGATIVE_EXACT,

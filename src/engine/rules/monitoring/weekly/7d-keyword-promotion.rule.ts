@@ -51,6 +51,7 @@ export class SevenDayKeywordPromotionRule extends BaseRule implements ICampaignR
       ruleId: 'SEVEN_DAY_005',
       ruleName: '7-Day Keyword Promotion - Phrase/Broad to Exact',
       campaignId: this.campaign.campaignId,
+      campaignName: this.campaign.name,
       adjustments,
       searchTerms: candidatesForPromotion.map(k => ({
         searchTerm: k.searchTerm,

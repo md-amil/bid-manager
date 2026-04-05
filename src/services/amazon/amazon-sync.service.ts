@@ -53,7 +53,7 @@ export class AmazonSyncService {
     return campaignResult;
   }
 
-  async syncAdGroups(auth: IAmazonAuth,) {
+  async syncAdGroups(auth: IAmazonAuth) {
     console.log('Syncing Ad Groups...')
     const adGroups = await this.adGroupApi.getAdGroups(auth);
     const adGroupBulkOps = adGroups.map(g => ({
@@ -82,8 +82,6 @@ export class AmazonSyncService {
     if (next) return this.syncAds(auth, next)
     return adResult;
   }
-
-
   async syncKeywards(auth: IAmazonAuth, nextToken?: string) {
     const { keywords, nextToken: next } = await this.adGroupApi.getKeywords(auth, { nextToken })
     console.log('Syncing Keywords...', keywords.length, (!!next))
@@ -128,7 +126,6 @@ export class AmazonSyncService {
     if (next) return this.syncTargets(auth, next)
     return targetResult;
   }
-
   async syncNegativeTargets(auth: IAmazonAuth, nextToken?: string) {
     console.log('Syncing Negative Targets...')
     const { negativeTargetingClauses, nextToken: next } = await this.adGroupApi.getNegativeTargets(auth, { nextToken })
@@ -144,8 +141,6 @@ export class AmazonSyncService {
     if (next) return this.syncNegativeTargets(auth, next)
     return negativeTargetResult;
   }
-
-
   async syncProfile(organisationId:Types.ObjectId) {
     const profiles = await this.amazonApi.getProfiles()
     const adBulkOps = profiles.map(a => ({

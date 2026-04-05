@@ -8,11 +8,9 @@
 </head>
 <body>
     <%- include('partials/header', { selectedProfile, profiles, currentPage: 'campaigns' }) %>
-    
     <main class="container">
         <% if (campaign) { %>
             <a href="/campaigns" class="back-link-compact">← Back</a>
-
             <!-- Campaign Info Header Card -->
             <div class="campaign-header-card">
                 <div class="info-item">
@@ -29,17 +27,17 @@
                     <span class="info-label">Budget:</span>
                     <span class="info-value">
                         <% if (campaign.budget) { %>
-                            $<%= campaign.budget.budget %>
+                            <%= campaign.budget.budget.toLocaleString('en-IN', { currency: 'INR', style: 'currency', }) %> <%= campaign.budget.budgetType %>
                         <% } else { %>
                             N/A
                         <% } %>
                     </span>
                 </div>
-                <div class="info-divider"></div>
-                <div class="info-item">
+                <!-- <div class="info-divider"></div> -->
+                <!-- <div class="info-item">
                     <span class="info-label">Budget Type:</span>
                     <span class="info-value"><%= campaign.budgetType || 'N/A' %></span>
-                </div>
+                </div> -->
                 <div class="info-divider"></div>
                 <div class="info-item">
                     <span class="info-label">Targeting:</span>
@@ -88,31 +86,7 @@
             <div class="section">
                 <div class="section-header">
                     <h3>Performance Metrics</h3>
-                    <div class="filter-controls">
-                        <div class="filter-tabs">
-                            <button class="filter-tab <%= (!period || period === 'daily') ? 'active' : '' %>" onclick="window.location.href='/campaigns/<%= campaignId %>?period=daily'">Daily</button>
-                            <button class="filter-tab <%= period === 'weekly' ? 'active' : '' %>" onclick="window.location.href='/campaigns/<%= campaignId %>?period=weekly'">Weekly</button>
-                            <button class="filter-tab <%= period === 'monthly' ? 'active' : '' %>" onclick="window.location.href='/campaigns/<%= campaignId %>?period=monthly'">Monthly</button>
-                        </div>
-                        <div class="date-filter">
-                            <input type="date" id="startDate" class="date-input" value="<%= startDate || '' %>" />
-                            <span class="date-separator">to</span>
-                            <input type="date" id="endDate" class="date-input" value="<%= endDate || '' %>" />
-                            <button class="btn-filter" onclick="applyDateFilter()">Apply</button>
-                        </div>
-                    </div>
                 </div>
-                <script>
-                    function applyDateFilter() {
-                        const startDate = document.getElementById('startDate').value;
-                        const endDate = document.getElementById('endDate').value;
-                        if (startDate && endDate) {
-                            window.location.href = '/campaigns/<%= campaignId %>?period=custom&startDate=' + startDate + '&endDate=' + endDate;
-                        } else {
-                            alert('Please select both start and end dates');
-                        }
-                    }
-                </script>
                 <div class="metrics-list">
                     <div class="metric-card-compact">
                         <div class="metric-icon">📊</div>
@@ -132,14 +106,14 @@
                         <div class="metric-icon">💰</div>
                         <div class="metric-content">
                             <span class="metric-label">Spend</span>
-                            <span class="metric-value">$<%= metrics.spend.toFixed(2) %></span>
+                            <span class="metric-value"><%= metrics.spend.toLocaleString('en-IN', { currency: 'INR', style: 'currency', }) %></span>
                         </div>
                     </div>
                     <div class="metric-card-compact">
                         <div class="metric-icon">💵</div>
                         <div class="metric-content">
-                            <span class="metric-label">Sales (14d)</span>
-                            <span class="metric-value">$<%= metrics.sales14d.toFixed(2) %></span>
+                            <span class="metric-label">Sales</span>
+                            <span class="metric-value"><%= metrics.sales.toLocaleString('en-IN', { currency: 'INR', style: 'currency', }) %></span>
                         </div>
                     </div>
                     <div class="metric-card-compact">
@@ -159,29 +133,28 @@
                     <div class="metric-card-compact">
                         <div class="metric-icon">🔄</div>
                         <div class="metric-content">
-                            <span class="metric-label">ROAS (14d)</span>
-                            <span class="metric-value"><%= metrics.roas14d.toFixed(2) %></span>
+                            <span class="metric-label">ROAS</span>
+                            <span class="metric-value"><%= metrics.roas.toFixed(2) %></span>
                         </div>
                     </div>
                     <div class="metric-card-compact">
                         <div class="metric-icon">📉</div>
                         <div class="metric-content">
-                            <span class="metric-label">ACOS (14d)</span>
-                            <span class="metric-value"><%= metrics.acos14d.toFixed(2) %>%</span>
+                            <span class="metric-label">ACOS</span>
+                            <span class="metric-value"><%= metrics.acos.toFixed(2) %>%</span>
                         </div>
                     </div>
                     <div class="metric-card-compact">
                         <div class="metric-icon">✅</div>
                         <div class="metric-content">
-                            <span class="metric-label">Conversions (14d)</span>
-                            <span class="metric-value"><%= metrics.conversions14d %></span>
+                            <span class="metric-label">Conversions</span>
+                            <span class="metric-value"><%= metrics.conversions %></span>
                         </div>
                     </div>
                 </div>
             </div>
             <% } %>
 
-            <!-- Ad Groups Section -->
             <div class="section">
                 <h3>Ad Groups</h3>
                 <% if (adGroups && adGroups.length > 0) { %>
@@ -195,9 +168,9 @@
                                     <th>Impressions</th>
                                     <th>Clicks</th>
                                     <th>Cost</th>
-                                    <th>Sales 7d</th>
-                                    <th>Sales 14d</th>
+                                    <th>Sales</th>
                                     <th>ACOS</th>
+                                    <th>ROAS</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -228,15 +201,21 @@
                                             <%= adGroup.metrics ? '₹' + adGroup.metrics.cost.toLocaleString() : '-' %>
                                         </td>
                                         <td class="metric-cell sales">
-                                            <%= adGroup.metrics ? '₹' + adGroup.metrics.sales7d.toLocaleString() : '-' %>
-                                        </td>
-                                        <td class="metric-cell sales">
-                                            <%= adGroup.metrics ? '₹' + adGroup.metrics.sales14d.toLocaleString() : '-' %>
+                                            <%= adGroup.metrics ? '₹' + (adGroup.metrics.sales1d || 0).toLocaleString() : '-' %>
                                         </td>
                                         <td class="metric-cell acos">
-                                            <% if (adGroup.metrics && adGroup.metrics.acos14d > 0) { %>
-                                                <span class="acos-badge <%= adGroup.metrics.acos14d < 20 ? 'good' : adGroup.metrics.acos14d < 40 ? 'medium' : 'bad' %>">
-                                                    <%= adGroup.metrics.acos14d %>
+                                            <% if (adGroup.metrics && adGroup.metrics.acos > 0) { %>
+                                                <span class="acos-badge <%= adGroup.metrics.acos < 20 ? 'good' : adGroup.metrics.acos < 40 ? 'medium' : 'bad' %>">
+                                                    <%= adGroup.metrics.acos %>
+                                                </span>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </td>
+                                        <td class="metric-cell roas">
+                                            <% if (adGroup.metrics && adGroup.metrics.roas > 0) { %>
+                                                <span class="roas-badge <%= adGroup.metrics.roas >= 3 ? 'good' : adGroup.metrics.roas >= 1 ? 'medium' : 'bad' %>">
+                                                    <%= adGroup.metrics.roas %>x
                                                 </span>
                                             <% } else { %>
                                                 -
@@ -476,11 +455,13 @@
                                                                             %>
                                                                                 <td class="target-id"><%= entity.targetId || 'N/A' %></td>
                                                                                 <td class="target-expression">
-                                                                                    <% if (entity.expression && entity.expression.length > 0) { %>
+                                                                                    <% if (entity.expression && Array.isArray(entity.expression) && entity.expression.length > 0) { %>
                                                                                         <% entity.expression.forEach((expr, i) => { %>
                                                                                             <span class="expr-item"><%= expr.type %>: <%= expr.value %></span><% if (i < entity.expression.length - 1) { %>, <% } %>
                                                                                         <% }); %>
-                                                                                    <% } else if (entity.resolvedExpression && entity.resolvedExpression.length > 0) { %>
+                                                                                    <% } else if (entity.expression && typeof entity.expression === 'string') { %>
+                                                                                        <span class="expr-item"><%= entity.expression %></span>
+                                                                                    <% } else if (entity.resolvedExpression && Array.isArray(entity.resolvedExpression) && entity.resolvedExpression.length > 0) { %>
                                                                                         <% entity.resolvedExpression.forEach((expr, i) => { %>
                                                                                             <span class="expr-item"><%= expr.type %>: <%= expr.value %></span><% if (i < entity.resolvedExpression.length - 1) { %>, <% } %>
                                                                                         <% }); %>
@@ -643,9 +624,7 @@
             </div>
         <% } %>
     </main>
-    
     <%- include('partials/footer') %>
-
 <style>
 /* AdGroup Table Styles */
 .adgroup-table {
@@ -732,6 +711,29 @@
 }
 
 .acos-badge.bad {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.roas-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.roas-badge.good {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.roas-badge.medium {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.roas-badge.bad {
     background: #fee2e2;
     color: #991b1b;
 }
@@ -1605,7 +1607,7 @@ async function adjustCampaignBid(campaignId, campaignName) {
     adjustBtn.disabled = true;
     
     try {
-        const response = await fetch(`/api/campaigns/${campaignId}/schedule-adjustment`, {
+        const response = await fetch(`/api/campaigns/${campaignId}/optimize`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });

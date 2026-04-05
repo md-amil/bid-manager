@@ -41,6 +41,8 @@ import { Organization, OrganizationSchema } from './schemas/organization.schema'
 import Engine from './engine/core/rule.engine';
 import { AuthApiService } from './services/amazon/auth-api.service';
 import { ClsMiddleware } from './middleware/cls.middleware';
+import { DateFilterMiddleware } from './middleware/date-filter.middleware';
+import { AuthMiddleware } from './middleware/auth.middleware';
 import { AdjustmentLogService } from './services/log.service';
 import { TargetReport, TargetReportSchema } from './schemas/reports/target-report.schema';
 import { Product, ProductSchema } from './schemas/product.schema';
@@ -49,6 +51,7 @@ import { AdGroupReport, AdGroupReportSchema } from './schemas/reports/adgroup-re
 import { ReportApiService } from './services/amazon/report-api.service';
 import { Setting, SettingSchema } from './schemas/setting.schema';
 import { SettingService } from './services/setting.service';
+import { DataService } from './services/data.service';
 
 @Module({
   imports: [
@@ -69,7 +72,6 @@ import { SettingService } from './services/setting.service';
     }),
     MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/bid-manager'),
     MongooseModule.forFeature([
-      // { name: OptimizationLog.name, schema: OptimizationLogSchema },
       { name: Campaign.name, schema: CampaignSchema },
       { name: AdjustmentLog.name, schema: AdjustmentLogSchema },
       { name: CampaignReport.name, schema: CampaignReportSchema },
@@ -114,12 +116,29 @@ import { SettingService } from './services/setting.service';
     ReportProducer, BidProducer,
     ReportService,
     SettingService,
+    DataService
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(ClsMiddleware)
+      .forRoutes('*');
+    
+    consumer
+      .apply(DateFilterMiddleware)
+      .forRoutes('*');
+    
+    // Apply auth middleware to protected routes (exclude auth pages)
+    consumer
+      .apply(AuthMiddleware)
+      .exclude(
+        { path: '/auth/(.*)', method: 0 },
+        { path: '/css/(.*)', method: 0 },
+        { path: '/js/(.*)', method: 0 },
+        { path: '/images/(.*)', method: 0 },
+        { path: '/favicon.ico', method: 0 }
+      )
       .forRoutes('*');
   }
 }

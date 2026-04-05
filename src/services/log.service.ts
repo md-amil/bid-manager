@@ -13,7 +13,6 @@ export class AdjustmentLogService {
 
   }
 
-
   async saveLogs(logs: AdjustmentLog[]) {
     await this.logModel.insertMany(logs)
   }
@@ -21,6 +20,10 @@ export class AdjustmentLogService {
   createLog(log: Partial<AdjustmentLog>) {
     const logEntry = new this.logModel(log);
     return logEntry.save();
+  }
+
+  getLogsBy(filter:{scopeId?:string,campaignId?:string}, limit:number=10){
+    return this.logModel.find(filter).sort({ createdAt: -1 }).limit(limit).exec();
   }
 
   getLogsByCampaign(campaignId: string, scopeId: string) {
@@ -34,6 +37,12 @@ export class AdjustmentLogService {
   async deleteLogsByCampaign(campaignId: string, scopeId: string) {
     const result = await this.logModel.deleteMany({ campaignId, scopeId }).exec();
     this.logger.log(`Deleted ${result.deletedCount} logs for campaign ${campaignId}`);
+    return result;
+  }
+
+  async deleteLogsByScope(scopeId: string) {
+    const result = await this.logModel.deleteMany({ scopeId }).exec();
+    this.logger.log(`Deleted ${result.deletedCount} logs for scope ${scopeId}`);
     return result;
   }
 }
