@@ -1,0 +1,641 @@
+<%- include('partials/header', { currentPage: 'account', selectedProfile, profiles, title: 'Account' }) %>
+
+<div class="account-page">
+    <!-- Account Header -->
+    <div class="account-header">
+        <div class="header-content">
+            <div class="org-info">
+                <div class="org-avatar">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="org-details">
+                    <h1><%= organization?.name || 'Organization' %></h1>
+                    <span class="org-id">ID: <%= organization?._id || 'N/A' %></span>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name"><%= userName || 'User' %></span>
+                    <span class="user-email"><%= userEmail || '' %></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="profiles">
+                <i class="fas fa-users"></i>
+                Profiles
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <i class="fas fa-cog"></i>
+                Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Profiles Tab -->
+        <div id="profiles-tab" class="tab-pane active">
+            <div class="section-header">
+                <h3>Advertising Profiles</h3>
+                <button onclick="syncProfiles()" class="btn-sync">
+                    <i class="fas fa-sync-alt"></i> Sync Profiles
+                </button>
+            </div>
+            <div class="profiles-grid">
+                <% if (profiles && profiles.length > 0) { %>
+                    <% profiles.forEach(profile => { %>
+                        <div class="profile-card <%= selectedProfile?.profileId === profile.profileId ? 'active' : '' %>">
+                            <div class="profile-header">
+                                <div class="profile-icon">
+                                    <i class="fas fa-<%= profile.accountInfo?.type === 'seller' ? 'store' : profile.accountInfo?.type === 'vendor' ? 'building' : 'users' %>"></i>
+                                </div>
+                                <% if (selectedProfile?.profileId === profile.profileId) { %>
+                                    <span class="active-badge"><i class="fas fa-check-circle"></i></span>
+                                <% } %>
+                            </div>
+                            <div class="profile-body">
+                                <div class="profile-name"><%= profile.accountInfo?.name || 'Unknown' %></div>
+                                <div class="profile-type-badge <%= profile.accountInfo?.type %>">
+                                    <%= profile.accountInfo?.type?.toUpperCase() || 'N/A' %>
+                                </div>
+                                <div class="profile-meta">
+                                    <span><i class="fas fa-globe"></i> <%= profile.countryCode %></span>
+                                    <span><i class="fas fa-coins"></i> <%= profile.currencyCode %></span>
+                                </div>
+                                <div class="profile-id">ID: <%= profile.profileId %></div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-users-slash"></i>
+                        <p>No profiles found</p>
+                        <button onclick="syncProfiles()" class="btn-sync">
+                            <i class="fas fa-sync-alt"></i> Sync Profiles
+                        </button>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings-tab" class="tab-pane">
+            <%
+            const categories = { general: 'General', thresholds: 'Thresholds', targeting: 'Targeting' };
+            const groupedSettings = settings.reduce((acc, setting) => {
+                if (!acc[setting.category]) acc[setting.category] = [];
+                acc[setting.category].push(setting);
+                return acc;
+            }, {});
+            %>
+
+            <% Object.keys(categories).forEach(category => { %>
+                <% if (groupedSettings[category] && groupedSettings[category].length > 0) { %>
+                    <div class="settings-group">
+                        <h4 class="group-title"><%= categories[category] %></h4>
+                        <div class="settings-grid">
+                            <% groupedSettings[category].forEach(setting => { %>
+                                <div class="setting-card" data-key="<%= setting.key %>">
+                                    <div class="setting-info">
+                                        <label class="setting-label"><%= setting.label %></label>
+                                        <p class="setting-description"><%= setting.description %></p>
+                                    </div>
+                                    <div class="setting-control">
+                                        <input 
+                                            type="number" 
+                                            class="setting-input" 
+                                            value="<%= setting.value %>"
+                                            min="<%= setting.min %>"
+                                            max="<%= setting.max %>"
+                                            step="<%= setting.step %>"
+                                            data-key="<%= setting.key %>"
+                                            data-type="<%= setting.type %>"
+                                        >
+                                        <span class="setting-unit">
+                                            <% if (setting.type === 'percent') { %>%
+                                            <% } else if (setting.type === 'currency') { %>₹
+                                            <% } %>
+                                        </span>
+                                        <button onclick="saveSetting('<%= setting.key %>')" class="btn-save">Save</button>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<style>
+    .account-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header */
+    .account-header {
+        background: #1a2d4a;
+        border-radius: 12px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 1.5rem;
+        color: white;
+        box-shadow: 0 4px 20px rgba(17, 29, 51, 0.15);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .org-info, .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .org-avatar, .user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .org-details h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .org-id {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        font-family: monospace;
+    }
+
+    .user-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .user-email {
+        font-size: 0.85rem;
+        opacity: 0.7;
+    }
+
+    /* Tabs */
+    .tabs-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 0.5rem;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        width: fit-content;
+    }
+
+    .tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.25rem;
+        background: transparent;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+        background: #f1f5f9;
+        color: #111d33;
+    }
+
+    .tab-btn.active {
+        background: #111d33;
+        color: white;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    /* Section Header */
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .section-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #1e293b;
+    }
+
+    /* Sync Button */
+    .btn-sync {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #111d33;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .btn-sync:hover {
+        background: #0d172a;
+    }
+
+    /* Profiles Grid */
+    .profiles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .profile-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-card.active {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 1rem;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .profile-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #e0e7ff;
+        color: #4338ca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .active-badge {
+        color: #166534;
+        font-size: 1rem;
+    }
+
+    .profile-body {
+        padding: 1rem;
+    }
+
+    .profile-name {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-type-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-type-badge.seller {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .profile-type-badge.vendor {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .profile-type-badge.agency {
+        background: #fae8ff;
+        color: #86198f;
+    }
+
+    .profile-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    .profile-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .profile-id {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-family: monospace;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        margin-bottom: 1rem;
+    }
+
+    /* Settings */
+    .settings-group {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1rem;
+        padding: 1.25rem;
+    }
+
+    .group-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #475569;
+        margin: 0 0 1rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1rem;
+    }
+
+    .setting-card {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .setting-info {
+        margin-bottom: 0.75rem;
+    }
+
+    .setting-label {
+        display: block;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .setting-description {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .setting-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .setting-input {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        transition: border-color 0.2s ease;
+    }
+
+    .setting-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .setting-unit {
+        color: #64748b;
+        font-weight: 500;
+        min-width: 20px;
+    }
+
+    .btn-save {
+        padding: 0.5rem 1rem;
+        background: #111d33;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        font-size: 0.85rem;
+    }
+
+    .btn-save:hover {
+        background: #0d172a;
+    }
+
+    .btn-save.saving {
+        background: #6b7280;
+        cursor: not-allowed;
+    }
+
+    .btn-save.saved {
+        background: #166534;
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .profiles-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .settings-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tabs {
+            width: 100%;
+        }
+
+        .tab-btn {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            
+            // Update button states
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update tab panes
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+    });
+
+    async function saveSetting(key) {
+        const input = document.querySelector(`input[data-key="${key}"]`);
+        const saveBtn = input.parentElement.querySelector('.btn-save');
+        const value = parseFloat(input.value);
+
+        if (isNaN(value)) {
+            showNotification('Please enter a valid number', 'error');
+            return;
+        }
+
+        saveBtn.classList.add('saving');
+        saveBtn.textContent = 'Saving...';
+
+        try {
+            const response = await fetch(`/api/settings/${key}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ value }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                saveBtn.classList.remove('saving');
+                saveBtn.classList.add('saved');
+                saveBtn.textContent = 'Saved!';
+                showNotification('Setting saved successfully', 'success');
+                
+                setTimeout(() => {
+                    saveBtn.classList.remove('saved');
+                    saveBtn.textContent = 'Save';
+                }, 2000);
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            saveBtn.classList.remove('saving');
+            saveBtn.textContent = 'Save';
+            showNotification('Error saving setting: ' + error.message, 'error');
+        }
+    }
+
+    async function syncProfiles() {
+        try {
+            const response = await fetch('/auth/sync-profiles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification(`Profiles synced: ${result.added} added, ${result.removed} removed, ${result.total} total`, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            showNotification('Error syncing profiles: ' + error.message, 'error');
+        }
+    }
+
+    function showNotification(message, type = 'info') {
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+</script>
+
+<%- include('partials/footer') %>

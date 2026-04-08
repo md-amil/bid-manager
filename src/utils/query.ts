@@ -7,3 +7,4 @@ export function buildQueryWindow(win:number=0) {
     const windowStr = formatDate(window);
     return { $gte: windowStr, $lte: nowStr }
 }
+

@@ -39,12 +39,13 @@ export class AuthController {
     if (session.userId && !session.authenticated) {
       return res.redirect('/auth/connect-amazon');
     }
+    console.log("session")
 
     if (envRefreshToken && !session.authenticated) {
       this.logger.log('Refresh token found in environment, attempting auto-login');
       try {
         const tokens = await this.authApi.refreshAccessToken(envRefreshToken);
-        console.log(tokens)
+        // console.log(tokens)
         const profiles = await this.authService.getProfiles(tokens.access_token);
         session.accessToken = tokens.access_token;
         session.refreshToken = tokens.refresh_token;
@@ -82,7 +83,7 @@ export class AuthController {
     try {
       // Find user by email
       const user = await this.userModel.findOne({ email }).exec();
-
+      console.log(user)
       if (!user) {
         return res.render('login', {
           error: 'invalid_credentials',
@@ -97,6 +98,7 @@ export class AuthController {
           title: 'Login to Amazon Bid Manager'
         });
       }
+      console.log("login")
 
       // Store user in session
       session.userId = user._id;
@@ -107,18 +109,25 @@ export class AuthController {
 
       // Check if user has Amazon account connected
       const org = await this.authService.getOrganization(user._id);
+      
       if (!org.refreshToken) {
-        session.save((err) => {
-          if (err) throw err;
-          return res.redirect('/auth/connect-amazon');
+        // No Amazon account connected, redirect to connect page
+        return new Promise((resolve, reject) => {
+          session.save((err) => {
+            if (err) reject(err);
+            else resolve(res.redirect('/auth/connect-amazon'));
+          });
         });
       }
 
       // Auto-connect Amazon if refresh token exists
       try {
-        Object.assign(session, await this.authService.getSessionDetails(org))
-        session.save((err) => {
-          if (!err) res.redirect('/select-profile');
+        Object.assign(session, await this.authService.getSessionDetails(org));
+        return new Promise((resolve, reject) => {
+          session.save((err) => {
+            if (err) reject(err);
+            else resolve(res.redirect('/select-profile'));
+          });
         });
       } catch (error) {
         this.logger.error('Failed to auto-connect Amazon', error);

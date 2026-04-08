@@ -24,6 +24,11 @@ export class CloseMatchOptimizationRule extends BaseRule implements ICampaignRul
     this.convertableTerm = terms.filter(st => st.sales7d > 0 && this.calculateACOS(st) <= config.targetAcos);
     this.acceptableAcos = this.calculateACOS({ cost, sales7d: sales }) <= config.targetAcos;
     this.notAcceptable = cost >= config.minSpend && sales === 0;
+
+
+    // pause if not acceptable
+
+
     // // Increase 20% when: Converting search terms found AND ACOS is acceptable
     // this.goodTerms = closeMatchTerms.filter(st => st.sales7d > 0 && this.calculateACOS(st) <= config.targetAcos);
     // // Decrease 50% when: Spending 300+ with no sales OR ACOS is not acceptable
@@ -38,10 +43,12 @@ export class CloseMatchOptimizationRule extends BaseRule implements ICampaignRul
     const lowImpTarget = this.getLowImpressionTarget();
     const isLowImpression = lowImpTarget.length && lowImpTarget.some(target => target.targetId == this.targeting.targetId);
     if (isLowImpression) return false;
+
     // const { cost, sales } = this.targeting.metrics
     // const acceptableAcos = this.calculateACOS({ cost, sales7d: sales }) <= config.targetAcos;
     // const notAcceptable = cost >= config.minSpend && sales === 0;   
-    return this.notAcceptable || !!this.convertableTerm.length && this.acceptableAcos;
+    // return this.notAcceptable || !!this.convertableTerm.length;
+    return true
   }
 
   execute(): AdjustmentLog {

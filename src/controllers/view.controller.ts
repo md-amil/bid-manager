@@ -37,7 +37,7 @@ export class ViewController {
     const selectedProfile = session.selectedProfile;
     const allCampaigns = await this.campaignService.getCampaigns(session.selectedProfile.profileId);
     const campaigns = allCampaigns.filter(campaign =>
-      campaign.state?.toLowerCase() === 'enabled'
+      campaign.state === 'ENABLED'
     );
     const recentLogs = await this.logService.getLogsBy({scopeId: selectedProfile.profileId});
     // const recentLogs = await this.bidLogModel.find({ scopeId: selectedProfile.profileId }).sort({ createdAt: -1 }).limit(10).exec();
@@ -75,9 +75,9 @@ export class ViewController {
     @Query('status') status: string,
     @Query('name') name: string,
     @Query('targeting') targeting: string,
-    @Query('period') period: string,
-    @Query('startDate') startDate: string,
-    @Query('endDate') endDate: string
+    // @Query('period') period: string,
+    // @Query('startDate') startDate: string,
+    // @Query('endDate') endDate: string
   ) {
     const match = {
       scopeId: session.scopeId,
@@ -86,12 +86,11 @@ export class ViewController {
       ...(targeting ? {targetingType: targeting?.toUpperCase()} : {}),
     }
     let campaigns = await this.dataService.getCampaigns(match, session.dateWindow);
-    console.log(campaigns)
     // Calculate date range based on period (use session if no query param)
-    const sessionDateFilter = session.date;
-    const selectedPeriod = period || sessionDateFilter?.period || 'today';
-    const effectiveStartDate = startDate || sessionDateFilter?.startDate;
-    const effectiveEndDate = endDate || sessionDateFilter?.endDate;
+    // const sessionDateFilter = session.dateFilter;
+    // const selectedPeriod = period || sessionDateFilter?.period || 'today';
+    // const effectiveStartDate = startDate || sessionDateFilter?.startDate;
+    // const effectiveEndDate = endDate || sessionDateFilter?.endDate;
     
     // const today = new Date().toISOString().split('T')[0];
     // let dateStart = '';
@@ -182,9 +181,9 @@ export class ViewController {
       filterStatus: status || '',
       filterName: name || '',
       filterTargeting: targeting || '',
-      filterPeriod: selectedPeriod,
-      filterStartDate: effectiveStartDate || '',
-      filterEndDate: effectiveEndDate || '',
+      // filterPeriod: selectedPeriod,
+      // filterStartDate: effectiveStartDate || '',
+      // filterEndDate: effectiveEndDate || '',
       // dateStart,
       // dateEnd,
       getDateFilterLabel: (period: string, start: string, end: string) => {
@@ -493,6 +492,32 @@ export class ViewController {
     }
   }
 
+  @Get('account')
+  async getAccountPage(@Session() session: Record<string, any>, @Res() res: Response) {
+    try {
+      // Get organization details
+      const organization = await this.authService.getOrganization({ _id: session.userId });
+      // Get all profiles for this organization
+      const profiles = await this.authService.getProfiles(session.organizationId);
+      // Get settings
+      const settings = await this.settingService.getAllSettings(session.organizationId);
+      
+      return res.render('account', {
+        title: 'Account',
+        organization,
+        profiles: profiles || [],
+        settings,
+        selectedProfile: session.selectedProfile,
+        userId: session.userId,
+        userName: session.userName,
+        userEmail: session.userEmail,
+      });
+    } catch (error) {
+      console.error('Error loading account page:', error);
+      return res.redirect('/');
+    }
+  }
+
   @Get('select-profile')
   async selectProfilePage(@Session() session: Record<string, any>, @Res() res: Response) {
     const profiles = await this.authService.getProfiles(session.organizationId);
@@ -521,9 +546,12 @@ export class ViewController {
     })
 
     session.save(err => {
-      if (err) return console.log(err)
+      if (err) {
+        console.log(err);
+        return res.redirect('/select-profile?error=session_save_failed');
+      }
       return res.redirect('/');
-    })
+    });
   }
 
   @Get('settings')
@@ -531,14 +559,7 @@ export class ViewController {
     @Session() session: Record<string, any>,
     @Res() res: Response,
   ) {
-    const profiles = await this.authService.getProfiles(session.organizationId);
-    const settings = await this.settingService.getAllSettings(session.organizationId);
-
-    return res.render('settings', {
-      settings,
-      profiles,
-      selectedProfile: session.selectedProfile,
-      title: 'Settings',
-    });
+    // Redirect to account page which now includes settings
+    return res.redirect('/account');
   }
 }

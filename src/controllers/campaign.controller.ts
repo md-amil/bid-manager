@@ -52,7 +52,7 @@ export class CampaignController {
 
   @Post('report-sync')
   async reportSync() {
-    const reportJob = await this.reportProducer.generateReport(1);
+    const reportJob = await this.reportProducer.generateReport(7);
     return { message: 'Report sync initiated', jobIds: reportJob?.map(j => j.id).join(',') };
   }
 
@@ -66,7 +66,7 @@ export class CampaignController {
   async adjustBids(@Request() req: any) {
     const scopeId = req.session.selectedProfile?.profileId
     const accessToken = req.session?.accessToken;
-    const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c => c.state === "ENABLED" && c.campaignId == '235882805467163')
+    const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c => c.state === "ENABLED")
     // const budgetUsages = await this.campaignApi.getBudgetUses(['340981085273491'], {scopeId,accessToken})
     // console.log(campaigns.length, "campaign length", budgetUsages.length)
     await this.bidProducer.scheduleBidAdjustment(campaigns);

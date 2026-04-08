@@ -24,27 +24,41 @@ const periodWindow = {
 export class DateFilterMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const session = (req as any).session;
+    
     // Initialize dateFilter in session if not exists
     if (!session.dateFilter) {
       session.dateFilter = {
         period: 'today'
       };
       session.dateWindow = buildQueryWindow(0);
-      next();
+      res.locals.dateFilter = session.dateFilter;
+      res.locals.dateFilterQueryString = this.buildQueryString(session.dateFilter);
+      return next();
     }
+    
     const { period, startDate, endDate } = req.query;
-    if(period=='custom'){
-      session.dateWindow = {$gte: startDate, $lte: endDate}
-      next();
+    
+    if (period == 'custom') {
+      session.dateWindow = { $gte: startDate, $lte: endDate };
+      session.dateFilter = {
+        period: period as string,
+        startDate: startDate as string | undefined,
+        endDate: endDate as string | undefined
+      };
+      res.locals.dateFilter = session.dateFilter;
+      res.locals.dateFilterQueryString = this.buildQueryString(session.dateFilter);
+      return next();
     }
-    session.dateWindow = buildQueryWindow(periodWindow[period as string]);
+    
     if (period) {
+      session.dateWindow = buildQueryWindow(periodWindow[period as string]);
       session.dateFilter = {
         period: period as string,
         startDate: startDate as string | undefined,
         endDate: endDate as string | undefined
       };
     }
+    
     res.locals.dateFilter = session.dateFilter;
     res.locals.dateFilterQueryString = this.buildQueryString(session.dateFilter);
     next();

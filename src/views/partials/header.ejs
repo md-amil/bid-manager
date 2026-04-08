@@ -305,7 +305,7 @@ const getDateFilterLabel = (period, startDate, endDate) => {
                     <li><a href="<%= buildUrl('/') %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Dashboard</a></li>
                     <li><a href="<%= buildUrl('/campaigns') %>" class="<%= currentPage === 'campaigns' ? 'active' : '' %>">Campaigns</a></li>
                     <li><a href="<%= buildUrl('/logs') %>" class="<%= currentPage === 'logs' ? 'active' : '' %>">Logs</a></li>
-                    <li><a href="<%= buildUrl('/settings') %>" class="<%= currentPage === 'settings' ? 'active' : '' %>">Settings</a></li>
+                    <li><a href="/account" class="<%= currentPage === 'account' ? 'active' : '' %>">Account</a></li>
                 </ul>
                 <a href="/auth/logout" class="logout-btn">Logout</a>
             </div>

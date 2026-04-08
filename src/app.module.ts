@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -133,11 +133,17 @@ export class AppModule implements NestModule {
     consumer
       .apply(AuthMiddleware)
       .exclude(
-        { path: '/auth/(.*)', method: 0 },
-        { path: '/css/(.*)', method: 0 },
-        { path: '/js/(.*)', method: 0 },
-        { path: '/images/(.*)', method: 0 },
-        { path: '/favicon.ico', method: 0 }
+        { path: 'auth/login', method: RequestMethod.GET },
+        { path: 'auth/login', method: RequestMethod.POST },
+        { path: 'auth/register', method: RequestMethod.GET },
+        { path: 'auth/register', method: RequestMethod.POST },
+        { path: 'auth/amazon', method: RequestMethod.GET },
+        { path: 'auth/callback', method: RequestMethod.GET },
+        { path: 'auth/connect-amazon', method: RequestMethod.GET },
+        { path: 'auth/logout', method: RequestMethod.GET },
+        { path: 'select-profile', method: RequestMethod.GET },
+        { path: 'select-profile', method: RequestMethod.POST },
+        'auth/(.*)'
       )
       .forRoutes('*');
   }
