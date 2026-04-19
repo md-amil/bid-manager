@@ -12,6 +12,7 @@ export class HighSpendPoorConversionRule extends AutoCampaignBaseRule implements
   }
 
   shouldApply(): boolean {
+    console.log(this.metrics)
     const highClicks = this.metrics.clicks > config.minClicks;
     const highSpend = this.metrics.cost > config.minSpend;
     const lowOrZeroSales = this.metrics.sales === 0 || this.acos > config.targetAcos;

@@ -49,7 +49,7 @@ export interface ITargetFilter {
 }
 
 export interface ISearchTermFilter {
-    campaignId?: string;
+    campaignId?: string[] | string;
     adGroupId?: string;
     targeting?: string;
     keywordId?: string;

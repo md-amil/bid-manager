@@ -30,7 +30,6 @@ export class SettingController {
   @Post('init')
   async initialize(@Req() req: any) {
     const organizationId = req.session.organizationId;
-    console.log("init")
     if (!organizationId) {
       return { success: false, message: 'Organization not found' };
     }

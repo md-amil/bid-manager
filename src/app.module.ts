@@ -39,6 +39,7 @@ import { SearchTermReport, SearchTermReportSchema } from './schemas/reports/sear
 import { User, UserSchema } from './schemas/user.schema';
 import { Organization, OrganizationSchema } from './schemas/organization.schema';
 import Engine from './engine/core/rule.engine';
+import DailyRuleEngine from './engine/core/daily-rule.engine';
 import { AuthApiService } from './services/amazon/auth-api.service';
 import { ClsMiddleware } from './middleware/cls.middleware';
 import { DateFilterMiddleware } from './middleware/date-filter.middleware';
@@ -110,6 +111,7 @@ import { DataService } from './services/data.service';
     AppService,
     AuthApiService,
     Engine,
+    DailyRuleEngine,
     CronService, AuthService,
     BidProcessor, ReportProcessor,
     CampaignService, SyncProducer,

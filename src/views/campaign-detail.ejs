@@ -345,6 +345,9 @@
                                                 } else if (adj.target === 'searchTerms' && log.searchTerms && log.searchTerms.length > 0) {
                                                     entities = log.searchTerms;
                                                     entityType = 'search-term';
+                                                } else if (adj.target === 'ads' && log.ads && log.ads.length > 0) {
+                                                    entities = log.ads;
+                                                    entityType = 'ad';
                                                 }
                                             %>
                                                 <div class="adjustments-table-section">
@@ -443,6 +446,12 @@
                                                                             <th>Clicks</th>
                                                                             <th>Cost</th>
                                                                             <th>Sales</th>
+                                                                        <% } else if (entityType === 'ad') { %>
+                                                                            <th>Ad ID</th>
+                                                                            <th>Product</th>
+                                                                            <th>ASIN</th>
+                                                                            <th>Availability</th>
+                                                                            <th>Price</th>
                                                                         <% } %>
                                                                     </tr>
                                                                 </thead>
@@ -496,7 +505,33 @@
                                                                                 <td><%= entity.impressions || 0 %></td>
                                                                                 <td><%= entity.clicks || 0 %></td>
                                                                                 <td class="cost-value">$<%= (entity.cost || 0).toFixed(2) %></td>
-                                                                                <td class="sales-value">$<%= (entity.sales || entity.sales7d || 0).toFixed(2) %></td>
+                                                                                <td class="sales-value">$<%= (entity.sales??0).toFixed(2) %></td>
+                                                                            <% } else if (entityType === 'ad') { 
+                                                                                const product = entity.product || {};
+                                                                                const imageUrl = product.imageUrl;
+                                                                            %>
+                                                                                <td class="target-id"><%= entity.adId || 'N/A' %></td>
+                                                                                <td>
+                                                                                    <% if (imageUrl) { %>
+                                                                                        <img src="<%= imageUrl %>" alt="Product" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; vertical-align: middle; margin-right: 8px;">
+                                                                                    <% } %>
+                                                                                    <span><%= product.title || entity.sku || '-' %></span>
+                                                                                </td>
+                                                                                <td class="target-id"><%= entity.asin || 'N/A' %></td>
+                                                                                <td>
+                                                                                    <% if (product.availability === 'IN_STOCK') { %>
+                                                                                        <span class="status-badge enabled"><i class="fas fa-check-circle"></i> In Stock</span>
+                                                                                    <% } else { %>
+                                                                                        <span class="status-badge paused"><i class="fas fa-times-circle"></i> <%= product.availability || 'Out of Stock' %></span>
+                                                                                    <% } %>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <% if (product.price !== undefined && product.price !== null) { %>
+                                                                                        <%= product.currency || '$' %><%= parseFloat(product.price).toFixed(2) %>
+                                                                                    <% } else { %>
+                                                                                        <span class="text-muted">-</span>
+                                                                                    <% } %>
+                                                                                </td>
                                                                             <% } %>
                                                                         </tr>
                                                                     <% }); %>
@@ -599,7 +634,57 @@
                                                                     <td><%= st.impressions || 0 %></td>
                                                                     <td><%= st.clicks || 0 %></td>
                                                                     <td class="cost-value">$<%= (st.cost || 0).toFixed(2) %></td>
-                                                                    <td class="sales-value">$<%= (st.sales || st.sales7d || 0).toFixed(2) %></td>
+                                                                    <td class="sales-value">$<%= (st.sales ?? 0).toFixed(2) %></td>
+                                                                </tr>
+                                                            <% }); %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        <% } %>
+
+                                        <% if (log.ads && log.ads.length > 0 && (!log.adjustments || log.adjustments.length === 0)) { %>
+                                            <div class="ads-section">
+                                                <h4><i class="fas fa-ad"></i> Ads to Pause</h4>
+                                                <div class="table-responsive">
+                                                    <table class="adjustments-detail-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Ad ID</th>
+                                                                <th>Product</th>
+                                                                <th>ASIN</th>
+                                                                <th>Availability</th>
+                                                                <th>Price</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% log.ads.forEach(ad => { 
+                                                                const product = ad.product || {};
+                                                                const imageUrl = product.imageUrl;
+                                                            %>
+                                                                <tr>
+                                                                    <td class="target-id"><%= ad.adId || 'N/A' %></td>
+                                                                    <td>
+                                                                        <% if (imageUrl) { %>
+                                                                            <img src="<%= imageUrl %>" alt="Product" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; vertical-align: middle; margin-right: 8px;">
+                                                                        <% } %>
+                                                                        <span><%= product.title || ad.sku || '-' %></span>
+                                                                    </td>
+                                                                    <td class="target-id"><%= ad.asin || 'N/A' %></td>
+                                                                    <td>
+                                                                        <% if (product.availability === 'IN_STOCK') { %>
+                                                                            <span class="status-badge enabled"><i class="fas fa-check-circle"></i> In Stock</span>
+                                                                        <% } else { %>
+                                                                            <span class="status-badge paused"><i class="fas fa-times-circle"></i> <%= product.availability || 'Out of Stock' %></span>
+                                                                        <% } %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <% if (product.price !== undefined && product.price !== null) { %>
+                                                                            <%= product.currency || '$' %><%= parseFloat(product.price).toFixed(2) %>
+                                                                        <% } else { %>
+                                                                            <span class="text-muted">-</span>
+                                                                        <% } %>
+                                                                    </td>
                                                                 </tr>
                                                             <% }); %>
                                                         </tbody>
@@ -968,21 +1053,24 @@
 .adjustments-section,
 .targets-section,
 .keywords-section,
-.search-terms-section {
+.search-terms-section,
+.ads-section {
     margin-bottom: 16px;
 }
 
 .adjustments-section:last-child,
 .targets-section:last-child,
 .keywords-section:last-child,
-.search-terms-section:last-child {
+.search-terms-section:last-child,
+.ads-section:last-child {
     margin-bottom: 0;
 }
 
 .adjustments-section h4,
 .targets-section h4,
 .keywords-section h4,
-.search-terms-section h4 {
+.search-terms-section h4,
+.ads-section h4 {
     font-size: 0.85rem;
     font-weight: 600;
     color: #111d33;
@@ -997,7 +1085,8 @@
 .adjustments-section h4 i,
 .targets-section h4 i,
 .keywords-section h4 i,
-.search-terms-section h4 i {
+.search-terms-section h4 i,
+.ads-section h4 i {
     color: #64748b;
 }
 

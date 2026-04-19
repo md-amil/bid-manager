@@ -171,16 +171,24 @@
                                 <%= campaign.metrics ? '₹' + campaign.metrics.sales.toLocaleString() : '-' %>
                             </td>
                             <td class="metric-cell acos">
-                                <% if (campaign.metrics && campaign.metrics.acos > 0) { %>
-                                    <span class="acos-badge <%= parseFloat(campaign.metrics.acos) < 20 ? 'good' : parseFloat(campaign.metrics.acos) < 40 ? 'medium' : 'bad' %>">
-                                        <%= campaign.metrics.acos %>%
+                                <% if (campaign.metrics && campaign.metrics.cost > 0 && campaign.metrics.sales > 0) { %>
+                                    <% const acos = ((campaign.metrics.cost / campaign.metrics.sales) * 100).toFixed(2); %>
+                                    <span class="acos-badge <%= parseFloat(acos) < 20 ? 'good' : parseFloat(acos) < 40 ? 'medium' : 'bad' %>">
+                                        <%= acos %>%
                                     </span>
                                 <% } else { %>
                                     -
                                 <% } %>
                             </td>
                             <td class="metric-cell roas">
-                                <%= campaign.metrics ? campaign.metrics.roas : '-' %>
+                                <% if (campaign.metrics && campaign.metrics.cost > 0 && campaign.metrics.sales > 0) { %>
+                                    <% const roas = (campaign.metrics.sales / campaign.metrics.cost).toFixed(2); %>
+                                    <span class="roas-value <%= parseFloat(roas) >= 4 ? 'good' : parseFloat(roas) >= 2 ? 'medium' : 'low' %>">
+                                        <%= roas %>
+                                    </span>
+                                <% } else { %>
+                                    -
+                                <% } %>
                             </td>
                             <td>
                                 <span class="status-badge <%= campaign.state.toLowerCase() %>">
@@ -430,8 +438,19 @@
 <style>
 /* ROAS cell styling */
 .metric-cell.roas {
-    color: #059669;
     font-weight: 600;
+}
+
+.roas-value.good {
+    color: #059669;
+}
+
+.roas-value.medium {
+    color: #d97706;
+}
+
+.roas-value.low {
+    color: #dc2626;
 }
 </style>
 

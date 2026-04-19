@@ -10,7 +10,7 @@ import { TargetReport } from 'src/schemas/reports/target-report.schema';
 import { AdReport } from 'src/schemas/reports/ad-report.schema';
 import { AdGroupReport } from 'src/schemas/reports/adgroup-report.schema';
 import { AmazonMapper } from './amazon/amazon.mapper';
-import { IMetrics } from 'src/engine/interfaces';
+import { IMetrics, ISearchTerm } from 'src/engine/interfaces';
 import { buildQueryWindow } from 'src/utils/query';
 import { IDateFilter } from 'src/interfaces/report.type';
 
@@ -337,7 +337,17 @@ export class ReportService {
     ]);
     
     if (result.length === 0) {
-      return null;
+      return {
+          impressions: 0,
+          clicks: 0,
+          spend: 0,
+          sales: 0,
+          conversions: 0,
+          costPerClick: 0,
+          clickThroughRate: 0,
+          roas: 0,
+          acos: 0,
+        };
     }
     
     const data = result[0];
@@ -587,7 +597,7 @@ export class ReportService {
           last7d: [
             {
               $match: {
-                date: buildQueryWindow(7)
+                date: buildQueryWindow(6)
               }
             },
             {
@@ -605,25 +615,29 @@ export class ReportService {
       }
     ]);
     const data = result[0];
-    console.log(data)
     return {
       metrics30d: data.last30d[0] || { totalCost: 0, totalSales: 0, totalImpressions: 0, totalClicks: 0 },
       metrics7d: data.last7d[0] || { totalCost: 0, totalSales: 0, totalImpressions: 0, totalClicks: 0 }
     };
   }
   
-  async getSearchTermReport(campaignId: string) {
+  async getSearchTermReport(campaignId: string,dateFilter:{
+    $gte: string;
+    $lte: string;
+}) {
     const response = await this.searchReport.aggregate([
       {
         $match: {
           campaignId,
-          date: buildQueryWindow(7)
+          date: dateFilter
         },
       },
       {
         $group: {
           _id: '$searchTerm',
           keyword: { $first: '$keyword' },
+          matchType: { $first: '$matchType' },
+
           keywordId: { $first: '$keywordId' },
           searchTerm: { $first: '$searchTerm' },
           campaignId: { $first: '$campaignId' },
@@ -631,6 +645,7 @@ export class ReportService {
           cost: { $sum: '$cost' },
           clicks: { $sum: '$clicks' },
           impressions: { $sum: '$impressions' },
+          sales: { $sum: '$sales1d' },
           sales7d: { $sum: '$sales7d' },
           purchases7d: { $sum: '$purchases7d' },
         },
@@ -643,15 +658,17 @@ export class ReportService {
           searchTerm: 1,
           campaignId: 1,
           adGroupId: 1,
+          sales: 1,
           cost: 1,
           clicks: 1,
           impressions: 1,
+          matchType: 1,
           sales7d: 1,
           purchases7d: 1,
         },
       },
     ]);
-    return response || [];
+    return (response || []) as ISearchTerm[];
   }
 
   // async getCampaignTotalCost(campaignId: string, startDate?: string, endDate?: string) {
@@ -691,6 +708,28 @@ export class ReportService {
   //     totalClicks: 0
   //   };
   // }
+
+  /**
+   * Get today's search terms for multiple campaign IDs
+   * Returns raw search term data grouped by campaignId: { campaignId: [terms] }
+   */
+  async getSearchTermsByCampaignIds(campaignIds: string[]) {
+    const today = new Date();
+    const date = today.toISOString().split('T')[0];
+    const response = await this.searchReport.find({
+      campaignId: { $in: campaignIds },
+      date: date
+    }).lean();
+    const groupedByCampaign: Record<string, any[]> = {};
+    for (const term of response || []) {
+      const cid = term.campaignId;
+      if (!groupedByCampaign[cid]) {
+        groupedByCampaign[cid] = [];
+      }
+      groupedByCampaign[cid].push(term);
+    }
+    return groupedByCampaign;
+  }
 
 }
 

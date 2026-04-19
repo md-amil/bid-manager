@@ -10,6 +10,7 @@ import { CampaignService } from 'src/services/campaign.service';
 import { SyncProducer } from 'src/queue/producer/sync.producer';
 import { DataService } from 'src/services/data.service';
 import { buildQueryWindow } from 'src/utils/query';
+import DailyRuleEngine from 'src/engine/core/daily-rule.engine';
 
 
 @Controller('api/campaigns')
@@ -21,6 +22,7 @@ export class CampaignController {
     private readonly bidProducer: BidProducer,
     private readonly campaignService: CampaignService,
     private readonly dataService:DataService,
+    private readonly dailyRuleEngine: DailyRuleEngine,
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
     @InjectModel(AdjustmentLog.name) private bidLogModel: Model<LogDocument>,
   ) { }
@@ -68,9 +70,25 @@ export class CampaignController {
     const accessToken = req.session?.accessToken;
     const campaigns = (await this.campaignService.getCampaigns(scopeId)).filter(c => c.state === "ENABLED")
     // const budgetUsages = await this.campaignApi.getBudgetUses(['340981085273491'], {scopeId,accessToken})
-    // console.log(campaigns.length, "campaign length", budgetUsages.length)
     await this.bidProducer.scheduleBidAdjustment(campaigns);
     return { message: 'Bid adjustment scheduled' };
+  }
+
+  @Post('daily-adjust')
+  async dailyAdjust(@Request() req: any) {
+    const scopeId = req.session.selectedProfile?.profileId;
+    const accessToken = req.session?.accessToken;
+    
+    if (!scopeId || !accessToken) {
+      return { success: false, message: 'No profile selected or access token missing' };
+    }
+
+    try {
+      await this.dailyRuleEngine.run({ scopeId, accessToken });
+      return { success: true, message: 'Daily adjustment completed' };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
   }
 
   @Post(':id/optimize')

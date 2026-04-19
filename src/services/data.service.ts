@@ -13,6 +13,7 @@ import { AdGroup } from "src/schemas/ad-group.schema";
 import { Ad } from "src/schemas/ad.schema";
 import { Keyword } from "src/schemas/keyword.schema";
 import { Target } from "src/schemas/target.schema";
+import { Product } from "src/schemas/product.schema";
 
 
 @Injectable()
@@ -25,6 +26,7 @@ export class DataService {
     @InjectModel(Keyword.name) private keyword: Model<Keyword>,
     @InjectModel(Target.name) private target: Model<Target>,
     @InjectModel(Ad.name) private ad: Model<Ad>,
+    @InjectModel(Product.name) private product: Model<Product>,
     @InjectModel(SearchTermReport.name) private searchReport: Model<SearchTermReport>,
 
     @InjectModel(CampaignReport.name) private campReport: Model<CampaignReport>,
@@ -36,7 +38,6 @@ export class DataService {
 
 
   async getCampaigns($match: ICampaignFilter, { $gte, $lte }: IDateFilter, $sort: { state: 1|-1 } = { state: 1 }): Promise<ICampaignReport[]> {
-    console.log({ $match, $gte, $lte })
     const campaignWithReport = await this.campaign.aggregate([
       {
         $match
@@ -271,8 +272,7 @@ export class DataService {
     ]);
   }
 
-  async getSearchTerm($match: ISearchTermFilter, dateFilter: IDateFilter){
-    $match.campaignId='235882805467163'
+  async getSearchTerm($match: ISearchTermFilter, dateFilter: IDateFilter){ 
     return this.searchReport.aggregate([
       {
         $match: {
@@ -339,6 +339,20 @@ export class DataService {
     //       preserveNullAndEmptyArrays: true
     //     }
     //   },
-    // ]);
+    // ]));
+  }
+  /**
+   * Get products by ASINs
+   * Returns a map of ASIN -> Product for easy lookup
+   */
+  async getProductsByAsins(asins: string[]): Promise<Record<string, any>> {
+    if (!asins || asins.length === 0) return {};
+    const products = await this.product.find({ asin: { $in: asins } }).lean();
+    const productMap: Record<string, any> = {};
+    for (const product of products) {
+      productMap[product.asin] = product;
+    }
+    
+    return productMap;
   }
 }

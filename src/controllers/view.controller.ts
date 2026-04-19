@@ -26,9 +26,9 @@ export class ViewController {
     private reportService: ReportService,
     private authService: AuthService,
     private settingService: SettingService,
-    private logService:AdjustmentLogService,
+    private logService: AdjustmentLogService,
     private readonly syncProducer: SyncProducer,
-    private readonly dataService:DataService
+    private readonly dataService: DataService
   ) { }
 
   @Get()
@@ -39,7 +39,7 @@ export class ViewController {
     const campaigns = allCampaigns.filter(campaign =>
       campaign.state === 'ENABLED'
     );
-    const recentLogs = await this.logService.getLogsBy({scopeId: selectedProfile.profileId});
+    const recentLogs = await this.logService.getLogsBy({ scopeId: selectedProfile.profileId });
     // const recentLogs = await this.bidLogModel.find({ scopeId: selectedProfile.profileId }).sort({ createdAt: -1 }).limit(10).exec();
     const report = await this.campaignService.getLatestReportSum(allCampaigns.map(c => c.campaignId)) ?? {}
 
@@ -81,9 +81,9 @@ export class ViewController {
   ) {
     const match = {
       scopeId: session.scopeId,
-      ...(status ? {state:status?.toUpperCase()} : {}),
-      ...(name ? {name: { $regex: name, $options: 'i' }} : {}),
-      ...(targeting ? {targetingType: targeting?.toUpperCase()} : {}),
+      ...(status ? { state: status?.toUpperCase() } : {}),
+      ...(name ? { name: { $regex: name, $options: 'i' } } : {}),
+      ...(targeting ? { targetingType: targeting?.toUpperCase() } : {}),
     }
     let campaigns = await this.dataService.getCampaigns(match, session.dateWindow);
     // Calculate date range based on period (use session if no query param)
@@ -91,7 +91,7 @@ export class ViewController {
     // const selectedPeriod = period || sessionDateFilter?.period || 'today';
     // const effectiveStartDate = startDate || sessionDateFilter?.startDate;
     // const effectiveEndDate = endDate || sessionDateFilter?.endDate;
-    
+
     // const today = new Date().toISOString().split('T')[0];
     // let dateStart = '';
     // let dateEnd = today;
@@ -216,13 +216,13 @@ export class ViewController {
     let adGroups: any[] = [];
     let logs = [];
     let metrics: any = null;
-    
+
     // Use session date filter if no query params provided
     const sessionDateFilter = session.dateFilter;
     const selectedPeriod = period || sessionDateFilter?.period || 'daily';
     const effectiveStartDate = startDate || sessionDateFilter?.startDate;
     const effectiveEndDate = endDate || sessionDateFilter?.endDate;
-    
+
     let dateFilter = {}
     if (selectedPeriod === 'custom' && effectiveStartDate && effectiveEndDate) {
       dateFilter = { $gte: effectiveStartDate, $lte: effectiveEndDate }
@@ -237,7 +237,7 @@ export class ViewController {
       dateFilter = buildQueryWindow(window[selectedPeriod])
       // const windowDays = selectedPeriod === 'monthly' || selectedPeriod === 'last30days' ? 29 : 
       // selectedPeriod === 'weekly' || selectedPeriod === 'last7days' ? 6 : 0;
-      // const dateRange = buildQueryWindow(windowDays);
+      // const dateRange = buildQueryWindow(  windowDays);
       // dateStart = dateRange.$gte;
       // dateEnd = dateRange.$lte;
     }
@@ -246,28 +246,15 @@ export class ViewController {
       campaign = await this.campaignService.getCampaignById(id, ['adgroups', 'adjustmentlogs']);
       adGroups = campaign.adgroups;
       logs = campaign.adjustmentlogs;
-      // Get aggregated campaign metrics using report service
-      metrics = await this.reportService.getCampaignReportAggregated(id,dateFilter);
 
-      // Provide default metrics if null
-      if (!metrics) {
-        metrics = {
-          impressions: 0,
-          clicks: 0,
-          spend: 0,
-          sales: 0,
-          conversions: 0,
-          costPerClick: 0,
-          clickThroughRate: 0,
-          roas: 0,
-          acos: 0,
-        };
-      } else {
-        // Map cost to spend and sales1d to sales for template compatibility
-        metrics.spend = metrics.cost;
-        metrics.sales = metrics.sales1d;
-        metrics.conversions = metrics.purchases1d;
-      }
+
+      // Get aggregated campaign metrics using report service
+      metrics = await this.reportService.getCampaignReportAggregated(id, dateFilter);
+
+      // Map cost to spend and sales1d to sales for template compatibility
+      metrics.spend = metrics.cost;
+      metrics.sales = metrics.sales1d;
+      metrics.conversions = metrics.purchases1d;
       // Fetch adgroup reports for metrics with date filter
       if (adGroups && adGroups.length > 0) {
         const adGroupIds = adGroups.map(ag => String(ag.adGroupId));
@@ -334,7 +321,7 @@ export class ViewController {
     const selectedPeriod = period || sessionDateFilter?.period || 'today';
     const effectiveStartDate = startDate || sessionDateFilter?.startDate;
     const effectiveEndDate = endDate || sessionDateFilter?.endDate;
-    
+
     let dateStart: string;
     let dateEnd: string;
 
@@ -501,7 +488,7 @@ export class ViewController {
       const profiles = await this.authService.getProfiles(session.organizationId);
       // Get settings
       const settings = await this.settingService.getAllSettings(session.organizationId);
-      
+
       return res.render('account', {
         title: 'Account',
         organization,

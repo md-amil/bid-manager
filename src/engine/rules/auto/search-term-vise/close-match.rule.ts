@@ -1,4 +1,4 @@
-import { ICampaignBundle, ICampaignRuleDecision, TargetingType } from "src/engine/interfaces";
+import { ICampaignBundle, ICampaignRuleDecision, ISearchTerm, TargetingType } from "src/engine/interfaces";
 import { config, TargetType } from "../../base.rule";
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 import BaseRule from "../../base.rule";
@@ -9,20 +9,20 @@ import { Targeting } from "src/interfaces/report.type";
 
 export class CloseMatchOptimizationRule extends BaseRule implements ICampaignRuleDecision {
   private readonly targeting: Targeting;
-  private readonly convertableTerm: SearchTermDocument[];
+  private readonly convertableTerm: ISearchTerm[];
   private readonly acceptableAcos: boolean
   private readonly notAcceptable: boolean
 
   constructor(bundle: ICampaignBundle) {
     super(bundle)
     this.targeting = this.getTargeting(TargetType.CLOSE_MATCH)[0];
-    if(!this.targeting.metrics) return 
+    if (!this.targeting.metrics) return
 
 
-    const { cost, sales } = this.targeting.metrics??{}
+    const { cost, sales } = this.targeting.metrics ?? {}
     const terms = this.getSearchTerms(TargetingType.CLOSE_MATCH);
-    this.convertableTerm = terms.filter(st => st.sales7d > 0 && this.calculateACOS(st) <= config.targetAcos);
-    this.acceptableAcos = this.calculateACOS({ cost, sales7d: sales }) <= config.targetAcos;
+    this.convertableTerm = terms.filter((st: ISearchTerm) => st.sales > 0 && this.calculateACOS(st) <= config.targetAcos);
+    this.acceptableAcos = this.calculateACOS({ cost, sales }) <= config.targetAcos;
     this.notAcceptable = cost >= config.minSpend && sales === 0;
 
 
@@ -39,7 +39,7 @@ export class CloseMatchOptimizationRule extends BaseRule implements ICampaignRul
   }
 
   shouldApply(): boolean {
-    if(!this.targeting.metrics) return false
+    if (!this.targeting.metrics) return false
     const lowImpTarget = this.getLowImpressionTarget();
     const isLowImpression = lowImpTarget.length && lowImpTarget.some(target => target.targetId == this.targeting.targetId);
     if (isLowImpression) return false;
@@ -54,8 +54,8 @@ export class CloseMatchOptimizationRule extends BaseRule implements ICampaignRul
   execute(): AdjustmentLog {
     let action: EAction;
     let change: number;
-    const { cost, sales } = this.targeting.metrics??{}
-    const acceptableAcos = this.calculateACOS({ cost, sales7d: sales }) <= config.targetAcos;
+    const { cost, sales } = this.targeting.metrics ?? {}
+    const acceptableAcos = this.calculateACOS({ cost, sales }) <= config.targetAcos;
     if (acceptableAcos && this.convertableTerm.length) {
       action = EAction.INCREASE_BID;
       change = 20;

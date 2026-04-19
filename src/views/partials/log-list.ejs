@@ -180,6 +180,9 @@ const groupedLogs = typeof limit !== 'undefined' ? groupLogsByCampaignAndDate(lo
                                                     } else if (adj.target === 'searchTerms' && log.searchTerms && log.searchTerms.length > 0) {
                                                         entities = log.searchTerms;
                                                         entityType = 'search-term';
+                                                    } else if (adj.target === 'ads' && log.ads && log.ads.length > 0) {
+                                                        entities = log.ads;
+                                                        entityType = 'ad';
                                                     }
                                                 %>
                                                     <div class="adjustments-table-section">
@@ -269,6 +272,12 @@ const groupedLogs = typeof limit !== 'undefined' ? groupLogsByCampaignAndDate(lo
                                                                                 <th>Clicks</th>
                                                                                 <th>Cost</th>
                                                                                 <th>Sales</th>
+                                                                            <% } else if (entityType === 'ad') { %>
+                                                                                <th>Ad ID</th>
+                                                                                <th>Product</th>
+                                                                                <th>ASIN</th>
+                                                                                <th>Availability</th>
+                                                                                <th>Price</th>
                                                                             <% } %>
                                                                         </tr>
                                                                     </thead>
@@ -340,7 +349,33 @@ const groupedLogs = typeof limit !== 'undefined' ? groupLogsByCampaignAndDate(lo
                                                                                     <td><%= entity.impressions || 0 %></td>
                                                                                     <td><%= entity.clicks || 0 %></td>
                                                                                     <td class="cost-value">$<%= (entity.cost || 0).toFixed(2) %></td>
-                                                                                    <td class="sales-value">$<%= (entity.sales || entity.sales7d || 0).toFixed(2) %></td>
+                                                                                    <td class="sales-value">$<%= (entity.sales??0).toFixed(2) %></td>
+                                                                                <% } else if (entityType === 'ad') { 
+                                                                                    const product = entity.product || {};
+                                                                                    const imageUrl = product.imageUrl;
+                                                                                %>
+                                                                                    <td class="ad-id monospace"><%= entity.adId || 'N/A' %></td>
+                                                                                    <td class="product-info">
+                                                                                        <% if (imageUrl) { %>
+                                                                                            <img src="<%= imageUrl %>" alt="Product" class="product-thumbnail" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; margin-right: 8px;">
+                                                                                        <% } %>
+                                                                                        <span class="product-title"><%= product.title || entity.sku || '-' %></span>
+                                                                                    </td>
+                                                                                    <td class="asin monospace"><%= entity.asin || 'N/A' %></td>
+                                                                                    <td class="availability">
+                                                                                        <% if (product.availability === 'IN_STOCK') { %>
+                                                                                            <span class="status-badge in-stock"><i class="fas fa-check-circle"></i> In Stock</span>
+                                                                                        <% } else { %>
+                                                                                            <span class="status-badge out-of-stock"><i class="fas fa-times-circle"></i> <%= product.availability || 'Unknown' %></span>
+                                                                                        <% } %>
+                                                                                    </td>
+                                                                                    <td class="price">
+                                                                                        <% if (product.price !== undefined && product.price !== null) { %>
+                                                                                            <%= product.currency || '$' %><%= parseFloat(product.price).toFixed(2) %>
+                                                                                        <% } else { %>
+                                                                                            <span class="text-muted">-</span>
+                                                                                        <% } %>
+                                                                                    </td>
                                                                                 <% } %>
                                                                             </tr>
                                                                         <% }); %>

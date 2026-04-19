@@ -32,7 +32,6 @@ export class NewProductLaunchRule extends BaseRule implements ICampaignRuleDecis
       TargetType.COMPLEMENTS
     ];
     const targetings = this.getTargeting(allTargetingTypes);
-    console.log({targetings})
 
     return {
       ruleId: 'RULE_002',

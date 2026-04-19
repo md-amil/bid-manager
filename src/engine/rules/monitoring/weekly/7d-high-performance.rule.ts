@@ -20,8 +20,8 @@ export class SevenDayHighPerformerRule extends BaseRule implements ICampaignRule
     if (!this.searchTerms || this.searchTerms.length === 0) return false;
 
     const winners = this.searchTerms.filter(st => {
-      if (st.sales7d < this.minSales || st.cost === 0) return false;
-      const acos = st.cost / st.sales7d;
+      if (st.sales < this.minSales || st.cost === 0) return false;
+      const acos = st.cost / st.sales;
       return acos <= this.acosTarget;
     });
 
@@ -31,13 +31,13 @@ export class SevenDayHighPerformerRule extends BaseRule implements ICampaignRule
   execute(): AdjustmentLog {
     const winners = this.searchTerms
       .filter(st => {
-        if (st.sales7d < this.minSales || st.cost === 0) return false;
-        const acos = st.cost / st.sales7d;
+        if (st.sales < this.minSales || st.cost === 0) return false;
+        const acos = st.cost / st.sales;
         return acos <= this.acosTarget;
       })
       .sort((a, b) => {
-        const acosA = a.cost / a.sales7d;
-        const acosB = b.cost / b.sales7d;
+        const acosA = a.cost / a.sales;
+        const acosB = b.cost / b.sales;
         return acosA - acosB;
       });
 
@@ -58,7 +58,7 @@ export class SevenDayHighPerformerRule extends BaseRule implements ICampaignRule
       })),
       reasoning:
         `Identified ${winners.length} high-performing keyword(s) with ACOS ≤ ${(this.acosTarget * 100).toFixed(2)}%. ` +
-        `Top performers: ${winners.slice(0, 3).map(w => `"${w.searchTerm}" (${(w.cost / w.sales7d * 100).toFixed(2)}% ACOS)`).join(', ')}. ` +
+        `Top performers: ${winners.slice(0, 3).map(w => `"${w.searchTerm}" (${(w.cost / w.sales * 100).toFixed(2)}% ACOS)`).join(', ')}. ` +
         `Increasing bids 20% on these winners and recommending conversion to exact match for better control.`,
     };
   }

@@ -1,4 +1,4 @@
-import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, TargetingType } from "src/engine/interfaces";
+import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, ISearchTerm, TargetingType } from "src/engine/interfaces";
 import BaseRule, { config } from "../../base.rule";
 import { Type } from "src/schemas/campaign.schema";
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
@@ -11,7 +11,7 @@ import { SearchTermDocument } from "src/schemas/reports/search-term-report.schem
  * Action: Add Phrase + Exact version, Increase 10% budget + 20% bid on exact
  */
 export class BroadKeywordScalingRule extends BaseRule implements ICampaignRuleDecision {
-  private term:SearchTermDocument[]
+  private term:ISearchTerm[]
 
   // private acosTarget: number;
   // private spendIncreaseThreshold: number; // Week-over-week increase

@@ -1,4 +1,4 @@
-import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision } from "src/engine/interfaces";
+import { AutoCampaignAdjustment, ICampaignBundle, ICampaignRuleDecision, ISearchTerm } from "src/engine/interfaces";
 import BaseRule, { config } from "../../base.rule";
 import { Type } from "src/schemas/campaign.schema";
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
@@ -12,10 +12,10 @@ import { SearchTermDocument } from "src/schemas/reports/search-term-report.schem
  * Action: Add Negative Exact (if close intent), Add Negative Phrase (if irrelevant pattern)
  */
 export class NegativeKeywordManualRule extends BaseRule implements ICampaignRuleDecision {
-  private terms: SearchTermDocument[]
+  private terms: ISearchTerm[]
   constructor(bundle: ICampaignBundle) {
     super(bundle);
-    this.terms = this.getLowPerformingSearchTerms();
+    this.terms = this.getNegativeWorthySearchTerms();
   }
 
   shouldApply(): boolean {
@@ -57,15 +57,15 @@ export class NegativeKeywordManualRule extends BaseRule implements ICampaignRule
       adjustments: [
         {
           action: EAction.ADD_NEGATIVE_EXACT,
-          target: ETarget.KEYWORDS
+          target: ETarget.TERMS
         },
         {
           action: EAction.ADD_NEGATIVE_PHARASE,
           target: ETarget.OTHER
         }
       ],
-      keywords:closeIntentKeywords,
-      searchTerms:irrelevantKeywords,
+      searchTerms: [...closeIntentKeywords,...irrelevantKeywords],
+      // searchTerms:irrelevantKeywords,
 
       reasoning:
         `Found ${this.terms.length} keywords with 20+ clicks or 200+ spend but zero sales. ` +

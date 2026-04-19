@@ -1,6 +1,7 @@
-import { ICampaignBundle, ICampaignRuleDecision } from "src/engine/interfaces";
-import BaseRule, { config } from "../../base.rule";
+import { ICampaignRuleDecision } from "src/engine/interfaces";
+import BaseDailyRule  from "./base-daily.rule";
 import { AdjustmentLog, EAction, ETarget, Adjustment } from "src/schemas/log.schema";
+import { DailyCampaignBundle } from "src/interfaces/index.type";
 
 /**
  * RULE: Sudden Spend Spike (Daily - 24 Hour)
@@ -9,28 +10,28 @@ import { AdjustmentLog, EAction, ETarget, Adjustment } from "src/schemas/log.sch
  * NOTE: Only reduce if the spending didn't result in proportional sales
  */
 
-export class DailySpendSpikeRule extends BaseRule implements ICampaignRuleDecision {
+export class DailySpendSpikeRule extends BaseDailyRule implements ICampaignRuleDecision {
   private spendIncreaseThreshold: number = 0.5;
   private minAverageSpend: number = 100;
 
-  constructor(bundle: ICampaignBundle) {
+  constructor(bundle: DailyCampaignBundle) {
     super(bundle);
   }
 
   shouldApply(): boolean {
-    if (!this.metrics || !this.budgetUsage) return false;
+    if (!this.budgetUsage) return false;
 
-    // Compare current spend to historical average from budgetUsage
-    const avgSpend = this.budgetUsage.avgSpend || this.cost;
-    const spendIncrease = (this.cost - avgSpend) / avgSpend;
+    // Compare current spend to budget to detect spikes
+    const avgSpend = this.budgetUsage.avgSpend || this.totalCost;
+    const spendIncrease = (this.totalCost - avgSpend) / avgSpend;
 
     // Only flag if average spend is meaningful
     return spendIncrease > this.spendIncreaseThreshold && avgSpend >= this.minAverageSpend;
   }
 
   execute(): AdjustmentLog {
-    const avgSpend = this.budgetUsage?.avgSpend || this.cost;
-    const spendIncrease = ((this.cost - avgSpend) / avgSpend) * 100;
+    const avgSpend = this.budgetUsage?.avgSpend || this.totalCost;
+    const spendIncrease = ((this.totalCost - avgSpend) / avgSpend) * 100;
 
     const currentAcos = this.acos;
     const avgAcos = this.budgetUsage?.avgAcos || currentAcos;
@@ -48,12 +49,6 @@ export class DailySpendSpikeRule extends BaseRule implements ICampaignRuleDecisi
       campaignId: this.campaign.campaignId,
       campaignName: this.campaign.name,
       adjustments,
-      targetings: this.targets.map(t => ({
-        targetId: t.targetId,
-        targetingType: t.metrics.targeting,
-        expression: t.expression[0].type || '',
-        bid: t.bid
-      })),
       reasoning:
         `Unusual spend spike detected: +${spendIncrease.toFixed(0)}% above average. ` +
         (acosWorsened

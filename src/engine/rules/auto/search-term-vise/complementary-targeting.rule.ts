@@ -34,8 +34,8 @@ export class ComplementaryTargetingOptimizationRule extends BaseRule implements 
     if ( isLowImpression) return false;
 
     const {cost,sales} = this.targeting.metrics;
-    const isGenuineComplement = this.calculateACOS({cost: cost, sales7d: sales}) <= config.targetAcos;
-    const lowRelevence =  this.calculateACOS({cost: cost, sales7d: sales}) > config.targetAcos;
+    const isGenuineComplement = this.calculateACOS({cost, sales}) <= config.targetAcos;
+    const lowRelevence =  this.calculateACOS({cost, sales}) > config.targetAcos;
     return isGenuineComplement || lowRelevence;
   }
 
@@ -43,8 +43,8 @@ export class ComplementaryTargetingOptimizationRule extends BaseRule implements 
     let action: EAction;
     let change: number;
     const {cost,sales} = this.targeting.metrics;
-     const isGenuineComplement = this.calculateACOS({cost: cost, sales7d: sales}) <= config.targetAcos;
-    const lowRelevence =  this.calculateACOS({cost: cost, sales7d: sales}) > config.targetAcos;
+    const isGenuineComplement = this.calculateACOS({cost, sales}) <= config.targetAcos;
+    const lowRelevence =  this.calculateACOS({cost, sales}) > config.targetAcos;
 
     // Increase 25% when: Products genuinely complementary with incremental sales
     if (isGenuineComplement) {

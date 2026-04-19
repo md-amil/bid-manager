@@ -23,7 +23,7 @@ export class AddNewKeywordsFromDiscoveryRule extends BaseRule implements ICampai
     if (this.campaign.targetingType !== Type.MANUAL) return false;
 
     const promisingKeywords = this.searchTerms.filter(st =>
-      st.sales7d >= config.minSales &&
+      st.sales >= config.minSales &&
       this.calculateACOS(st) <= config.targetAcos &&
       st.searchTerm
     );
@@ -35,7 +35,7 @@ export class AddNewKeywordsFromDiscoveryRule extends BaseRule implements ICampai
 
     const broad = this.searchTerms.filter(s=>s.matchType == MatchType.BROAD)
     const fromBroad = broad.filter(st =>
-      st.sales7d >= config.minSales &&
+      st.sales >= config.minSales &&
       this.calculateACOS(st) <= config.targetAcos
     );
 

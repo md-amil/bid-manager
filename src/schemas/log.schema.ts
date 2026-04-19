@@ -14,6 +14,7 @@ export enum EAction {
   DECREASE_BUDGET = 'DECREASE_BUDGET',
 
   PAUSE_CAMPAIGN = 'PAUSE_CAMPAIGN',
+  PAUSE_AD = 'PAUSE_AD',
   RESUME_CAMPAIGN = 'RESUME_CAMPAIGN',
 
   ADD_EXACT = 'ADD_EXACT',
@@ -109,6 +110,7 @@ export enum ETarget {
   CAMPAIGN = 'campaign',
   TARGETING = 'targetings',
   KEYWORDS = 'keywords',
+  ADS = 'ads',
   TERMS = 'searchTerms',
   OTHER='other'
 }
@@ -177,6 +179,9 @@ export class AdjustmentLog  {
 
   @Prop({ type: MongooseSchema.Types.Mixed })
   campaign?:any
+
+  @Prop({ type: MongooseSchema.Types.Mixed })
+  ads?: any[];
 
   @Prop({ type: MongooseSchema.Types.Mixed })
   keywords?: any[];

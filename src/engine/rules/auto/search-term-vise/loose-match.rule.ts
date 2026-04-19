@@ -19,7 +19,7 @@ export class LooseMatchOptimizationRule extends BaseRule implements ICampaignRul
     const ctr = this.calculateCTR(this.targeting.metrics);
     const cpc = this.calculateCPC(this.targeting.metrics);
     this.isGoodBroadExp = ctr > 0.5 && cpc < 2; // decent CTR (>0.5%) and low CPC (<$2)
-    this.isGeneric = this.calculateACOS({ cost, sales7d: sales }) > config.targetAcos
+    this.isGeneric = this.calculateACOS({ cost, sales }) > config.targetAcos
 
     // Increase 20% when: Low CPC and decent CTR (good for broad keyword exploration)
     // this.goodTargets = looseMatchTargets.filter(target => {
@@ -38,7 +38,6 @@ export class LooseMatchOptimizationRule extends BaseRule implements ICampaignRul
   shouldApply(): boolean {
     if(!this.targeting.metrics) return false;
     const lowImpTarget = this.getLowImpressionTarget();
-    console.dir({lowImpTarget,targetId:this.targeting.targetId},{depth: null})
         const isLowImpression = lowImpTarget.length && lowImpTarget.some(target => target.targetId == this.targeting.targetId);
     if (isLowImpression) return false;
     return (this.isGeneric || this.isGoodBroadExp);

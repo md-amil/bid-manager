@@ -93,6 +93,7 @@ export interface ICampaignDetails extends Campaign {
     keywords: keywordWithMetrics[]
     targetings:Targeting[]
 }
+
 export interface IMetrics {
     impressions: number;
     purchase:number;
@@ -101,10 +102,23 @@ export interface IMetrics {
     sales: number;
 }
 
+export interface ISearchTerm{
+    matchType: string;
+    searchTerm: string;
+    clicks: number;
+    impressions: number;
+    cost: number;
+    sales: number;
+    keyword: string;
+    keywordId: string;
+    campaignId: string;
+    adGroupId: string;
+}
+
 export interface ICampaignBundle extends ICampaignDetails {
     metrics30d:IMetrics
     metrics7d:IMetrics
-    searchTerms: SearchTermDocument[]
+    searchTerms: ISearchTerm[]
     budgetUsage: any
 }
 

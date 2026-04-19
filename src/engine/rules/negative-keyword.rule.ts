@@ -1,6 +1,6 @@
 import { AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
-import { ICampaignBundle, ICampaignRuleDecision } from "../../../interfaces";
-import AutoCampaignBaseRule, { config } from "../../base.rule";
+import { ICampaignBundle, ICampaignRuleDecision } from "../interfaces";
+import AutoCampaignBaseRule, { config } from "./base.rule";
 
 // RULE for Negative Keywords
 export class NegativeKeywordRule extends AutoCampaignBaseRule implements ICampaignRuleDecision {
@@ -11,13 +11,12 @@ export class NegativeKeywordRule extends AutoCampaignBaseRule implements ICampai
 
   shouldApply(): boolean {
     const poorSearchTerms = this.getNegativeWorthySearchTerms();
-    // console.log(`NegativeKeywordRule: shouldApply check - Found ${poorSearchTerms.length} search terms with 20+ clicks or 200+ spend and zero sales.`);
     return poorSearchTerms.length > 0;
   }
 
   execute(): AdjustmentLog {
     const termsToNegate = this.getNegativeWorthySearchTerms();
-    const negativeKeywords = termsToNegate.map(st => st.searchTerm);
+    console.log(termsToNegate)
 
     return {
       ruleId: 'RULE_010',
@@ -27,13 +26,13 @@ export class NegativeKeywordRule extends AutoCampaignBaseRule implements ICampai
       adjustments: [
         {
           action: EAction.ADD_NEGATIVE,
-          target: ETarget.KEYWORDS
+          target: ETarget.TERMS
         }
       ],
-      keywords: negativeKeywords,
+      searchTerms: termsToNegate,
       reasoning:
         `Found ${termsToNegate.length} search terms with 20+ clicks or 200+ spend and zero sales. ` +
-        `Adding ${negativeKeywords.length} terms as negative exact/phrase keywords to reduce wasted spend.`,
+        `Adding ${termsToNegate.length} terms as negative exact/phrase keywords to reduce wasted spend.`,
     };
   }
 }

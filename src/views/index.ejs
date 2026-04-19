@@ -288,6 +288,10 @@
                 <i class="fas fa-sync-alt"></i>
                 Sync Report
             </button>
+            <button onclick="dailyAdjust()" class="btn btn-primary">
+                <i class="fas fa-calendar-day"></i>
+                Daily Adjust
+            </button>
             <button onclick="adjustBids()" class="btn btn-primary">
                 <i class="fas fa-bolt"></i>
                 Adjust Bids Now
@@ -481,6 +485,58 @@
                     } catch (error) {
                         console.error('Bid adjustment error:', error);
                         showNotification(`Error adjusting bids: ${error.message}`, 'error');
+
+                        // Reset button
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        button.style.background = '';
+                    }
+                }
+            );
+        }
+
+        async function dailyAdjust() {
+            // Show custom confirmation modal
+            showConfirmationModal(
+                'Confirm Daily Adjustment',
+                'Run daily optimization rules? This will check budget exhaustion, out-of-stock products, and negative keyword detection for all campaigns.',
+                async () => {
+                    const button = event.target;
+                    const originalText = button.innerHTML;
+
+                    // Show loading state
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+                    button.disabled = true;
+
+                    try {
+                        const response = await fetch('/api/campaigns/daily-adjust', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            // Show success message
+                            button.innerHTML = '<i class="fas fa-check"></i> Complete';
+                            button.style.background = '#4caf50';
+
+                            // Show notification
+                            showNotification(`Daily adjustment completed successfully!`, 'success');
+
+                            // Reload page after 2 seconds to show updated data
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            throw new Error(result.message || 'Daily adjustment failed');
+                        }
+                    } catch (error) {
+                        console.error('Daily adjustment error:', error);
+                        showNotification(`Error: ${error.message}`, 'error');
 
                         // Reset button
                         button.innerHTML = originalText;

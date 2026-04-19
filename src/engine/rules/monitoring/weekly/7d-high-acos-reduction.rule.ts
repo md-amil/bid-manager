@@ -30,12 +30,12 @@ export class SevenDayHighAcosReductionRule extends BaseRule implements ICampaign
     // Find worst performing search terms
     const underperformingTerms = this.searchTerms
       .filter(st => {
-        const termAcos = st.cost > 0 ? st.cost / st.sales7d : Infinity;
+        const termAcos = st.cost > 0 ? st.cost / st.sales : Infinity;
         return termAcos > this.acosTarget * 1.5 && st.cost > 50;
       })
       .sort((a, b) => {
-        const acosA = a.cost / (a.sales7d || 1);
-        const acosB = b.cost / (b.sales7d || 1);
+        const acosA = a.cost / (a.sales || 1);
+        const acosB = b.cost / (b.sales || 1);
         return acosB - acosA;
       })
       .slice(0, 5); // Top 5 worst
@@ -60,7 +60,7 @@ export class SevenDayHighAcosReductionRule extends BaseRule implements ICampaign
         
         searchTerm: st.searchTerm,
         spend: st.cost,
-        sales7d: st.sales7d
+        sales: st.sales
       })),
       reasoning:
         `7-day ACOS ${(acos * 100).toFixed(2)}% exceeds target ${(this.acosTarget * 100).toFixed(2)}%. ` +

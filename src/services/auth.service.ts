@@ -134,6 +134,16 @@ export class AuthService {
     return organization;
   }
 
+  async getAllOrganizations(): Promise<Organization[]> {
+    try {
+      const organizations = await this.organizationModel.find().exec();
+      return organizations;
+    } catch (error) {
+      this.logger.error('Failed to get all organizations', error.message);
+      throw new Error('Failed to fetch organizations');
+    }
+  }
+
 
   async getSessionDetails({ refreshToken, id }: Organization) {
     const tokens = await this.authApi.refreshAccessToken(refreshToken!);

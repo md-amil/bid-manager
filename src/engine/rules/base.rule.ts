@@ -1,4 +1,4 @@
-import { ICampaignBundle, IMetrics, keywordWithMetrics, TargetingType, TargetWithMetrics } from "src/engine/interfaces";
+import { ICampaignBundle, IMetrics, ISearchTerm, keywordWithMetrics, TargetingType, TargetWithMetrics } from "src/engine/interfaces";
 import { Targeting } from "src/interfaces/report.type";
 import { Campaign, Type } from "src/schemas/campaign.schema";
 import { MatchType } from "src/schemas/keyword.schema";
@@ -27,7 +27,7 @@ export enum TargetType {
 
 
 export default class BaseRule {
-    protected searchTerms: SearchTermDocument[]
+    protected searchTerms: ISearchTerm[]
     protected metrics7d: IMetrics
     protected metrics30d: IMetrics
     protected campaign: Campaign
@@ -145,18 +145,17 @@ export default class BaseRule {
     }
 
     getTargeting(type?: TargetType | TargetType[]) {
-        console.dir(this.targets, { depth: null })
         if (!type?.length) return this.targets
         if (Array.isArray(type)) return this.targets.filter(t => type.includes(t.expression[0].type as TargetType))
         return this.targets.filter(t => t.expression[0].type == type)
     }
 
     getProfitableTerms(minSales: number = config.minSales) {
-        return this.searchTerms.filter((term) => term.sales7d >= minSales && this.calculateACOS(term) <= config.targetAcos);
+        return this.searchTerms.filter((term) => term.sales >= minSales && this.calculateACOS(term) <= config.targetAcos);
     }
 
     getLowPerformingSearchTerms() {
-        return this.searchTerms.filter(st => st.clicks >= config.minClicks && st.cost >= config.minSpend && st.sales7d === 0)
+        return this.searchTerms.filter(st => st.clicks >= config.minClicks && st.cost >= config.minSpend && st.sales === 0)
         // return this.searchTerms.filter((term) => term.sales7d <= minSales && this.calculateACOS(term) >= config.targetAcos);
     }
 
@@ -168,9 +167,11 @@ export default class BaseRule {
     // Search terms with 20+ clicks OR 200+ spend and zero sales - for negative keyword rules
 
     getNegativeWorthySearchTerms() {
-        return this.searchTerms.filter(st =>
-            (st.clicks >= 20 || st.cost >= 200) && st.sales7d === 0
-        );
+        return this.searchTerms.filter(st =>{
+            const zeroSale = (st.clicks >= 20 || st.cost >= config.minSpend) && st.sales === 0
+            const negative = st.cost>=config.minSpend&&this.calculateACOS(st)>=1
+            return zeroSale || negative
+        });
     }
 
     // getAcos(matric?: { spend: number, sales7d: number }) {
@@ -189,8 +190,8 @@ export default class BaseRule {
         return cost / clicks;
     }
 
-    calculateACOS(matric?: { cost: number, sales7d: number }): number {
-        if (matric) return matric.cost && matric.sales7d ? matric.cost / matric.sales7d : Infinity;
+    calculateACOS(matric?: { cost: number, sales: number }): number {
+        if (matric) return matric.cost && matric.sales ? matric.cost / matric.sales : Infinity;
         return this.metrics.cost && this.metrics.sales ? this.metrics.cost / this.metrics.sales : Infinity;
     }
 

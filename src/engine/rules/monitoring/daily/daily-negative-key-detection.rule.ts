@@ -1,6 +1,7 @@
-import { ICampaignBundle, ICampaignRuleDecision } from "src/engine/interfaces";
-import BaseRule, { config } from "../../base.rule";
+import { ICampaignRuleDecision } from "src/engine/interfaces";
+import BaseDailyRule, { dailyConfig } from "./base-daily.rule";
 import { AdjustmentLog, EAction, ETarget, Adjustment } from "src/schemas/log.schema";
+import { DailyCampaignBundle } from "src/interfaces/index.type";
 
 /**
  * RULE: Daily Negative Keyword Addition (Daily - 24 Hour)
@@ -8,27 +9,22 @@ import { AdjustmentLog, EAction, ETarget, Adjustment } from "src/schemas/log.sch
  * Action: Add as negative exact match to prevent repeat wasting
  * NOTE: Real-time quality control
  */
-export class DailyNegativeKeywordDetectionRule extends BaseRule implements ICampaignRuleDecision {
-  private clickThreshold: number = 20;
+export class DailyNegativeKeywordDetectionRule extends BaseDailyRule implements ICampaignRuleDecision {
 
-  constructor(bundle: ICampaignBundle) {
+  constructor(bundle: DailyCampaignBundle) {
     super(bundle);
   }
 
   shouldApply(): boolean {
-    if (!this.searchTerms || this.searchTerms.length === 0) return false;
+    if (!this.hasSearchTerms) return false;
     
-    const badTerms = this.searchTerms.filter(st =>
-      st.clicks >= this.clickThreshold && st.sales7d === 0
-    );
+    const badTerms = this.getLowPerformingSearchTerms(dailyConfig.clickThreshold);
 
     return badTerms.length > 0;
   }
 
   execute(): AdjustmentLog {
-    const badTerms = this.searchTerms.filter(st =>
-      st.clicks >= this.clickThreshold && st.sales7d === 0
-    );
+    const badTerms = this.getLowPerformingSearchTerms(dailyConfig.clickThreshold);
 
     const adjustments: Adjustment[] = [
       { action: EAction.ADD_NEGATIVE, target: ETarget.TERMS }
@@ -39,7 +35,6 @@ export class DailyNegativeKeywordDetectionRule extends BaseRule implements ICamp
       ruleName: 'Daily Negative Keywords - Quality Control',
       campaignId: this.campaign.campaignId,
       campaignName: this.campaign.name,
-      
       adjustments,
       searchTerms: badTerms.map(st => ({
         searchTerm: st.searchTerm,
@@ -47,7 +42,7 @@ export class DailyNegativeKeywordDetectionRule extends BaseRule implements ICamp
         cost: st.cost
       })),
       reasoning:
-        `${badTerms.length} search term(s) with ${this.clickThreshold}+ clicks, zero sales detected today. ` +
+        `${badTerms.length} search term(s) with ${dailyConfig.clickThreshold}+ clicks, zero sales detected today. ` +
         `Adding to negative exact matches: ${badTerms.map(st => st.searchTerm).join(', ')}`,
     };
   }

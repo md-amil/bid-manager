@@ -30,7 +30,7 @@ export class ThreeDayZeroSalesRule extends BaseRule implements ICampaignRuleDeci
     const avgDailySpend = this.cost / 3;
 
     const zeroSaleTerms = this.searchTerms.filter(st =>
-      st.clicks >= 10 && st.sales7d === 0
+      st.clicks >= 10 && st.sales === 0
     );
 
     const adjustments: Adjustment[] = [

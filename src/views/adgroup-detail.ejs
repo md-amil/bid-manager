@@ -1055,15 +1055,7 @@
     }
     
     function editKeyword(keywordId, currentBid) {
-        const newBid = prompt(`Enter new bid for keyword ${keywordId}:`, currentBid);
-        
-        if (newBid && !isNaN(newBid) && parseFloat(newBid) > 0) {
-            alert(`Bid for keyword ${keywordId} would be updated to $${parseFloat(newBid).toFixed(2)}`);
-            
-            // TODO: Implement actual API call to update keyword bid
-        } else if (newBid !== null) {
-            alert('Please enter a valid bid amount greater than 0');
-        }
+        showBidModal('keyword', keywordId, currentBid);
     }
     
     function removeNegativeKeyword(keywordId) {
@@ -1075,15 +1067,7 @@
     }
     
     function editTargetBid(targetId, currentBid) {
-        const newBid = prompt(`Enter new bid for target ${targetId}:`, currentBid);
-        
-        if (newBid && !isNaN(newBid) && parseFloat(newBid) > 0) {
-            alert(`Bid for target ${targetId} would be updated to $${parseFloat(newBid).toFixed(2)}`);
-            
-            // TODO: Implement actual API call to update target bid
-        } else if (newBid !== null) {
-            alert('Please enter a valid bid amount greater than 0');
-        }
+        showBidModal('target', targetId, currentBid);
     }
     
     function removeTarget(targetId) {
@@ -1226,6 +1210,346 @@
     });
     </script>
     
+    <!-- Bid Edit Modal -->
+    <div id="bidModal" class="bid-modal-overlay" style="display: none;">
+        <div class="bid-modal">
+            <div class="bid-modal-header">
+                <div class="bid-modal-icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <h3>Edit Bid</h3>
+                <button class="bid-modal-close" onclick="closeBidModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="bid-modal-body">
+                <div class="bid-info">
+                    <span class="bid-label" id="bidModalLabel">Keyword ID</span>
+                    <span class="bid-id" id="bidModalId">--</span>
+                </div>
+                <div class="bid-input-group">
+                    <label for="bidInput">New Bid Amount</label>
+                    <div class="bid-input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input 
+                            type="number" 
+                            id="bidInput" 
+                            class="bid-input" 
+                            step="0.01" 
+                            min="0.01"
+                            placeholder="0.00"
+                            autofocus
+                        >
+                    </div>
+                    <span class="bid-hint">Minimum bid: $0.01</span>
+                </div>
+                <div class="bid-current">
+                    <span>Current Bid: <strong id="bidCurrentValue">$0.00</strong></span>
+                </div>
+            </div>
+            <div class="bid-modal-footer">
+                <button class="btn-cancel" onclick="closeBidModal()">Cancel</button>
+                <button class="btn-save-bid" onclick="saveBid()">
+                    <i class="fas fa-check"></i> Save Bid
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Bid Modal Styles */
+        .bid-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(17, 29, 51, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .bid-modal {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(17, 29, 51, 0.4);
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .bid-modal-header {
+            background: linear-gradient(135deg, #111d33 0%, #1a2d4a 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .bid-modal-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .bid-modal-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .bid-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .bid-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .bid-modal-body {
+            padding: 1.5rem;
+        }
+
+        .bid-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .bid-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .bid-id {
+            font-size: 1rem;
+            color: #1e293b;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        .bid-input-group {
+            margin-bottom: 1rem;
+        }
+
+        .bid-input-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .bid-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 1rem;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .bid-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111d33;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .bid-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .bid-hint {
+            display: block;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+        }
+
+        .bid-current {
+            padding: 0.75rem 1rem;
+            background: #eff6ff;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+
+        .bid-current strong {
+            color: #111d33;
+        }
+
+        .bid-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem 1.5rem;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-save-bid {
+            flex: 2;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #111d33 0%, #1a2d4a 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-save-bid:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(17, 29, 51, 0.3);
+        }
+
+        .btn-save-bid:active {
+            transform: translateY(0);
+        }
+    </style>
+
+    <script>
+        let currentBidType = '';
+        let currentBidId = '';
+
+        function showBidModal(type, id, currentBid) {
+            currentBidType = type;
+            currentBidId = id;
+            
+            document.getElementById('bidModalLabel').textContent = type === 'keyword' ? 'Keyword ID' : 'Target ID';
+            document.getElementById('bidModalId').textContent = id;
+            document.getElementById('bidCurrentValue').textContent = '$' + parseFloat(currentBid).toFixed(2);
+            document.getElementById('bidInput').value = parseFloat(currentBid).toFixed(2);
+            
+            document.getElementById('bidModal').style.display = 'flex';
+            document.getElementById('bidInput').focus();
+            document.getElementById('bidInput').select();
+        }
+
+        function closeBidModal() {
+            document.getElementById('bidModal').style.display = 'none';
+            currentBidType = '';
+            currentBidId = '';
+        }
+
+        function saveBid() {
+            const newBid = parseFloat(document.getElementById('bidInput').value);
+            
+            if (isNaN(newBid) || newBid <= 0) {
+                showNotification('Please enter a valid bid amount greater than 0', 'error');
+                return;
+            }
+            
+            const typeLabel = currentBidType === 'keyword' ? 'Keyword' : 'Target';
+            showNotification(`${typeLabel} bid updated to $${newBid.toFixed(2)}`, 'success');
+            
+            // TODO: Implement actual API call to update bid
+            console.log(`Updating ${currentBidType} ${currentBidId} bid to $${newBid.toFixed(2)}`);
+            
+            closeBidModal();
+        }
+
+        // Close modal on overlay click
+        document.getElementById('bidModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBidModal();
+            }
+        });
+
+        // Handle Enter key
+        document.getElementById('bidInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                saveBid();
+            }
+        });
+
+        // Handle Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('bidModal').style.display === 'flex') {
+                closeBidModal();
+            }
+        });
+    </script>
+
     <%- include('partials/footer') %>
 </body>
 </html>

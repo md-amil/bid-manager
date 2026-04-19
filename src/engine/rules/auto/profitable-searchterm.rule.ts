@@ -1,6 +1,6 @@
 import {  AdjustmentLog, EAction, ETarget } from "src/schemas/log.schema";
 import {  ICampaignBundle, ICampaignRuleDecision } from "../../interfaces";
-import AutoCampaignBaseRule, { config } from "../base.rule";
+import  { config } from "../base.rule";
 import BaseRule from "../base.rule";
 
 export class ProfitableSearchTermsRule extends BaseRule implements ICampaignRuleDecision {
@@ -43,7 +43,7 @@ export class ProfitableSearchTermsRule extends BaseRule implements ICampaignRule
           target : ETarget.TERMS
         }
       ],
-      searchTerms : highPerformingTerms.map(term => ({term:term.searchTerm,keywordId:term.keywordId})),
+      searchTerms : highPerformingTerms,
       reasoning:
         `Auto campaign is generating consistent profitable sales. ` +
         `ACOS is within target. Found ${highPerformingTerms.length} high-performing search terms. ` +

@@ -1,6 +1,7 @@
-import { ICampaignBundle, ICampaignRuleDecision } from "src/engine/interfaces";
-import BaseRule, { config } from "../../base.rule";
+import { ICampaignRuleDecision } from "src/engine/interfaces";
+import BaseDailyRule, { dailyConfig } from "./base-daily.rule";
 import { AdjustmentLog, EAction, ETarget, Adjustment } from "src/schemas/log.schema";
+import { DailyCampaignBundle } from "src/interfaces/index.type";
 
 /**
  * RULE: Daily Performance Summary (Daily - 24 Hour)
@@ -8,29 +9,27 @@ import { AdjustmentLog, EAction, ETarget, Adjustment } from "src/schemas/log.sch
  * Action: Log performance, flag anomalies, prepare for next day
  * NOTE: Do NOT optimize based on single day - just monitor
  */
-export class DailyPerformanceAlertRule extends BaseRule implements ICampaignRuleDecision {
+export class DailyPerformanceAlertRule extends BaseDailyRule implements ICampaignRuleDecision {
   private minHourForCheck: number = 23; // 11 PM
-  private acosTarget: number = config.targetAcos;
 
-  constructor(bundle: ICampaignBundle) {
+  constructor(bundle: DailyCampaignBundle) {
     super(bundle);
   }
 
   shouldApply(): boolean {
-    if (!this.metrics) return false;
+    if (!this.hasSearchTerms) return false;
     const currentHour = new Date().getHours();
     return currentHour === this.minHourForCheck;
   }
 
   execute(): AdjustmentLog {
-    const metrics = this.metrics;
     const acos = this.acos;
-    const roi = this.roi;
+    const roas = this.roas;
 
     const alerts: string[] = [];
-    if (acos > this.acosTarget * 1.5) alerts.push(`High ACOS: ${(acos * 100).toFixed(2)}%`);
-    if (this.clicks > 100 && this.sales === 0) alerts.push('High traffic, zero sales');
-    if (this.utilization > 0.8) alerts.push('Budget near limit');
+    if (acos > dailyConfig.acosTarget * 1.5) alerts.push(`High ACOS: ${(acos * 100).toFixed(2)}%`);
+    if (this.totalClicks > 100 && this.totalSales === 0) alerts.push('High traffic, zero sales');
+    if (this.budgetUsage && this.budgetUsage.budgetUsagePercent > 80) alerts.push('Budget near limit');
 
     const adjustments: Adjustment[] = [];
 
@@ -41,8 +40,9 @@ export class DailyPerformanceAlertRule extends BaseRule implements ICampaignRule
       campaignName: this.campaign.name,
       adjustments,
       reasoning:
-        `Daily Summary: $${this.cost.toFixed(2)} spend, $${this.sales.toFixed(2)} sales, ` +
-        `${this.metrics.purchase} orders. ACOS: ${(acos * 100).toFixed(2)}%, ROI: ${roi.toFixed(2)}%. ` +
+        `Daily Summary: $${this.totalCost.toFixed(2)} spend, $${this.totalSales.toFixed(2)} sales, ` +
+        `${this.totalClicks} clicks, ${this.totalImpressions} impressions. ` +
+        `ACOS: ${(acos * 100).toFixed(2)}%, ROAS: ${roas.toFixed(2)}. ` +
         (alerts.length > 0 ? `ALERTS: ${alerts.join('; ')}` : 'Performance normal.'),
     };
   }

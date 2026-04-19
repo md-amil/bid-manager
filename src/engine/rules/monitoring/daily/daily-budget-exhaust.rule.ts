@@ -1,6 +1,7 @@
-import { ICampaignBundle, ICampaignRuleDecision } from "src/engine/interfaces";
-import BaseRule, { config } from "../../base.rule";
+import { ICampaignRuleDecision } from "src/engine/interfaces";
+import BaseDailyRule, { dailyConfig } from "./base-daily.rule";
 import { AdjustmentLog, EAction, ETarget, Adjustment } from "src/schemas/log.schema";
+import { DailyCampaignBundle } from "src/interfaces/index.type";
 
 /**
  * RULE: Campaign Out of Budget (Daily - 24 Hour)
@@ -9,30 +10,28 @@ import { AdjustmentLog, EAction, ETarget, Adjustment } from "src/schemas/log.sch
  * NOTE: Do NOT optimize based on one bad day
  */
 
-export class DailyBudgetExhaustionRule extends BaseRule implements ICampaignRuleDecision {
+export class DailyBudgetExhaustionRule extends BaseDailyRule implements ICampaignRuleDecision {
   private budgetUtilizationThreshold: number = 0.95;
-  private acosTarget: number = 0.30;
-  private minHourForCheck: number = 18; // 6 PM check
+  private minHourForCheck: number = 18; // 6 PM
 
-  constructor(bundle: ICampaignBundle) {
+  constructor(bundle: DailyCampaignBundle) {
     super(bundle);
   }
 
   shouldApply(): boolean {
-    if (!this.metrics) return false;
-
-    const dailyUtilization = this.utilization;
+    if (!this.budgetUsage) return false;
+    
+    const budgetUtilization = this.budgetUsage.budgetUsagePercent / 100;
     const currentHour = new Date().getHours();
+    
     // Check late in the day (after minHourForCheck)
     if (currentHour < this.minHourForCheck) return false;
 
-    return dailyUtilization >= this.budgetUtilizationThreshold;
+    return budgetUtilization >= this.budgetUtilizationThreshold;
   }
 
   execute(): AdjustmentLog {
-    const metrics = this.metrics;
-    const acos = this.acos;
-    const isProfitable = acos <= this.acosTarget;
+    const isProfitable = this.acos <= dailyConfig.acosTarget;
 
     const adjustments: Adjustment[] = isProfitable
       ? [{ action: EAction.INCREASE_BUDGET, change: 25 }]
@@ -43,19 +42,13 @@ export class DailyBudgetExhaustionRule extends BaseRule implements ICampaignRule
       ruleName: 'Daily Budget Exhaustion - Real-Time Control',
       campaignId: this.campaign.campaignId,
       campaignName: this.campaign.name,
-      
       adjustments,
-      targetings: this.targets.map(t => ({
-        targetId: t.targetId,
-        targetingType: t.metrics.targeting,
-        expression: t.expression[0].type || '',
-        bid: t.bid
-      })),
+      targetings: this.getTargets(),
       reasoning:
-        `Campaign exhausted ${(this.utilization * 100).toFixed(0)}% of daily budget before evening. ` +
+        `Campaign exhausted ${(this.budgetUsage.budgetUsagePercent).toFixed(0)}% of daily budget. ` +
         (isProfitable
-          ? `ACOS ${(acos * 100).toFixed(2)}% is profitable. Increasing budget 25% to capture more sales.`
-          : `ACOS ${(acos * 100).toFixed(2)}% is unprofitable. Reducing bids 25% instead of increasing budget.`),
+          ? `ACOS ${(this.acos * 100).toFixed(2)}% is profitable. Increasing budget 25% to capture more sales.`
+          : `ACOS ${(this.acos * 100).toFixed(2)}% is unprofitable. Reducing bids 25% instead of increasing budget.`),
     };
   }
 }

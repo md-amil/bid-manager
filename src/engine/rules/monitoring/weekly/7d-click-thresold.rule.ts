@@ -19,7 +19,7 @@ export class SevenDayClickThresholdRule extends BaseRule implements ICampaignRul
     if (!this.searchTerms || this.searchTerms.length === 0) return false;
 
     const nonConvertingTerms = this.searchTerms.filter(st =>
-      st.clicks >= this.clickThreshold && st.sales7d === 0
+      st.clicks >= this.clickThreshold && st.sales === 0
     );
 
     return nonConvertingTerms.length > 0;
@@ -27,7 +27,7 @@ export class SevenDayClickThresholdRule extends BaseRule implements ICampaignRul
 
   execute(): AdjustmentLog {
     const nonConvertingTerms = this.searchTerms
-      .filter(st => st.clicks >= this.clickThreshold && st.sales7d === 0)
+      .filter(st => st.clicks >= this.clickThreshold && st.sales === 0)
       .sort((a, b) => b.clicks - a.clicks);
 
     const adjustments: Adjustment[] = [

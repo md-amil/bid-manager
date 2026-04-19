@@ -149,28 +149,8 @@ export class CampaignService {
 
   async getCampaignById(campaignId: string, populates: string[]) {
     const match: any = { campaignId };
-    return this.getCampaignBy(match, populates)
-    // const query: PipelineStage[] = [
-    //   {
-    //     $match: {
-    //       campaignId
-    //     }
-    //   },
-    // ]
-    // populates.forEach(from => {
-    //   query.push(
-    //     {
-    //       $lookup: {
-    //         from,
-    //         localField: 'campaignId',
-    //         foreignField: 'campaignId',
-    //         as: from
-    //       }
-    //     },
-    //   )
-    // })
-    // const data = await this.campaignModel.aggregate(query);
-    // return data[0];
+    const campaign = await this.getCampaignBy(match, populates);
+    return campaign?.[0];
   }
 
   async getCampaignBy($match: PipelineStage.Match, populate: string[]) {
@@ -186,7 +166,7 @@ export class CampaignService {
       })
     }
     const data = await this.campaignModel.aggregate(pipeline);
-    return data[0];
+    return data;
   }
 
   async getAdGroupBy($match, populate: (string | { from: string, field: string })[]) {

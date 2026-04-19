@@ -44,7 +44,7 @@ export class ReportProcessor extends WorkerHost {
     async downloadReport(res: ReportResponse, attempt: number = 1) {
         if (attempt > 3) throw new Error('Max download attempts reached');
         try {
-            this.logger.log(`Downloading report from: ${res.url}`);
+            // this.logger.log(`Downloading report from: ${res.url}`);
             const response = await fetch(res.url!);
             if (!response.ok) {
                 throw new Error(`Failed to download report: ${response.statusText}`);
@@ -74,7 +74,6 @@ export class ReportProcessor extends WorkerHost {
             return Promise.reject({ status: reportResponse.status, type: reportResponse.configuration.groupBy[0] });
         const fileName = await this.downloadReport(reportResponse);
         const report = await this.getReportMatrics(fileName);
-        console.log('Report metrics extracted:', report.length);
         await this.reportService.saveReport(report, reportResponse);
     }
 

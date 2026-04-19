@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { AmazonApiService, ReportPayload, } from "./amazon-api.service";
-import { IAmazonAuth } from "src/interfaces/index.type";
+import { IAmazonAuth, IBudgetUsage } from "src/interfaces/index.type";
 import { CAMPAIGN_MATRICS, TARGETING_MATRICS, ADVERTISED_PRODUCT_METRICS } from "src/utils/constant";
 
 export interface ICampaignFilter {
@@ -87,10 +87,11 @@ export class CampaignApiService extends AmazonApiService {
 
   async getBudgetUses(campaignIds: string[], auth: IAmazonAuth) {
     try {
-      const response = await this.httpClient.post(`/sp/campaigns/budget/usage`, { campaignIds }, this.authBuilder(auth))
-      return response.data.success;
+      const response = await this.httpClient.post<{success:IBudgetUsage[]}>(`/sp/campaigns/budget/usage`, { campaignIds }, this.authBuilder(auth))
+      const usages = response.data.success;
+      if(!usages.length) return {}
+      return usages.reduce((acc, cur) => ({ ...acc, [cur.campaignId]: cur }), {} as Record<string, IBudgetUsage>);
     } catch (error) {
-      console.log(error, "data")
       this.logger.error(`Failed to get budget uses for campaign ${campaignIds.join(',')}`, error);
       throw error;
     }

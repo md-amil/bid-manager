@@ -21,10 +21,10 @@ export class SevenDayKeywordPromotionRule extends BaseRule implements ICampaignR
 
     const candidatesForPromotion = this.searchTerms.filter(st => {
       const isPhraseBroad = st.searchTerm.includes('(phrase)') || st.searchTerm.includes('(broad)');
-      const acos = st.cost > 0 ? st.cost / st.sales7d : Infinity;
+      const acos = st.cost > 0 ? st.cost / st.sales : Infinity;
       return (
         isPhraseBroad &&
-        st.sales7d >= this.minSales &&
+        st.sales >= this.minSales &&
         acos <= this.acosTarget
       );
     });
@@ -35,10 +35,10 @@ export class SevenDayKeywordPromotionRule extends BaseRule implements ICampaignR
   execute(): AdjustmentLog {
     const candidatesForPromotion = this.searchTerms.filter(st => {
       const isPhraseBroad = st.searchTerm.includes('(phrase)') || st.searchTerm.includes('(broad)');
-      const acos = st.cost > 0 ? st.cost / st.sales7d : Infinity;
+      const acos = st.cost > 0 ? st.cost / st.sales : Infinity;
       return (
         isPhraseBroad &&
-        st.sales7d >= this.minSales &&
+        st.sales >= this.minSales &&
         acos <= this.acosTarget
       );
     });
@@ -55,12 +55,12 @@ export class SevenDayKeywordPromotionRule extends BaseRule implements ICampaignR
       adjustments,
       searchTerms: candidatesForPromotion.map(k => ({
         searchTerm: k.searchTerm,
-        sales7d: k.sales7d,
+        sales: k.sales,
         cost: k.cost
       })),
       reasoning:
         `${candidatesForPromotion.length} phrase/broad keyword(s) ready for promotion after 7+ days of consistent, profitable sales. ` +
-        `Candidates: ${candidatesForPromotion.map(k => `"${k.searchTerm}" (${k.sales7d} sales, ${(k.cost / k.sales7d * 100).toFixed(2)}% ACOS)`).join(', ')}. ` +
+        `Candidates: ${candidatesForPromotion.map(k => `"${k.searchTerm}" (${k.sales} sales, ${(k.cost / k.sales * 100).toFixed(2)}% ACOS)`).join(', ')}. ` +
         `Recommend: Create exact match variants, increase exact bids 20%, reduce phrase/broad bids 10%.`,
     };
   }
